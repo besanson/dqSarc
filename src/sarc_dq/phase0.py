@@ -17,14 +17,16 @@ Refusals are their own outcome class and never counted as action defects
 from __future__ import annotations
 
 import random
+import statistics
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
 from sarc_dq.agent import make_agent
-from sarc_dq.agent.base import OUTCOME_OK, OUTCOME_REFUSAL
+from sarc_dq.agent.base import OUTCOME_OK, OUTCOME_REFUSAL, Agent
 from sarc_dq.config import RunConfig
 from sarc_dq.injectors import STALE_UNIT_PRICE
 from sarc_dq.judge import make_judge, validate
+from sarc_dq.judge.base import Judge
 from sarc_dq.markers import extract
 from sarc_dq.metrics import (
     action_defect_rate,
@@ -99,16 +101,32 @@ class Phase0Result:
     kill_verdict: str
     kill_detail: str
     spend_usd: float
+    # Phase 0b additions.
+    elasticity_median: float  # median Δq_agent / Δq_oracle (P4)
+    elasticity_n: int  # episodes with a materially non-zero oracle Δq used in the median
+    clean_regret: dict[str, float]  # agent clean_cost − oracle clean_cost (decision noise)
+    failure_autopsy: dict[str, Any]  # drift distribution + which arm failed
     episodes: list[dict[str, Any]] = field(default_factory=list)
+    failures: list[dict[str, Any]] = field(default_factory=list)
 
 
-def run_phase0(config: RunConfig) -> Phase0Result:
-    """Execute the Phase 0 protocol and return a fully structured result."""
-    agent = make_agent(config.arm, config.agent_model)
-    judge = make_judge(config.arm, config.judge_model)
+def run_phase0(
+    config: RunConfig,
+    *,
+    agent: Agent | None = None,
+    judge: Judge | None = None,
+) -> Phase0Result:
+    """Execute the Phase 0 protocol and return a fully structured result.
+
+    ``agent`` / ``judge`` may be injected (tests use a failing stub to exercise the
+    failure-logging path); by default they are built from ``config.arm``.
+    """
+    agent = agent if agent is not None else make_agent(config.arm, config.agent_model)
+    judge = judge if judge is not None else make_judge(config.arm, config.judge_model)
     injector = STALE_UNIT_PRICE
 
     results: list[EpisodeResult] = []
+    failures: list[dict[str, Any]] = []
     spend = 0.0
     n_refusals = n_errors = n_parse_failures = 0
 
@@ -121,8 +139,12 @@ def run_phase0(config: RunConfig) -> Phase0Result:
         inject_rng = random.Random(seed + 1)
         corrupt_rec = injector.inject(clean_rec, episode, inject_rng)
 
-        clean_dec = agent.decide(episode, clean_rec, advisory=False)
-        corrupt_dec = agent.decide(episode, corrupt_rec, advisory=False)
+        clean_dec = agent.decide(
+            episode, clean_rec, advisory=False, prompt_variant=config.prompt_variant
+        )
+        corrupt_dec = agent.decide(
+            episode, corrupt_rec, advisory=False, prompt_variant=config.prompt_variant
+        )
 
         # Cost channel: agent calls on both arms + judge calls on both transcripts.
         cj = judge.score(clean_dec.transcript)
@@ -131,12 +153,45 @@ def run_phase0(config: RunConfig) -> Phase0Result:
         spend += usd
 
         if corrupt_dec.outcome != OUTCOME_OK or clean_dec.outcome != OUTCOME_OK:
-            if OUTCOME_REFUSAL in (clean_dec.outcome, corrupt_dec.outcome):
+            is_refusal = OUTCOME_REFUSAL in (clean_dec.outcome, corrupt_dec.outcome)
+            is_parse_fail = bool(
+                clean_dec.raw.get("parse_failed") or corrupt_dec.raw.get("parse_failed")
+            )
+            if is_refusal:
                 n_refusals += 1
             else:
                 n_errors += 1
-                if clean_dec.raw.get("parse_failed") or corrupt_dec.raw.get("parse_failed"):
+                if is_parse_fail:
                     n_parse_failures += 1
+            # Log the failed pair so it is auditable (excluded from ADR). Records
+            # the outcome, both raw transcripts, and the injected drift.
+            gt = corrupt_rec.ground_truth
+            if clean_dec.outcome != OUTCOME_OK and corrupt_dec.outcome != OUTCOME_OK:
+                failed_arm = "both"
+            elif corrupt_dec.outcome != OUTCOME_OK:
+                failed_arm = "corrupt"
+            else:
+                failed_arm = "clean"
+            true_c = float(gt["true_unit_cost"])
+            stale_c = float(gt["stale_unit_cost"])
+            failures.append(
+                {
+                    "kind": "failure",
+                    "index": i,
+                    "seed": seed,
+                    "failed_arm": failed_arm,
+                    "is_refusal": is_refusal,
+                    "is_parse_failure": is_parse_fail,
+                    "clean_outcome": clean_dec.outcome,
+                    "corrupt_outcome": corrupt_dec.outcome,
+                    "clean_transcript": clean_dec.transcript,
+                    "corrupt_transcript": corrupt_dec.transcript,
+                    "true_unit_cost": true_c,
+                    "stale_unit_cost": stale_c,
+                    "drift_frac": (stale_c / true_c - 1.0) if true_c else float("nan"),
+                    "age_days": int(gt["age_days"]),
+                }
+            )
             continue
 
         clean_cost = episode.realised_cost(clean_dec.order_qty)
@@ -187,12 +242,51 @@ def run_phase0(config: RunConfig) -> Phase0Result:
             )
         )
 
-    return _aggregate(config, results, spend, n_refusals, n_errors, n_parse_failures, judge)
+    return _aggregate(
+        config, results, failures, spend, n_refusals, n_errors, n_parse_failures, judge
+    )
+
+
+# An oracle order change smaller than this (in units) is treated as "no signal"
+# for elasticity: dividing the agent's Δq by a near-zero oracle Δq is unstable and
+# would swamp the median. Episodes below it are excluded from the elasticity ratio.
+_ELASTICITY_MIN_ORACLE_DQ = 1.0
+
+
+def _elasticity(results: list[EpisodeResult]) -> tuple[float, int]:
+    """Median Δq_agent / Δq_oracle over episodes with a material oracle Δq (P4)."""
+    ratios = [
+        (r.corrupt_qty - r.clean_qty) / (r.oracle_corrupt_qty - r.oracle_clean_qty)
+        for r in results
+        if abs(r.oracle_corrupt_qty - r.oracle_clean_qty) >= _ELASTICITY_MIN_ORACLE_DQ
+    ]
+    if not ratios:
+        return float("nan"), 0
+    return statistics.median(ratios), len(ratios)
+
+
+def _failure_autopsy(failures: list[dict[str, Any]]) -> dict[str, Any]:
+    """Summarise failed pairs: count, which arm failed, and the drift distribution."""
+    by_arm = {"clean": 0, "corrupt": 0, "both": 0}
+    for f in failures:
+        by_arm[f["failed_arm"]] = by_arm.get(f["failed_arm"], 0) + 1
+    drifts = [float(f["drift_frac"]) for f in failures if f["drift_frac"] == f["drift_frac"]]
+    drift_summary = (
+        {
+            "median": statistics.median(drifts),
+            "min": min(drifts),
+            "max": max(drifts),
+        }
+        if drifts
+        else {"median": float("nan"), "min": float("nan"), "max": float("nan")}
+    )
+    return {"n": len(failures), "by_arm": by_arm, "drift_frac": drift_summary}
 
 
 def _aggregate(
     config: RunConfig,
     results: list[EpisodeResult],
+    failures: list[dict[str, Any]],
     spend: float,
     n_refusals: int,
     n_errors: int,
@@ -210,6 +304,12 @@ def _aggregate(
     oracle_clean_costs = [r.oracle_clean_cost for r in results]
     oracle_adr = action_defect_rate(oracle_losses, oracle_clean_costs, config.tau_m)
     oracle_lq = quantiles(oracle_losses)
+
+    # Phase 0b: decision elasticity (P4) and clean-arm regret vs the oracle.
+    elasticity_median, elasticity_n = _elasticity(results)
+    clean_regrets = [r.clean_cost - r.oracle_clean_cost for r in results]
+    rq = quantiles(clean_regrets)
+    autopsy = _failure_autopsy(failures)
 
     # Behavioral discrimination: can markers / judge separate corrupted from clean?
     marker_pos = [r.marker_corrupt for r in results]
@@ -260,7 +360,12 @@ def _aggregate(
         kill_verdict=verdict,
         kill_detail=detail,
         spend_usd=spend,
+        elasticity_median=elasticity_median,
+        elasticity_n=elasticity_n,
+        clean_regret={"median": rq.median, "p90": rq.p90, "mean": rq.mean},
+        failure_autopsy=autopsy,
         episodes=[asdict(r) for r in results],
+        failures=failures,
     )
 
 

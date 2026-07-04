@@ -1,0 +1,97 @@
+name: phase0b-live
+
+# Manually triggered live Phase 0b run (real Claude — costs money). Phase 0b is
+# the pre-registered protocol amendment (reports/PHASE0B_PREREG.md): same protocol,
+# `policy_instructed` prompt variant. This workflow ONLY orchestrates the existing
+# live command; it changes no experiment code, prompts, or configuration.
+# Results go to the results/phase0b-live branch; results/phase0-live (the Phase 0a
+# record) is left untouched. Requires an ANTHROPIC_API_KEY repository secret.
+on:
+  workflow_dispatch:
+    inputs:
+      episodes:
+        description: "Number of episodes (100 corrupted + 100 clean per the protocol)"
+        required: true
+        default: "100"
+      prompt:
+        description: "Prompt variant"
+        required: true
+        type: choice
+        default: "policy_instructed"
+        options:
+          - policy_instructed
+          - naive
+
+permissions:
+  contents: write # push the results commit to the results/phase0b-live branch
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fail fast, before installing anything, if the secret is absent.
+      - name: Check ANTHROPIC_API_KEY secret is present
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY repository secret is not set. Add it under" \
+                 "Settings → Secrets and variables → Actions before running this workflow."
+            exit 1
+          fi
+          echo "ANTHROPIC_API_KEY is present."
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install (with live extra)
+        run: pip install -e ".[dev,live]"
+
+      - name: Run Phase 0b live smoke test
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EPISODES: ${{ inputs.episodes }}
+          PROMPT: ${{ inputs.prompt }}
+        run: |
+          python -m benchmarks.phase0_smoke \
+            --arm live \
+            --prompt "$PROMPT" \
+            --episodes "$EPISODES" \
+            --out reports/SMOKE_TEST.md
+
+      # Capture the full reports/ tree (report, summary JSON, per-episode logs)
+      # even if a later step fails.
+      - name: Upload reports/ as a workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase0b-live-reports
+          path: reports/
+          if-no-files-found: error
+
+      - name: Commit results to results/phase0b-live branch
+        env:
+          EPISODES: ${{ inputs.episodes }}
+          PROMPT: ${{ inputs.prompt }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B results/phase0b-live
+          # SMOKE_TEST.md is tracked; the summary JSON and logs are git-ignored, so
+          # force-add them explicitly.
+          git add -f \
+            reports/SMOKE_TEST.md \
+            reports/SMOKE_TEST.summary.json \
+            reports/logs/
+          if git diff --cached --quiet; then
+            echo "No result changes to commit."
+            exit 0
+          fi
+          git commit -m "Phase 0b live results (${PROMPT}, ${EPISODES} episodes, run ${RUN_ID})"
+          git push --force origin results/phase0b-live

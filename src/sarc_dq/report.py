@@ -53,7 +53,8 @@ def render_markdown(result: Phase0Result) -> str:
     lines.append("")
     lines.append(f"- **config hash:** `{r.config_hash}`")
     lines.append(
-        f"- **arm:** `{r.config.get('arm')}`  ·  **agent:** `{r.config.get('agent_model')}`"
+        f"- **arm:** `{r.config.get('arm')}`  ·  **prompt:** `{r.config.get('prompt_variant')}`"
+        f"  ·  **agent:** `{r.config.get('agent_model')}`"
         f"  ·  **judge:** `{r.config.get('judge_model')}`"
     )
     lines.append("- **corruption class:** `stale_unit_price` (metadata-borne)")
@@ -120,6 +121,56 @@ def render_markdown(result: Phase0Result) -> str:
     lines.append("loss histogram (lower bound of bin | count):")
     lines.extend(_ascii_hist([e["loss"] for e in r.episodes]))
     lines.append("```")
+    lines.append("")
+
+    lines.append("## Decision elasticity (Phase 0b, P4)")
+    lines.append("")
+    lines.append(
+        "Median of Δq_agent / Δq_oracle across episodes with a materially non-zero "
+        "oracle order change — how much the agent's order *moves with* the (stale) "
+        "price relative to a perfect solver. ~1.0 = fully elastic (inherits the "
+        "corruption); ~0 = inelastic (ignores the price)."
+    )
+    lines.append("")
+    lines.append(
+        f"- **agent elasticity (median):** {r.elasticity_median:.3f} "
+        f"(over {r.elasticity_n} episodes with |Δq_oracle| ≥ 1 unit)"
+    )
+    lines.append("")
+
+    lines.append("## Clean-arm regret vs oracle")
+    lines.append("")
+    lines.append(
+        "Agent clean-arm cost − oracle clean-arm cost: pure decision noise on the "
+        "*uncorrupted* price, independent of any corruption. Large regret means the "
+        "agent is a poor newsvendor solver even with good data."
+    )
+    lines.append("")
+    cr = r.clean_regret
+    lines.append(
+        f"- median {cr['median']:.2f}  ·  P90 {cr['p90']:.2f}  ·  mean {cr['mean']:.2f} (currency)"
+    )
+    lines.append("")
+
+    lines.append("## Parse-failure autopsy")
+    lines.append("")
+    fa = r.failure_autopsy
+    lines.append(
+        f"- **failed pairs:** {fa['n']}  ·  by arm — clean {fa['by_arm'].get('clean', 0)}, "
+        f"corrupt {fa['by_arm'].get('corrupt', 0)}, both {fa['by_arm'].get('both', 0)}"
+    )
+    df = fa["drift_frac"]
+    if fa["n"]:
+        lines.append(
+            f"- **injected price drift of failed pairs (stale/true − 1):** "
+            f"median {df['median']:+.1%}, range [{df['min']:+.1%}, {df['max']:+.1%}]"
+        )
+        lines.append(
+            "- If failures concentrate on one arm or one drift regime, the exclusion "
+            "is not missing-at-random — inspect the failure records in the JSONL."
+        )
+    else:
+        lines.append("- No failed pairs: every episode produced a parseable order on both arms.")
     lines.append("")
 
     lines.append("## Judge validation (20 hand-checkable cases)")
