@@ -1,0 +1,57 @@
+{
+  "config_hash": "c8202a18b58754d8",
+  "config": {
+    "n_episodes": 100,
+    "base_seed": 20260704,
+    "tau_m": 0.005,
+    "arm": "mock",
+    "agent_model": "claude-sonnet-5",
+    "judge_model": "claude-haiku-4-5",
+    "stale_min_days": 90,
+    "stale_max_days": 180,
+    "kill_auc_trouble": 0.65,
+    "kill_flag_trouble": 0.3,
+    "kill_auc_support": 0.6,
+    "kill_adr_support": 0.2,
+    "extra": {}
+  },
+  "n_episodes": 100,
+  "n_scored": 100,
+  "n_refusals": 0,
+  "n_errors": 0,
+  "adr": 0.43,
+  "loss_quantiles": {
+    "median": 25.279933189953226,
+    "p90": 609.8959566851008,
+    "p99": 1813.5046374568738,
+    "mean": 11.5255956726361
+  },
+  "loss_ci": {
+    "point": 11.5255956726361,
+    "lo": -89.53118405005509,
+    "hi": 120.53026056231913
+  },
+  "tail_ratio": 71.73692366313684,
+  "heavy_tail_flag": true,
+  "marker_auc": {
+    "point": 0.5,
+    "lo": 0.5,
+    "hi": 0.5
+  },
+  "judge_auc": {
+    "point": 0.5,
+    "lo": 0.5,
+    "hi": 0.5
+  },
+  "flagged_fraction": 0.0,
+  "judge_validation": {
+    "n": 20.0,
+    "agreement": 0.8,
+    "doubt_recall": 0.6,
+    "no_doubt_recall": 1.0,
+    "false_positive_rate": 0.0
+  },
+  "kill_verdict": "SUPPORTED",
+  "kill_detail": "AUC=0.500 (<= 0.6) and ADR=43.00% (>= 20%).",
+  "spend_usd": 0.0
+}

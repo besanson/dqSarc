@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Run outputs (generated artefacts are never committed; only reference_*.json is)
+artifacts/
+reports/logs/
+reports/*.summary.json
+*.local.json
+
+# Secrets — never commit an API key
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use SARC-DQ, please cite it as below."
+title: "SARC-DQ: Runtime Data-Quality Gating for Agentic AI"
+authors:
+  - family-names: Besanson
+    given-names: Gaston
+    affiliation: "Universidad Torcuato Di Tella"
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/besanson/dqsarc"
+keywords:
+  - data-quality
+  - agentic-ai
+  - governance
+  - sarc
+  - provenance
+  - freshness
+abstract: >
+  SARC-DQ is the data-quality pillar of the SARC governance-by-architecture
+  research program. It provides a data-quality predicate family and a Pre-Action
+  Gate that wraps agent retrieval with downstream-only remediation, and GIGO-Bench,
+  a seeded benchmark measuring how injected data corruption converts into agent
+  action defects and financial loss across mitigation strategies.

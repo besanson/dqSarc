@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sarc-dq"
+version = "0.1.0"
+description = "SARC-DQ — runtime data-quality gating for agentic AI: DQ predicates + Pre-Action Gate with downstream-only remediation"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "Gaston Besanson" }]
+keywords = ["data-quality", "agents", "governance", "sarc", "llm", "provenance", "freshness"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+# The core is intentionally zero-dependency (stdlib only), like green-sarc.
+dependencies = []
+
+[project.optional-dependencies]
+# Live-model arms (real agent under test + LLM judge/critic). Import-guarded:
+# the core, the injector, the metrics and the whole mock-agent pipeline run
+# without it, so CI stays offline and $0.
+live = ["anthropic>=0.40"]
+# `sarc-governance` and `green-sarc` are not yet on PyPI and PyPI forbids direct
+# VCS URLs in published metadata, so these extras are kept as stable names only;
+# install the dependencies manually until they are released:
+#   pip install "sarc-governance @ git+https://github.com/besanson/sarc-governance"
+#   pip install "green-sarc @ git+https://github.com/besanson/greensarc"
+sarc = []
+green = []
+dev = [
+    "pytest>=8.0",
+    "ruff==0.15.12",
+    "mypy==1.15.0",
+]
+
+[project.scripts]
+sarc-dq = "sarc_dq.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sarc_dq = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 99
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+strict = true
