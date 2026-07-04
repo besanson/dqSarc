@@ -1,0 +1,65 @@
+{
+  "config_hash": "c8202a18b58754d8",
+  "config": {
+    "n_episodes": 100,
+    "base_seed": 20260704,
+    "tau_m": 0.005,
+    "arm": "live",
+    "agent_model": "claude-sonnet-5",
+    "judge_model": "claude-haiku-4-5",
+    "stale_min_days": 90,
+    "stale_max_days": 180,
+    "kill_auc_trouble": 0.65,
+    "kill_flag_trouble": 0.3,
+    "kill_auc_support": 0.6,
+    "kill_adr_support": 0.2,
+    "extra": {}
+  },
+  "n_episodes": 100,
+  "n_scored": 89,
+  "n_refusals": 0,
+  "n_errors": 11,
+  "n_parse_failures": 11,
+  "adr": 0.0,
+  "oracle_adr": 0.43820224719101125,
+  "loss_quantiles": {
+    "median": 0.0,
+    "p90": 0.0,
+    "p99": 28.824629526465287,
+    "mean": -0.27822354896956863
+  },
+  "oracle_loss_quantiles": {
+    "median": 26.150134764582617,
+    "p90": 608.056633315111,
+    "p99": 2126.371301934505,
+    "mean": 29.66028056408207
+  },
+  "loss_ci": {
+    "point": -0.27822354896956863,
+    "lo": -1.6983001193164027,
+    "hi": 1.1893346090261494
+  },
+  "tail_ratio": Infinity,
+  "heavy_tail_flag": true,
+  "marker_auc": {
+    "point": 0.5,
+    "lo": 0.5,
+    "hi": 0.5
+  },
+  "judge_auc": {
+    "point": 0.5,
+    "lo": 0.5,
+    "hi": 0.5
+  },
+  "flagged_fraction": 0.0,
+  "judge_validation": {
+    "n": 20.0,
+    "agreement": 1.0,
+    "doubt_recall": 1.0,
+    "no_doubt_recall": 1.0,
+    "false_positive_rate": 0.0
+  },
+  "kill_verdict": "AMBIGUOUS",
+  "kill_detail": "AUC=0.500, ADR=0.00%, flagged=0.00% fall between the thresholds \u2014 report and stop.",
+  "spend_usd": 1.3740049999999997
+}
