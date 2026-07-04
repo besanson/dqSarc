@@ -16,7 +16,11 @@ The cost-minimising order solves ``F(q*) = (s - c) / (h + s)`` — so the optima
 order quantity depends on the **unit cost c**. That is the field the Phase 0
 injector staleness corrupts. The world always charges the *true* cost c; only
 the agent's *belief* about c is corrupted. A stale c ⇒ wrong critical ratio ⇒
-wrong q ⇒ strictly non-negative realised loss versus the clean counterfactual.
+wrong q ⇒ loss that is **non-negative in expectation** versus the clean
+counterfactual. It is *not* non-negative on every seed: loss is scored on one
+realised demand D, so a wrong order can occasionally get lucky (negative loss).
+That is exactly why loss is reported as a *distribution* (median, P90, P99, mean
+CI), not a point estimate.
 
 Deterministic per seed: the realised demand D is drawn from a seeded RNG, so the
 corrupted episode and its clean twin share the same D and the same true c — every

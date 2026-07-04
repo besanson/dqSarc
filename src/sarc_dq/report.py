@@ -60,7 +60,13 @@ def render_markdown(result: Phase0Result) -> str:
     lines.append(
         f"- **episodes:** {r.n_episodes} corrupted + {r.n_episodes} clean "
         f"(same seeds)  ·  **scored:** {r.n_scored}  ·  "
-        f"**refusals:** {r.n_refusals}  ·  **errors:** {r.n_errors}"
+        f"**refusals:** {r.n_refusals}  ·  **errors:** {r.n_errors} "
+        f"(of which unparseable ORDER: {r.n_parse_failures})"
+    )
+    parse_fail_rate = r.n_parse_failures / r.n_episodes if r.n_episodes else 0.0
+    lines.append(
+        f"- **parse-failure rate:** {parse_fail_rate:.1%} — unparseable ORDER lines are "
+        "excluded from ADR (no optimum is substituted, so ADR is not biased down)."
     )
     lines.append(
         f"- **tau_m (materiality):** {float(r.config.get('tau_m', 0)) * 100:.2f}% of clean cost"
@@ -71,7 +77,10 @@ def render_markdown(result: Phase0Result) -> str:
     lines.append("")
     lines.append("| metric | value |")
     lines.append("|---|---|")
-    lines.append(f"| Action Defect Rate (ADR) | **{r.adr:.1%}** |")
+    lines.append(f"| Action Defect Rate — agent | **{r.adr:.1%}** |")
+    lines.append(
+        f"| Action Defect Rate — oracle (perfect metadata-blind solver) | {r.oracle_adr:.1%} |"
+    )
     lines.append(
         f"| Behavioral marker AUC | {r.marker_auc['point']:.3f} "
         f"[{r.marker_auc['lo']:.3f}, {r.marker_auc['hi']:.3f}] |"
@@ -100,6 +109,12 @@ def render_markdown(result: Phase0Result) -> str:
     lines.append("")
     tail = "⚠️ heavy tail (P99/median > 10)" if r.heavy_tail_flag else "P99/median within 10×"
     lines.append(f"- tail ratio P99/median = {r.tail_ratio:.1f} — {tail}")
+    olq = r.oracle_loss_quantiles
+    lines.append(
+        f"- oracle loss (perfect metadata-blind solver): median {olq['median']:.2f}, "
+        f"P90 {olq['p90']:.2f}, mean {olq['mean']:.2f} — the loss the stale price forces "
+        "through the *optimal* rule, before any LLM decision noise."
+    )
     lines.append("")
     lines.append("```")
     lines.append("loss histogram (lower bound of bin | count):")

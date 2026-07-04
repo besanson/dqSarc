@@ -2,9 +2,13 @@
 
 The cost channel is deliberately paper-grade. USD is the currency the paper
 reports (never raw token counts across model tiers — different tokenizers, brief
-§3). These per-token prices are **placeholders that MUST be confirmed against
-current public pricing before any number is quoted in the paper** — they are here
-so budget tracking works out of the box, not as an authoritative price sheet.
+§3). Prices below are the standard published per-MTok rates for the Gate 0 model
+ladder (confirm against the current price sheet before a final camera-ready).
+
+Note: ``claude-sonnet-5`` carries an introductory promotion of **$2 / $10** per
+MTok through **Aug 31**; the table uses the standard **$3 / $15** so spend is not
+under-reported. Set ``SARC_DQ_PRICING`` to bill the promo rate for a run inside
+the window.
 
 Override at runtime with ``SARC_DQ_PRICING`` (a JSON object
 ``{"model": {"input": <usd_per_token>, "output": <usd_per_token>}}``) or by
@@ -17,13 +21,12 @@ import json
 import os
 from dataclasses import dataclass
 
-# USD per single token (i.e. per-MTok price / 1e6). PLACEHOLDERS — confirm before
-# citing. Structured so the live arm records a real USD figure per call.
+# USD per single token (i.e. per-MTok price / 1e6). Standard published rates.
 _TABLE: dict[str, dict[str, float]] = {
-    "claude-haiku-4-5": {"input": 1.0e-6, "output": 5.0e-6},
-    "claude-sonnet-5": {"input": 3.0e-6, "output": 15.0e-6},
-    "claude-opus-4-8": {"input": 15.0e-6, "output": 75.0e-6},
-    "claude-fable-5": {"input": 15.0e-6, "output": 75.0e-6},
+    "claude-haiku-4-5": {"input": 1.0e-6, "output": 5.0e-6},  # $1 / $5
+    "claude-sonnet-5": {"input": 3.0e-6, "output": 15.0e-6},  # $3 / $15 (intro $2/$10 to Aug 31)
+    "claude-opus-4-8": {"input": 5.0e-6, "output": 25.0e-6},  # $5 / $25
+    "claude-fable-5": {"input": 10.0e-6, "output": 50.0e-6},  # $10 / $50
 }
 _FALLBACK = {"input": 3.0e-6, "output": 15.0e-6}
 

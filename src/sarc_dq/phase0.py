@@ -21,7 +21,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any
 
 from sarc_dq.agent import make_agent
-from sarc_dq.agent.base import OUTCOME_OK
+from sarc_dq.agent.base import OUTCOME_OK, OUTCOME_REFUSAL
 from sarc_dq.config import RunConfig
 from sarc_dq.injectors import STALE_UNIT_PRICE
 from sarc_dq.judge import make_judge, validate
@@ -54,6 +54,16 @@ class EpisodeResult:
     corrupt_cost: float
     loss: float
     material: bool
+    # Oracle baseline: a perfect newsvendor solver that trusts the price it is
+    # shown (optimal_order on each arm's believed price). Isolates the loss that
+    # the stale price forces through the *optimal* rule, independent of LLM
+    # decision noise — so agent-ADR can be read against oracle-ADR.
+    oracle_clean_qty: float
+    oracle_corrupt_qty: float
+    oracle_clean_cost: float
+    oracle_corrupt_cost: float
+    oracle_loss: float
+    oracle_material: bool
     # Behavioral signals
     marker_clean: float
     marker_corrupt: float
@@ -74,8 +84,11 @@ class Phase0Result:
     n_scored: int  # episodes that reached a decision (excludes refusals/errors)
     n_refusals: int
     n_errors: int
+    n_parse_failures: int  # subset of errors: unparseable ORDER line (excluded from ADR)
     adr: float
+    oracle_adr: float  # ADR of a perfect metadata-blind newsvendor solver (baseline)
     loss_quantiles: dict[str, float]
+    oracle_loss_quantiles: dict[str, float]
     loss_ci: dict[str, float]
     tail_ratio: float
     heavy_tail_flag: bool
@@ -97,7 +110,7 @@ def run_phase0(config: RunConfig) -> Phase0Result:
 
     results: list[EpisodeResult] = []
     spend = 0.0
-    n_refusals = n_errors = 0
+    n_refusals = n_errors = n_parse_failures = 0
 
     for i in range(config.n_episodes):
         seed = config.episode_seed(i)
@@ -118,10 +131,12 @@ def run_phase0(config: RunConfig) -> Phase0Result:
         spend += usd
 
         if corrupt_dec.outcome != OUTCOME_OK or clean_dec.outcome != OUTCOME_OK:
-            if "refusal" in (clean_dec.outcome, corrupt_dec.outcome):
+            if OUTCOME_REFUSAL in (clean_dec.outcome, corrupt_dec.outcome):
                 n_refusals += 1
             else:
                 n_errors += 1
+                if clean_dec.raw.get("parse_failed") or corrupt_dec.raw.get("parse_failed"):
+                    n_parse_failures += 1
             continue
 
         clean_cost = episode.realised_cost(clean_dec.order_qty)
@@ -130,6 +145,14 @@ def run_phase0(config: RunConfig) -> Phase0Result:
         mk_c = extract(clean_dec.transcript)
         mk_d = extract(corrupt_dec.transcript)
         gt = corrupt_rec.ground_truth
+
+        # Oracle: optimal newsvendor order on each arm's *believed* price (the value
+        # actually shown in that arm's record), priced at the true cost.
+        oracle_clean_qty = episode.optimal_order(float(clean_rec.payload["unit_cost"]))
+        oracle_corrupt_qty = episode.optimal_order(float(corrupt_rec.payload["unit_cost"]))
+        oracle_clean_cost = episode.realised_cost(oracle_clean_qty)
+        oracle_corrupt_cost = episode.realised_cost(oracle_corrupt_qty)
+        oracle_loss = oracle_corrupt_cost - oracle_clean_cost
 
         results.append(
             EpisodeResult(
@@ -147,6 +170,12 @@ def run_phase0(config: RunConfig) -> Phase0Result:
                 corrupt_cost=corrupt_cost,
                 loss=loss,
                 material=is_material(loss, clean_cost, config.tau_m),
+                oracle_clean_qty=oracle_clean_qty,
+                oracle_corrupt_qty=oracle_corrupt_qty,
+                oracle_clean_cost=oracle_clean_cost,
+                oracle_corrupt_cost=oracle_corrupt_cost,
+                oracle_loss=oracle_loss,
+                oracle_material=is_material(oracle_loss, oracle_clean_cost, config.tau_m),
                 marker_clean=mk_c.marker_score,
                 marker_corrupt=mk_d.marker_score,
                 doubt_clean=cj.doubt,
@@ -158,7 +187,7 @@ def run_phase0(config: RunConfig) -> Phase0Result:
             )
         )
 
-    return _aggregate(config, results, spend, n_refusals, n_errors, judge)
+    return _aggregate(config, results, spend, n_refusals, n_errors, n_parse_failures, judge)
 
 
 def _aggregate(
@@ -167,6 +196,7 @@ def _aggregate(
     spend: float,
     n_refusals: int,
     n_errors: int,
+    n_parse_failures: int,
     judge: Any,
 ) -> Phase0Result:
     losses = [r.loss for r in results]
@@ -174,6 +204,12 @@ def _aggregate(
     adr = action_defect_rate(losses, clean_costs, config.tau_m)
     lq = quantiles(losses)
     loss_ci = paired_bootstrap_mean(losses) if losses else None
+
+    # Oracle baseline (perfect metadata-blind solver).
+    oracle_losses = [r.oracle_loss for r in results]
+    oracle_clean_costs = [r.oracle_clean_cost for r in results]
+    oracle_adr = action_defect_rate(oracle_losses, oracle_clean_costs, config.tau_m)
+    oracle_lq = quantiles(oracle_losses)
 
     # Behavioral discrimination: can markers / judge separate corrupted from clean?
     marker_pos = [r.marker_corrupt for r in results]
@@ -200,8 +236,16 @@ def _aggregate(
         n_scored=len(results),
         n_refusals=n_refusals,
         n_errors=n_errors,
+        n_parse_failures=n_parse_failures,
         adr=adr,
+        oracle_adr=oracle_adr,
         loss_quantiles={"median": lq.median, "p90": lq.p90, "p99": lq.p99, "mean": lq.mean},
+        oracle_loss_quantiles={
+            "median": oracle_lq.median,
+            "p90": oracle_lq.p90,
+            "p99": oracle_lq.p99,
+            "mean": oracle_lq.mean,
+        },
         loss_ci=(
             {"point": loss_ci.point, "lo": loss_ci.lo, "hi": loss_ci.hi}
             if loss_ci

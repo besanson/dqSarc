@@ -29,6 +29,19 @@ def test_mock_shows_silent_failure_direction() -> None:
     assert result.spend_usd == 0.0
 
 
+def test_oracle_adr_present_and_tracks_mock_agent() -> None:
+    """The mock agent IS a (rounded) newsvendor oracle, so its agent-ADR should
+    sit close to the oracle-ADR; both are valid rates and every scored episode
+    carries oracle qty/loss per arm."""
+    result = run_phase0(RunConfig(n_episodes=100, arm="mock"))
+    assert 0.0 <= result.oracle_adr <= 1.0
+    assert abs(result.adr - result.oracle_adr) <= 0.1  # mock ≈ oracle (rounding aside)
+    ep = result.episodes[0]
+    for key in ("oracle_clean_qty", "oracle_corrupt_qty", "oracle_loss", "oracle_material"):
+        assert key in ep
+    assert result.n_parse_failures == 0  # mock always emits a parseable order
+
+
 def test_loss_is_nonnegative_in_expectation() -> None:
     """Loss is measured on one realised demand per seed, so a corrupted order can
     occasionally get lucky (negative loss) — that is why the brief wants a loss

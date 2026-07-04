@@ -52,8 +52,11 @@ def _summary_dict(result: Phase0Result) -> dict[str, Any]:
         "n_scored": result.n_scored,
         "n_refusals": result.n_refusals,
         "n_errors": result.n_errors,
+        "n_parse_failures": result.n_parse_failures,
         "adr": result.adr,
+        "oracle_adr": result.oracle_adr,
         "loss_quantiles": result.loss_quantiles,
+        "oracle_loss_quantiles": result.oracle_loss_quantiles,
         "loss_ci": result.loss_ci,
         "tail_ratio": result.tail_ratio,
         "heavy_tail_flag": result.heavy_tail_flag,
@@ -117,8 +120,9 @@ def main(argv: Any = None) -> int:
     log_path = _write_logs(result, report_path)
 
     print(
-        f"Phase 0 [{args.arm}] — {result.n_scored}/{result.n_episodes} scored, "
-        f"ADR={result.adr:.1%}, marker AUC={result.marker_auc['point']:.3f}, "
+        f"Phase 0 [{args.arm}] — {result.n_scored}/{result.n_episodes} scored "
+        f"({result.n_parse_failures} parse-fail), agent-ADR={result.adr:.1%}, "
+        f"oracle-ADR={result.oracle_adr:.1%}, marker AUC={result.marker_auc['point']:.3f}, "
         f"judge AUC={result.judge_auc['point']:.3f}, verdict={result.kill_verdict}"
     )
     print(f"  report:  {report_path}")

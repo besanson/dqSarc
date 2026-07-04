@@ -7,14 +7,16 @@
 - **config hash:** `c8202a18b58754d8`
 - **arm:** `mock`  ·  **agent:** `claude-sonnet-5`  ·  **judge:** `claude-haiku-4-5`
 - **corruption class:** `stale_unit_price` (metadata-borne)
-- **episodes:** 100 corrupted + 100 clean (same seeds)  ·  **scored:** 100  ·  **refusals:** 0  ·  **errors:** 0
+- **episodes:** 100 corrupted + 100 clean (same seeds)  ·  **scored:** 100  ·  **refusals:** 0  ·  **errors:** 0 (of which unparseable ORDER: 0)
+- **parse-failure rate:** 0.0% — unparseable ORDER lines are excluded from ADR (no optimum is substituted, so ADR is not biased down).
 - **tau_m (materiality):** 0.50% of clean cost
 
 ## Headline
 
 | metric | value |
 |---|---|
-| Action Defect Rate (ADR) | **43.0%** |
+| Action Defect Rate — agent | **43.0%** |
+| Action Defect Rate — oracle (perfect metadata-blind solver) | 43.0% |
 | Behavioral marker AUC | 0.500 [0.500, 0.500] |
 | LLM-judge doubt AUC | 0.500 [0.500, 0.500] |
 | Explicit data-flag fraction (corrupted) | 0.0% |
@@ -31,6 +33,7 @@ Loss = cost(corrupted) − cost(clean counterfactual), same seed.
 | 25.28 | 609.90 | 1813.50 | 11.53 | [-89.53, 120.53] |
 
 - tail ratio P99/median = 71.7 — ⚠️ heavy tail (P99/median > 10)
+- oracle loss (perfect metadata-blind solver): median 24.81, P90 608.06, mean 11.75 — the loss the stale price forces through the *optimal* rule, before any LLM decision noise.
 
 ```
 loss histogram (lower bound of bin | count):

@@ -39,7 +39,7 @@ def parse_order(text: str) -> float | None:
 class AnthropicAgent:
     """Real Claude agent. Requires ``pip install 'sarc-dq[live]'`` + an API key."""
 
-    def __init__(self, model: str, *, max_tokens: int = 512, temperature: float = 0.0) -> None:
+    def __init__(self, model: str, *, max_tokens: int = 512) -> None:
         try:
             import anthropic
         except ImportError as exc:  # pragma: no cover - exercised only in the live arm
@@ -48,7 +48,6 @@ class AnthropicAgent:
             ) from exc
         self.model = model
         self.max_tokens = max_tokens
-        self.temperature = temperature
         self._client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
 
     def decide(
@@ -57,15 +56,19 @@ class AnthropicAgent:
         view = agent_view(episode, price_record)
         prompt = build_prompt(view, advisory=advisory)
         try:
+            # No `temperature` (or other sampling params): Sonnet 5 (and the rest
+            # of the ladder) returns HTTP 400 on non-default sampling params.
             resp: Any = self._client.messages.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
-                temperature=self.temperature,
                 messages=[{"role": "user", "content": prompt}],
             )
         except Exception as exc:  # pragma: no cover - network/live only
             return AgentDecision(
-                order_qty=float("nan"), transcript=f"[error] {exc}", outcome=OUTCOME_ERROR
+                order_qty=float("nan"),
+                transcript=f"[error] {exc}",
+                outcome=OUTCOME_ERROR,
+                raw={"error": str(exc)},
             )
 
         in_tok = int(getattr(resp.usage, "input_tokens", 0))
@@ -85,9 +88,19 @@ class AnthropicAgent:
         text = "".join(getattr(b, "text", "") for b in resp.content)
         qty = parse_order(text)
         if qty is None:
-            # No parseable order: treat as fallback to the model-implied optimum so
-            # a formatting miss does not masquerade as an action defect. Logged raw.
-            qty = episode.optimal_order(float(view["unit_cost"]))
+            # No parseable ORDER line: this is an error outcome, not an action
+            # defect. We do NOT substitute a model-implied optimum — that would
+            # bias ADR downward. The pair is excluded from ADR and the parse-failure
+            # rate is reported so the substitution/exclusion is fully visible.
+            return AgentDecision(
+                order_qty=float("nan"),
+                transcript=text,
+                outcome=OUTCOME_ERROR,
+                usd=usd,
+                input_tokens=in_tok,
+                output_tokens=out_tok,
+                raw={"parse_failed": True, "stop_reason": getattr(resp, "stop_reason", None)},
+            )
         return AgentDecision(
             order_qty=float(qty),
             transcript=text,

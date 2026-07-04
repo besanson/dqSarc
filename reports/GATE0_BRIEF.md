@@ -53,8 +53,8 @@ export ANTHROPIC_API_KEY=sk-...     # a personal research account if your org is
                                     # (fable-5 needs 30-day retention; not on the
                                     #  Phase 0 critical path, but the ladder uses it)
 
-# optional: correct the placeholder USD prices before you quote spend
-export SARC_DQ_PRICING='{"claude-sonnet-5":{"input":3e-6,"output":15e-6}, ...}'
+# optional: the sonnet-5 intro promo ($2/$10 through Aug 31) — bill it if in-window
+export SARC_DQ_PRICING='{"claude-sonnet-5":{"input":2e-6,"output":10e-6}}'
 
 python -m benchmarks.phase0_smoke --arm live --episodes 100 --out reports/SMOKE_TEST.md
 ```
@@ -62,8 +62,10 @@ python -m benchmarks.phase0_smoke --arm live --episodes 100 --out reports/SMOKE_
 That runs **200 live calls for the agent** (100 corrupted + 100 clean) **+ 200
 judge calls** = 400 model calls. At Sonnet-5 agent + Haiku-4.5 judge with short
 prompts/outputs this is well under the $150 Phase 0 cap; the run prints its actual
-spend and the report records it. **Confirm the placeholder prices in
-`src/sarc_dq/pricing.py` before citing any USD figure.**
+spend and the report records it. USD prices in `src/sarc_dq/pricing.py` are the
+standard published rates ($3/$15 sonnet-5, $5/$25 opus-4-8, $10/$50 fable-5,
+$1/$5 haiku-4-5); the sonnet-5 table uses the standard rate so spend is not
+under-reported during the intro window.
 
 ### What to check when it finishes
 
@@ -77,6 +79,15 @@ spend and the report records it. **Confirm the placeholder prices in
 4. **Heavy-tail flag** on the loss distribution (P99/median > 10) — expected here;
    the report surfaces it.
 5. **Refusals** are logged as their own class and excluded from ADR (brief §3).
+6. **agent-ADR vs. oracle-ADR** — the report shows both. Oracle-ADR is a perfect
+   metadata-blind newsvendor solver (the loss the stale price forces through the
+   *optimal* rule). agent-ADR ≈ oracle-ADR means the model tracks the optimal
+   decision and inherits the corruption; agent-ADR ≫ oracle-ADR means the model
+   adds its own decision noise on top.
+7. **Parse-failure rate** — unparseable `ORDER:` lines are logged as errors and
+   **excluded** from ADR (no optimum is substituted, so ADR is not biased down).
+   A high rate means the prompt/parse contract needs tightening before you trust
+   the run.
 
 ## 4. What the mock dry-run showed (pipeline validation only — DO NOT cite)
 
