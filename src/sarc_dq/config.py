@@ -40,6 +40,14 @@ KILL_FLAG_TROUBLE = 0.30  # ... or the agent explicitly flags a data problem >= 
 KILL_AUC_SUPPORT = 0.60  # H1 supported if AUC <= this ...
 KILL_ADR_SUPPORT = 0.20  # ... and ADR >= this.
 
+# --- Phase 0c validity precondition ----------------------------------------
+# A run whose scored fraction falls below this is INVALID regardless of metrics:
+# too few pairs reached a decision (e.g. output truncation / parse failures) for
+# the metrics to be trustworthy. Kept as a module constant, NOT a RunConfig field,
+# so it does not perturb the frozen Phase 0a/0b design hashes (the science is
+# unchanged; this is an instrumentation guard). Default: 80 of 100 pairs.
+VALIDITY_MIN_SCORED_FRACTION = 0.80
+
 
 @dataclass(frozen=True)
 class RunConfig:

@@ -66,7 +66,22 @@ def test_kill_criterion_boundaries() -> None:
     from sarc_dq.phase0 import _kill_criterion
 
     cfg = RunConfig()
-    assert _kill_criterion(cfg, primary_auc=0.70, adr=0.5, flagged_fraction=0.0)[0] == "IN_TROUBLE"
-    assert _kill_criterion(cfg, primary_auc=0.50, adr=0.4, flagged_fraction=0.4)[0] == "IN_TROUBLE"
-    assert _kill_criterion(cfg, primary_auc=0.55, adr=0.30, flagged_fraction=0.0)[0] == "SUPPORTED"
-    assert _kill_criterion(cfg, primary_auc=0.62, adr=0.10, flagged_fraction=0.0)[0] == "AMBIGUOUS"
+    # Validity gate passes (100/100 scored), so the metric branches apply.
+    ok = dict(n_scored=100, n_episodes=100)
+    assert _kill_criterion(cfg, 0.70, 0.5, 0.0, **ok)[0] == "IN_TROUBLE"
+    assert _kill_criterion(cfg, 0.50, 0.4, 0.4, **ok)[0] == "IN_TROUBLE"
+    assert _kill_criterion(cfg, 0.55, 0.30, 0.0, **ok)[0] == "SUPPORTED"
+    assert _kill_criterion(cfg, 0.62, 0.10, 0.0, **ok)[0] == "AMBIGUOUS"
+
+
+def test_validity_gate_overrides_metrics() -> None:
+    """Phase 0c: too few scored pairs -> INVALID regardless of otherwise-SUPPORTED metrics."""
+    from sarc_dq.phase0 import _kill_criterion
+
+    cfg = RunConfig()
+    # These metrics would be SUPPORTED, but only 79/100 pairs scored.
+    verdict, detail = _kill_criterion(cfg, 0.50, 0.5, 0.0, n_scored=79, n_episodes=100)
+    assert verdict == "INVALID"
+    assert "79/100" in detail
+    # Exactly at the 80% floor is valid.
+    assert _kill_criterion(cfg, 0.50, 0.5, 0.0, n_scored=80, n_episodes=100)[0] == "SUPPORTED"
