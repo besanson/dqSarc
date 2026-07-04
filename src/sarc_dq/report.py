@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from sarc_dq.config import VALIDITY_MIN_SCORED_FRACTION
 from sarc_dq.phase0 import Phase0Result
 
 
@@ -68,6 +69,13 @@ def render_markdown(result: Phase0Result) -> str:
     lines.append(
         f"- **parse-failure rate:** {parse_fail_rate:.1%} — unparseable ORDER lines are "
         "excluded from ADR (no optimum is substituted, so ADR is not biased down)."
+    )
+    scored_frac = r.n_scored / r.n_episodes if r.n_episodes else 0.0
+    valid = scored_frac >= VALIDITY_MIN_SCORED_FRACTION
+    lines.append(
+        f"- **validity precondition (Phase 0c):** {r.n_scored}/{r.n_episodes} scored "
+        f"({scored_frac:.0%}) vs {VALIDITY_MIN_SCORED_FRACTION:.0%} floor — "
+        + ("**PASS**" if valid else "**FAIL → verdict INVALID regardless of metrics**")
     )
     lines.append(
         f"- **tau_m (materiality):** {float(r.config.get('tau_m', 0)) * 100:.2f}% of clean cost"
