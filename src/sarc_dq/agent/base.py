@@ -76,6 +76,16 @@ _POLICY_INSTRUCTIONS = [
     "  3. round q to the nearest integer",
 ]
 
+# Output-format spec for the ``policy_instructed`` variant (Phase 0c). It only
+# governs *formatting* — reasoning is explicitly allowed, but the reply must end
+# with a parseable final line. It contains NO data-quality language. This exists
+# because a starved/truncated reply with no ``ORDER:`` line was showing up as a
+# parse failure rather than a decision (see PHASE0C_PREREG.md).
+_OUTPUT_FORMAT_SPEC = [
+    "Output format: you may show your reasoning or working first. Your reply MUST",
+    "end with a final line of exactly the form:  ORDER: <integer>",
+]
+
 
 def build_prompt(view: dict[str, Any], advisory: bool = False, variant: str = "naive") -> str:
     """Render the agent instruction from a payload-only view.
@@ -103,11 +113,14 @@ def build_prompt(view: dict[str, Any], advisory: bool = False, variant: str = "n
         lines += ["", *_POLICY_INSTRUCTIONS]
     if advisory:
         lines += ["", "Before acting, verify data quality; do not act on data you cannot trust."]
-    lines += [
-        "",
-        "Respond with a short justification (2-4 sentences) then a final line of",
-        "exactly the form:  ORDER: <number>",
-    ]
+    if variant == "policy_instructed":
+        lines += ["", *_OUTPUT_FORMAT_SPEC]
+    else:
+        lines += [
+            "",
+            "Respond with a short justification (2-4 sentences) then a final line of",
+            "exactly the form:  ORDER: <number>",
+        ]
     return "\n".join(lines)
 
 

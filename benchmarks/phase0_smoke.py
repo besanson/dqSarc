@@ -29,6 +29,25 @@ from sarc_dq.config import RunConfig
 from sarc_dq.phase0 import Phase0Result, run_phase0
 from sarc_dq.report import render_markdown
 
+
+def _json_safe(obj: Any) -> Any:
+    """Recursively replace non-finite floats (NaN/Inf) with None (JSON null).
+
+    Phase 0c fix: ``json.dumps`` renders ``float('nan')`` as the bare token ``NaN``,
+    which is invalid JSON — downstream parsers read it as null or reject the file.
+    A NaN elasticity (few scored pairs) was showing up this way even though the
+    report printed it. Sanitising here lets us dump with ``allow_nan=False`` so the
+    file is always valid JSON and the field is a proper ``null``.
+    """
+    if isinstance(obj, float):
+        return obj if math.isfinite(obj) else None
+    if isinstance(obj, dict):
+        return {k: _json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_json_safe(v) for v in obj]
+    return obj
+
+
 # Metrics compared by --verify, with per-metric absolute tolerances. ADR/AUC are
 # rates (abs tol), loss mean is relative-checked separately below.
 _VERIFY_ABS = {"adr": 0.02, "marker_auc": 0.02, "judge_auc": 0.02, "flagged_fraction": 0.02}
@@ -40,11 +59,11 @@ def _write_logs(result: Phase0Result, report_path: Path) -> Path:
     log_path = log_dir / f"phase0_{result.config_hash}.jsonl"
     with log_path.open("w", encoding="utf-8") as fh:
         for ep in result.episodes:
-            fh.write(json.dumps({"kind": "scored", **ep}, default=str) + "\n")
+            fh.write(json.dumps(_json_safe({"kind": "scored", **ep}), default=str) + "\n")
         # Failed/parse-fail pairs are excluded from ADR but written here so they
         # are auditable (outcome, both raw transcripts, injected drift).
         for fail in result.failures:
-            fh.write(json.dumps(fail, default=str) + "\n")
+            fh.write(json.dumps(_json_safe(fail), default=str) + "\n")
     return log_path
 
 
@@ -130,7 +149,9 @@ def main(argv: Any = None) -> int:
     report_path.write_text(render_markdown(result), encoding="utf-8")
     summary = _summary_dict(result)
     summary_path = report_path.with_suffix(".summary.json")
-    summary_path.write_text(json.dumps(summary, indent=2, default=str), encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(_json_safe(summary), indent=2, allow_nan=False, default=str), encoding="utf-8"
+    )
     log_path = _write_logs(result, report_path)
 
     print(

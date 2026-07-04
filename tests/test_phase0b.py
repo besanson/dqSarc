@@ -40,6 +40,43 @@ def test_policy_prompt_has_formula_and_no_dq_language() -> None:
         assert banned not in policy.lower(), banned
 
 
+def test_parse_order_is_hardened() -> None:
+    from sarc_dq.agent.anthropic_agent import parse_order
+
+    assert parse_order("ORDER: 500") == 500
+    assert parse_order("ORDER: 500.7") == 501  # decimals rounded to int
+    assert parse_order("ORDER: 1,200") == 1200  # thousands comma
+    assert parse_order("**ORDER:** 512**") == 512  # markdown bold stripped
+    assert parse_order("ORDER: ≈ 640") == 640  # approx symbol tolerated
+    assert parse_order("ORDER: approx 300") == 300  # approx word tolerated
+    assert parse_order("`ORDER: 42`.") == 42  # code ticks + trailing punctuation
+    # Takes the LAST match (the agent's final line).
+    assert parse_order("first ORDER: 10\n...revised\nORDER: 25") == 25
+    assert parse_order("no order line here") is None
+
+
+def test_thinking_param_is_model_aware() -> None:
+    from sarc_dq.agent.anthropic_agent import _thinking_param
+
+    assert _thinking_param("claude-sonnet-5") == {"type": "disabled"}
+    assert _thinking_param("claude-opus-4-8") == {"type": "disabled"}
+    # Fable/Mythos: thinking is always on and {disabled} 400s, so we omit the param.
+    assert _thinking_param("claude-fable-5") is None
+    assert _thinking_param("claude-mythos-5") is None
+
+
+def test_policy_prompt_has_output_format_and_no_dq_language() -> None:
+    from sarc_dq.agent.base import agent_view, build_prompt
+    from sarc_dq.substrate import make_episode
+
+    ep = make_episode(7, 0)
+    policy = build_prompt(agent_view(ep, ep.clean_price_record()), variant="policy_instructed")
+    assert "ORDER: <integer>" in policy  # output-format spec present
+    assert "reasoning" in policy.lower()  # reasoning explicitly allowed
+    for banned in ("verify", "check", "trust", "stale", "outdated", "fresh", "confirm", "doubt"):
+        assert banned not in policy.lower(), banned
+
+
 def test_mock_elasticity_near_one_and_regret_present() -> None:
     r = run_phase0(RunConfig(n_episodes=100, prompt_variant="policy_instructed"))
     # The mock is the oracle (modulo integer rounding), so it is fully elastic.

@@ -25,21 +25,49 @@ from sarc_dq.pricing import usd_for
 from sarc_dq.records import EvidenceRecord
 from sarc_dq.substrate import Episode
 
-_ORDER_RE = re.compile(r"ORDER:\s*([0-9][0-9,]*\.?[0-9]*)", re.IGNORECASE)
+# Hardened ORDER matcher (Phase 0c). Tolerates: an optional ``:`` or ``=``; an
+# approximation marker (≈ ≅ ~ or the word "approx"/"about"); thousands commas; and
+# decimals. Markdown emphasis / code markers are stripped before matching, so
+# ``**ORDER:** 500``, ```ORDER: 500```, and ``ORDER: 500.`` all parse.
+_ORDER_RE = re.compile(
+    r"ORDER\s*[:=]?\s*(?:approx\.?|about|[≈≅~])?\s*([0-9][0-9,]*(?:\.[0-9]+)?)",
+    re.IGNORECASE,
+)
 
 
-def parse_order(text: str) -> float | None:
-    """Extract the final ``ORDER: <number>`` value from a transcript, if present."""
-    matches = _ORDER_RE.findall(text)
+def parse_order(text: str) -> int | None:
+    """Extract the **last** ``ORDER: <number>`` value from a transcript as an int.
+
+    Takes the last match (the agent's final line), rounds decimals to the nearest
+    integer (order quantities are whole units), and returns ``None`` if no ORDER
+    value is present.
+    """
+    cleaned = text.replace("*", "").replace("`", "")
+    matches = _ORDER_RE.findall(cleaned)
     if not matches:
         return None
-    return float(matches[-1].replace(",", ""))
+    return int(round(float(matches[-1].replace(",", ""))))
+
+
+def _thinking_param(model: str) -> dict[str, Any] | None:
+    """Explicitly turn reasoning off so visible output can't be starved (Phase 0c).
+
+    ``max_tokens`` caps *total* output (thinking + visible text), so silent
+    reasoning can consume the budget before the agent emits its ``ORDER:`` line.
+    Sonnet 5 / Opus 4.8 / 4.7 accept ``{"type": "disabled"}``; Fable 5 / Mythos 5
+    reject it (thinking is always on) and must omit the parameter — there we rely
+    on the raised ``max_tokens`` for headroom instead.
+    """
+    lowered = model.lower()
+    if "fable" in lowered or "mythos" in lowered:
+        return None
+    return {"type": "disabled"}
 
 
 class AnthropicAgent:
     """Real Claude agent. Requires ``pip install 'sarc-dq[live]'`` + an API key."""
 
-    def __init__(self, model: str, *, max_tokens: int = 512) -> None:
+    def __init__(self, model: str, *, max_tokens: int = 4096) -> None:
         try:
             import anthropic
         except ImportError as exc:  # pragma: no cover - exercised only in the live arm
@@ -60,14 +88,18 @@ class AnthropicAgent:
     ) -> AgentDecision:
         view = agent_view(episode, price_record)
         prompt = build_prompt(view, advisory=advisory, variant=prompt_variant)
+        # No `temperature` (or other sampling params): Sonnet 5 (and the rest of
+        # the ladder) returns HTTP 400 on non-default sampling params.
+        kwargs: dict[str, Any] = {
+            "model": self.model,
+            "max_tokens": self.max_tokens,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+        thinking = _thinking_param(self.model)
+        if thinking is not None:
+            kwargs["thinking"] = thinking
         try:
-            # No `temperature` (or other sampling params): Sonnet 5 (and the rest
-            # of the ladder) returns HTTP 400 on non-default sampling params.
-            resp: Any = self._client.messages.create(
-                model=self.model,
-                max_tokens=self.max_tokens,
-                messages=[{"role": "user", "content": prompt}],
-            )
+            resp: Any = self._client.messages.create(**kwargs)
         except Exception as exc:  # pragma: no cover - network/live only
             return AgentDecision(
                 order_qty=float("nan"),

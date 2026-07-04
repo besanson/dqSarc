@@ -23,7 +23,7 @@ from typing import Any
 
 from sarc_dq.agent import make_agent
 from sarc_dq.agent.base import OUTCOME_OK, OUTCOME_REFUSAL, Agent
-from sarc_dq.config import RunConfig
+from sarc_dq.config import VALIDITY_MIN_SCORED_FRACTION, RunConfig
 from sarc_dq.injectors import STALE_UNIT_PRICE
 from sarc_dq.judge import make_judge, validate
 from sarc_dq.judge.base import Judge
@@ -327,7 +327,9 @@ def _aggregate(
     # Primary discrimination signal for the kill criterion: the max of the two
     # behavioral AUCs (a defect is "detectable" if *either* channel catches it).
     primary_auc = max(m_auc.point, j_auc.point)
-    verdict, detail = _kill_criterion(config, primary_auc, adr, flagged_fraction)
+    verdict, detail = _kill_criterion(
+        config, primary_auc, adr, flagged_fraction, len(results), config.n_episodes
+    )
 
     return Phase0Result(
         config=asdict(config),
@@ -369,15 +371,42 @@ def _aggregate(
     )
 
 
-def _kill_criterion(
-    config: RunConfig, primary_auc: float, adr: float, flagged_fraction: float
-) -> tuple[str, str]:
-    """Apply the Phase 0 kill criterion (brief §4).
+def _run_is_valid(n_scored: int, n_episodes: int) -> bool:
+    """DQ predicate on the run itself (Phase 0c): did enough pairs actually score?
 
+    A data-quality gate applied to the verdict function — the same discipline the
+    library applies to evidence, applied to its own output. If too few pairs
+    reached a decision (truncation, parse failures, refusals), the metrics are not
+    trustworthy and no scientific verdict may be read from them.
+    """
+    if n_episodes <= 0:
+        return False
+    return n_scored >= VALIDITY_MIN_SCORED_FRACTION * n_episodes
+
+
+def _kill_criterion(
+    config: RunConfig,
+    primary_auc: float,
+    adr: float,
+    flagged_fraction: float,
+    n_scored: int,
+    n_episodes: int,
+) -> tuple[str, str]:
+    """Apply the Phase 0 kill criterion (brief §4), gated by the Phase 0c validity precondition.
+
+    - **INVALID** (precondition, checked first): scored fraction < validity floor —
+      returned regardless of the metrics.
     - *in trouble* if AUC >= kill_auc_trouble OR flagged_fraction >= kill_flag_trouble
     - *supported*  if AUC <= kill_auc_support AND ADR >= kill_adr_support
     - anything else: *ambiguous*
     """
+    if not _run_is_valid(n_scored, n_episodes):
+        return (
+            "INVALID",
+            f"only {n_scored}/{n_episodes} pairs scored "
+            f"(< {VALIDITY_MIN_SCORED_FRACTION:.0%} validity floor); metrics are not "
+            "trustworthy — fix instrumentation and re-run before reading any verdict.",
+        )
     in_trouble = (
         primary_auc >= config.kill_auc_trouble or flagged_fraction >= config.kill_flag_trouble
     )
