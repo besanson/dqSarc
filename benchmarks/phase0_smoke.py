@@ -40,7 +40,11 @@ def _write_logs(result: Phase0Result, report_path: Path) -> Path:
     log_path = log_dir / f"phase0_{result.config_hash}.jsonl"
     with log_path.open("w", encoding="utf-8") as fh:
         for ep in result.episodes:
-            fh.write(json.dumps(ep, default=str) + "\n")
+            fh.write(json.dumps({"kind": "scored", **ep}, default=str) + "\n")
+        # Failed/parse-fail pairs are excluded from ADR but written here so they
+        # are auditable (outcome, both raw transcripts, injected drift).
+        for fail in result.failures:
+            fh.write(json.dumps(fail, default=str) + "\n")
     return log_path
 
 
@@ -67,6 +71,10 @@ def _summary_dict(result: Phase0Result) -> dict[str, Any]:
         "kill_verdict": result.kill_verdict,
         "kill_detail": result.kill_detail,
         "spend_usd": result.spend_usd,
+        "elasticity_median": result.elasticity_median,
+        "elasticity_n": result.elasticity_n,
+        "clean_regret": result.clean_regret,
+        "failure_autopsy": result.failure_autopsy,
     }
 
 
@@ -103,12 +111,18 @@ def main(argv: Any = None) -> int:
         help="alias for --episodes (kept for make-target symmetry)",
     )
     parser.add_argument("--arm", choices=["mock", "live"], default="mock")
+    parser.add_argument(
+        "--prompt",
+        choices=["naive", "policy_instructed"],
+        default="naive",
+        help="prompt variant; 'naive' (default) reproduces Phase 0a exactly",
+    )
     parser.add_argument("--out", default="reports/SMOKE_TEST.md")
     parser.add_argument("--verify", default=None, help="reference summary JSON to check against")
     args = parser.parse_args(argv)
 
     n = args.seeds if args.seeds is not None else args.episodes
-    config = RunConfig(n_episodes=n, arm=args.arm)
+    config = RunConfig(n_episodes=n, arm=args.arm, prompt_variant=args.prompt)
     result = run_phase0(config)
 
     report_path = Path(args.out)
@@ -120,9 +134,10 @@ def main(argv: Any = None) -> int:
     log_path = _write_logs(result, report_path)
 
     print(
-        f"Phase 0 [{args.arm}] — {result.n_scored}/{result.n_episodes} scored "
+        f"Phase 0 [{args.arm}/{args.prompt}] — {result.n_scored}/{result.n_episodes} scored "
         f"({result.n_parse_failures} parse-fail), agent-ADR={result.adr:.1%}, "
-        f"oracle-ADR={result.oracle_adr:.1%}, marker AUC={result.marker_auc['point']:.3f}, "
+        f"oracle-ADR={result.oracle_adr:.1%}, elasticity={result.elasticity_median:.2f}, "
+        f"marker AUC={result.marker_auc['point']:.3f}, "
         f"judge AUC={result.judge_auc['point']:.3f}, verdict={result.kill_verdict}"
     )
     print(f"  report:  {report_path}")

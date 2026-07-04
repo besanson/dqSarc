@@ -59,6 +59,11 @@ class RunConfig:
     base_seed: int = 20260704  # seed registry anchor; per-episode seeds derive from it.
     tau_m: float = TAU_M_DEFAULT
     arm: str = "mock"
+    # Prompt variant (Phase 0b amendment). "naive" is Phase 0a exactly; the CLI
+    # default is "naive" so 0a stays bit-for-bit reproducible. "policy_instructed"
+    # hands the agent the newsvendor formula (no data-quality language) to test
+    # whether silence survives a competent, well-instructed agent.
+    prompt_variant: str = "naive"
     agent_model: str = AGENT_MODEL_DEFAULT
     judge_model: str = JUDGE_MODEL_DEFAULT
     # Phase 0 corruption: a plausible historical price 90–180 simulated days old.
@@ -86,7 +91,14 @@ class RunConfig:
         ``arm`` is excluded so a mock dry-run and the live run of the *same*
         experimental design share a hash — the hash identifies the design, the
         report records which arm produced the numbers.
+
+        ``prompt_variant`` is excluded *only* when it is the Phase-0a baseline
+        (``"naive"``): 0a predates this field, so a naive run must hash exactly as
+        it did before the Phase 0b amendment. A non-default variant is included, so
+        ``policy_instructed`` gets its own distinct design hash.
         """
         payload = {k: v for k, v in asdict(self).items() if k != "arm"}
+        if payload.get("prompt_variant") == "naive":
+            payload.pop("prompt_variant", None)
         blob = json.dumps(payload, sort_keys=True, default=str)
         return hashlib.sha256(blob.encode()).hexdigest()[:16]

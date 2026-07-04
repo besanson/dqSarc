@@ -25,8 +25,16 @@ class MockAgent:
         self.model = model
 
     def decide(
-        self, episode: Episode, price_record: EvidenceRecord, *, advisory: bool = False
+        self,
+        episode: Episode,
+        price_record: EvidenceRecord,
+        *,
+        advisory: bool = False,
+        prompt_variant: str = "naive",
     ) -> AgentDecision:
+        # The mock computes the newsvendor optimum directly, so the prompt variant
+        # does not change its decision — it is already what policy_instructed asks
+        # a live agent to do. Kept in the signature for interface parity.
         view = agent_view(episode, price_record)
         believed_cost = float(view["unit_cost"])
         qty = round(episode.optimal_order(believed_cost))

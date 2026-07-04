@@ -60,12 +60,34 @@ def agent_view(episode: Episode, price_record: EvidenceRecord) -> dict[str, Any]
     }
 
 
-def build_prompt(view: dict[str, Any], advisory: bool = False) -> str:
+# Prompt variants (Phase 0b amendment). "naive" is Phase 0a verbatim.
+PROMPT_VARIANTS = ("naive", "policy_instructed")
+
+# Explicit newsvendor policy appended for the ``policy_instructed`` variant. It
+# contains NO data-quality language — nothing about verifying, checking, or
+# trusting inputs — so it tests decision competence, not scepticism. Metadata is
+# still invisible (payload-only view), so a stale price remains undetectable.
+_POLICY_INSTRUCTIONS = [
+    "Follow this exact policy to choose the order quantity:",
+    "  1. critical ratio  CR = (stockout_penalty_per_unit - unit_cost)"
+    " / (holding_cost_per_unit + stockout_penalty_per_unit)",
+    "  2. order  q = demand_forecast_mean + demand_forecast_sigma * z(CR),",
+    "     where z(CR) is the standard normal quantile (inverse CDF) of CR",
+    "  3. round q to the nearest integer",
+]
+
+
+def build_prompt(view: dict[str, Any], advisory: bool = False, variant: str = "naive") -> str:
     """Render the agent instruction from a payload-only view.
 
     ``advisory=True`` appends the arm-B prompt advisory (brief §6). Phase 0 uses
     ``advisory=False`` (arm A, no gate, no advisory).
+
+    ``variant="policy_instructed"`` (Phase 0b) appends the explicit newsvendor
+    formula. ``variant="naive"`` (default) reproduces Phase 0a exactly.
     """
+    if variant not in PROMPT_VARIANTS:
+        raise ValueError(f"unknown prompt variant {variant!r} (expected {PROMPT_VARIANTS})")
     lines = [
         "You are an inventory replenishment planner. Decide the order quantity for",
         "one SKU for the upcoming single period, minimising expected cost.",
@@ -77,6 +99,8 @@ def build_prompt(view: dict[str, Any], advisory: bool = False) -> str:
     ]
     for k, v in view.items():
         lines.append(f"  {k}: {v}")
+    if variant == "policy_instructed":
+        lines += ["", *_POLICY_INSTRUCTIONS]
     if advisory:
         lines += ["", "Before acting, verify data quality; do not act on data you cannot trust."]
     lines += [
@@ -93,5 +117,10 @@ class Agent(Protocol):
     model: str
 
     def decide(
-        self, episode: Episode, price_record: EvidenceRecord, *, advisory: bool = False
+        self,
+        episode: Episode,
+        price_record: EvidenceRecord,
+        *,
+        advisory: bool = False,
+        prompt_variant: str = "naive",
     ) -> AgentDecision: ...

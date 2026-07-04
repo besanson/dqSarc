@@ -51,10 +51,15 @@ class AnthropicAgent:
         self._client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
 
     def decide(
-        self, episode: Episode, price_record: EvidenceRecord, *, advisory: bool = False
+        self,
+        episode: Episode,
+        price_record: EvidenceRecord,
+        *,
+        advisory: bool = False,
+        prompt_variant: str = "naive",
     ) -> AgentDecision:
         view = agent_view(episode, price_record)
-        prompt = build_prompt(view, advisory=advisory)
+        prompt = build_prompt(view, advisory=advisory, variant=prompt_variant)
         try:
             # No `temperature` (or other sampling params): Sonnet 5 (and the rest
             # of the ladder) returns HTTP 400 on non-default sampling params.
