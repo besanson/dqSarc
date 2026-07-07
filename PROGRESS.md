@@ -44,7 +44,11 @@ Total live spend: **$5.1331**.
   H4 recovery). `benchmarks/harness_matrix.py` ($0). CI runs the matrix. 57 tests.
   Mock matrix reproduces H1/H2/H4: C blind to metadata-borne, D detects+recovers,
   false-block 0. Phase 0 frozen still verifies.
-- [ ] **Part 3 — GIGO-Bench freeze**
+- [x] **Part 3 — GIGO-Bench freeze** — `benchmarks/gigo/`: SPEC.md (conditions
+  matrix, seeds, splits, metrics, schema), reproduce.py (`make gigo-reproduce`) +
+  `--verify` (`make gigo-verify`, per-cell tolerances), frozen `reference_summary.json`
+  (192 cells), CALIBRATION.md stub. CI runs gigo-verify. Perf: spec loaded once per
+  condition (was per-episode). 59 tests.
 - [ ] **Part 4 — Experiment execution kits**
 - [ ] **Part 5 — The paper (compiles today)**
 - [ ] **Part 6 — Release hygiene**

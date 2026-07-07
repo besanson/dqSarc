@@ -181,6 +181,9 @@ def run_condition(
     gate: PreActionGate | None = None,
 ) -> ConditionResult:
     cls = get_class(corruption_class)
+    # Load the spec ONCE per condition (YAML parse is expensive); only the per-episode
+    # governed buffer changes below.
+    spec = gate.spec if gate is not None else load_spec()
     outcomes: list[ArmOutcome] = []
     corrupted_flags: list[bool] = []
 
@@ -197,7 +200,7 @@ def run_condition(
             evidence = (clean_rec,)
         # Governed buffer: a downstream clean cache keyed by SKU (never a source store).
         buf = GovernedBuffer({episode.sku: episode.true_unit_cost})
-        g = PreActionGate(gate.spec if gate is not None else load_spec(), buf)
+        g = PreActionGate(spec, buf)
         outcomes.append(
             apply_arm(
                 arm,

@@ -36,3 +36,6 @@ jobs:
       # arm and every corruption class is exercised on every push.
       - name: Harness matrix dry-run (all arms + classes, offline, $0)
         run: python -m benchmarks.harness_matrix --episodes 40 --out /tmp/matrix_ci.json
+      # GIGO-Bench reference must not drift (Green SARC discipline).
+      - name: GIGO-Bench verify against frozen reference
+        run: make gigo-verify
