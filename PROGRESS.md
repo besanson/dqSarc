@@ -37,7 +37,13 @@ Total live spend: **$5.1331**.
   (REVISION-REQUESTED) + TAXONOMY_REVISION_GUIDE.md (10 questions). PyYAML in
   `[gate]`/`[dev]`. 51 tests. **v0 predicate gaps (intentional):** silent_unit_change,
   duplicate_vendor_conflicting_terms, plausible_outlier — flagged in the guide.
-- [ ] **Part 2 — Full harness (6 arms) + DQ Pre-Action Gate**
+- [x] **Part 2 — Full harness (6 arms) + DQ Pre-Action Gate** — `sarc_dq/gate.py`
+  (PreActionGate + GovernedBuffer, content-addressed evidence ids, quarantine-and-
+  substitute from buffer only, never writes to source, read-only over evidence);
+  `sarc_dq/harness.py` (arms A–F, mock critic payload-only view, matrix runner with
+  H4 recovery). `benchmarks/harness_matrix.py` ($0). CI runs the matrix. 57 tests.
+  Mock matrix reproduces H1/H2/H4: C blind to metadata-borne, D detects+recovers,
+  false-block 0. Phase 0 frozen still verifies.
 - [ ] **Part 3 — GIGO-Bench freeze**
 - [ ] **Part 4 — Experiment execution kits**
 - [ ] **Part 5 — The paper (compiles today)**

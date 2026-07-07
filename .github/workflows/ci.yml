@@ -32,3 +32,7 @@ jobs:
       # broken harness is caught on every push without ever calling a paid API.
       - name: Phase 0 pipeline dry-run (mock agent, offline, $0)
         run: python -m benchmarks.phase0_smoke --out /tmp/smoke_ci.md --seeds 24
+      # The full six-arm × taxonomy × rate matrix must run offline at $0, so every
+      # arm and every corruption class is exercised on every push.
+      - name: Harness matrix dry-run (all arms + classes, offline, $0)
+        run: python -m benchmarks.harness_matrix --episodes 40 --out /tmp/matrix_ci.json

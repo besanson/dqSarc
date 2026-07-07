@@ -132,19 +132,21 @@ class DuplicateVendorConflictingTerms:
     ) -> InjectionResult:
         true_p = _price(record)
         conflict_p = max(1.0, round(true_p * rng.uniform(1.15, 1.6), 4))
-        dup = EvidenceRecord(
-            record.record_id + ":dup",
-            {**record.payload, "unit_cost": conflict_p, "vendor": "vendor-B"},
-            replace(record.metadata, source="erp.pricing.altvendor"),
-            {"role": "duplicate_vendor"},
+        # The agent keys on the conflicting duplicate row (vendor-B); the true-terms
+        # row (vendor-A) is the companion.
+        companion = EvidenceRecord(
+            record.record_id + ":alt",
+            {**record.payload, "unit_cost": true_p, "vendor": "vendor-A"},
+            record.metadata,
+            {"role": "true_terms"},
         )
         primary = EvidenceRecord(
             record.record_id,
-            {**record.payload, "vendor": "vendor-A"},
-            record.metadata,
-            base_ground_truth(self, true_unit_cost=true_p, conflicting_unit_cost=conflict_p),
+            {**record.payload, "unit_cost": conflict_p, "vendor": "vendor-B"},
+            replace(record.metadata, source="erp.pricing.altvendor"),
+            base_ground_truth(self, true_unit_cost=true_p, observed_unit_cost=conflict_p),
         )
-        return InjectionResult(primary, (dup,), dict(primary.ground_truth))
+        return InjectionResult(primary, (companion,), dict(primary.ground_truth))
 
 
 @dataclass(frozen=True)
@@ -160,17 +162,19 @@ class CrossSourceContradiction:
     ) -> InjectionResult:
         true_p = _price(record)
         other_p = max(1.0, round(true_p * rng.uniform(1.1, 1.5), 4))  # beyond tolerance
+        # Companion carries the authoritative (true) value; the primary the agent
+        # keys on carries the contradicting one, so acting on it converts.
         other = EvidenceRecord(
             record.record_id,
-            {**record.payload, "unit_cost": other_p},
-            replace(record.metadata, source="dwh.pricing"),
-            {"role": "second_source"},
+            {**record.payload, "unit_cost": true_p},
+            replace(record.metadata, source="contract.authoritative"),
+            {"role": "authoritative_source"},
         )
         primary = EvidenceRecord(
             record.record_id,
-            dict(record.payload),
-            record.metadata,
-            base_ground_truth(self, true_unit_cost=true_p, contradicting_unit_cost=other_p),
+            {**record.payload, "unit_cost": other_p},
+            replace(record.metadata, source="dwh.pricing"),
+            base_ground_truth(self, true_unit_cost=true_p, observed_unit_cost=other_p),
         )
         return InjectionResult(primary, (other,), dict(primary.ground_truth))
 
