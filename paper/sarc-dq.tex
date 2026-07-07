@@ -1,0 +1,311 @@
+\documentclass[11pt]{article}
+
+% Conservative preamble (compiles under a full TeX Live, e.g. xu-cheng/latex-action).
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{eso-pic}
+\usepackage[hidelinks]{hyperref}
+
+% Robust DRAFT watermark (version-independent; no draftwatermark dependency).
+\newcommand{\DraftMark}{%
+  \AtPageCenter{\makebox(0,0){\rotatebox{45}{%
+    \textcolor{gray!18}{\fontsize{5cm}{5cm}\selectfont DRAFT}}}}}
+\AddToShipoutPictureFG{\DraftMark}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{assumption}{Assumption}
+
+% Every result value comes from here (generated from reference_summary.json).
+\input{generated/results.tex}
+\newcommand{\verifyc}{\textsuperscript{$\langle$VERIFY$\rangle$}}
+\newcommand{\PhaseZeroScoredNote}{three live runs, \$\PhaseZeroSpend}
+
+\title{\textbf{SARC-DQ: Runtime Data-Quality Gating for Agentic AI}\\
+  \large Silent evidence defects, the incompetence shield, and downstream-only remediation}
+\author{Gaston Besanson\\ Universidad Torcuato Di Tella}
+\date{Working paper --- \today \\[2pt]
+  \textcolor{red}{\textbf{DRAFT. Claims not yet signed off. Every $[$pending$]$ marker is an unrun experiment.}}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Agentic systems act. When the evidence an agent retrieves is defective in a way
+that is invisible in the record's payload---a stale price, a superseded golden
+record---the defect never enters the agent's context, and no amount of model
+capability recovers it. We frame the \emph{silent conversion chain}: a data defect
+becomes an action defect becomes a currency loss, measured against a
+certifiably-clean, same-seed counterfactual. Our thesis is that \emph{enforcement
+placement beats model intelligence}: a cheap metadata-aware gate at the point of
+action dominates a frontier-class critic that sees only the payload. We contribute
+(i) \textbf{SARC-DQ}, a data-quality predicate family and Pre-Action Gate with
+\emph{downstream-only} remediation (quarantine-and-substitute in a governed buffer;
+zero writes to source systems); (ii) \textbf{GIGO-Bench}, a frozen benchmark pricing
+how injected corruption converts into loss across six mitigation arms; and (iii) a
+pilot ($\PhaseZeroScoredNote$) on a real replenishment task. In the pilot, a
+competent agent acts on a stale price $\PZcAdr$ of the time (matching a
+metadata-blind oracle at $\PZcOracleAdr$) while expressing no doubt (behavioral AUC
+$\PZcMarkerAuc$, judge AUC $\PZcJudgeAuc$, explicit flags $\PZcFlags$). A
+naive agent is protected only by \emph{incompetence}---it ignores the price and so
+does not convert the defect. Total pilot spend was \$\PhaseZeroSpend. Full
+hypothesis tests (H1--H4) are pre-registered and render as $[$pending$]$ until fired.
+\end{abstract}
+
+\section{Introduction}
+An agent differs from a chatbot in one decisive way: it \emph{acts}. A chatbot that
+reasons over a stale price emits a wrong sentence; an agent that reasons over a
+stale price places a wrong order, and the loss is realised in currency. The
+literature on agent robustness has studied degradation under generic noise, but the
+defects that matter most in enterprise data are not noisy---they are
+\emph{plausible}. A price that is 120 days stale is a perfectly well-formed number;
+nothing in its payload betrays it. The tell is in the \emph{metadata}: freshness,
+lineage, provenance, version. We call such defects \emph{metadata-borne}, and
+contrast them with \emph{payload-visible} defects (duplicates, contradictions,
+schema drift) detectable from content alone.
+
+\paragraph{The silent conversion chain.} A metadata-borne defect propagates:
+\[
+\text{data defect} \;\rightarrow\; \text{(invisible in payload)} \;\rightarrow\;
+\text{agent acts} \;\rightarrow\; \text{action defect} \;\rightarrow\; \text{loss}.
+\]
+Each arrow is measurable. We price the last one against a same-seed clean
+counterfactual, so ``loss'' is a currency delta, not a task-success proxy.
+
+\paragraph{Competence buys conversion, not detection: the incompetence shield.}
+Our sharpest finding is a pilot result and a caution against a comforting intuition.
+One might hope a smarter agent would notice the bad price. It does not---because the
+discriminating signal is not in its context at any capability level. Worse, making
+the agent \emph{better at its task} makes it \emph{more} vulnerable: an agent that
+faithfully tracks the price it is given (high decision elasticity) inherits the
+corruption, while an agent that ignores the price (low elasticity) is accidentally
+shielded by its own incompetence. Detection must therefore be placed where the
+signal lives---on the metadata, at the point of action---not bought with model
+scale.
+
+\paragraph{Contributions.} (1) The SARC-DQ predicate family on the four SARC
+enforcement sites, with downstream-only remediation and versioned-evidence-set
+semantics (\S\ref{sec:arch}). (2) Two formal results: lineage preservation under
+downstream-only remediation, and a bound linking evidence error rate to ADR with and
+without gating (\S\ref{sec:formal}). (3) The Phase 0 pilot with its methods-integrity
+narrative (\S\ref{sec:pilot}). (4) GIGO-Bench (\S\ref{sec:gigo}) and pre-registered
+H1--H4 (\S\ref{sec:results}).
+
+\section{Related work}
+\paragraph{Agent robustness under noise.} AgentNoiseBench\verifyc{}~\cite{agentnoisebench}
+finds tool-side noise degrades agents more than user-side noise, and that strong
+reasoning models make \emph{confident} errors under corrupted tool feedback;
+NoisyToolBench\verifyc{}~\cite{noisytoolbench}, ToolEmu\verifyc{}~\cite{toolemu}, and
+``Tools Fail''\verifyc{}~\cite{toolsfail} study silent tool errors;
+$\tau$-bench / $\tau^2$-bench\verifyc{}~\cite{taubench} provide agentic task
+environments. These works inject \emph{generic} noise and measure \emph{task-success}
+deltas. Our delta is precise: we isolate the \emph{metadata-borne} channel
+(invisible-in-payload defects), price failures in \emph{currency} rather than
+task-success, and supply and test an \emph{architectural remedy} with downstream-only
+remediation.
+\paragraph{Action-side runtime enforcement.} AgentSpec\verifyc{}- and
+MI9\verifyc{}-class systems and LLM guardrails enforce constraints on what the agent
+is about to \emph{do}. SARC-DQ addresses the complementary \emph{input-side} gap:
+whether the evidence the action rests on is trustworthy.
+\paragraph{Data validation and DQ dimensions.} ISO/IEC 5259\verifyc{}~\cite{iso5259}
+frames data-quality dimensions; the data-cleaning benchmarks we use for Tier-2
+validation---the Raha/Baran suite\verifyc{}~\cite{raha}, multi-source-conflict
+datasets, Magellan/DeepMatcher\verifyc{}~\cite{magellan} entity matching, and ALFRED
+archival vintages\verifyc{}---supply labeled real errors.
+Citations marked \verifyc{} are unverified pending web access and must be confirmed
+before the DRAFT watermark is lifted.
+
+\section{Architecture}\label{sec:arch}
+SARC-DQ places a data-quality predicate family on the four SARC enforcement sites
+(Pre-Action Gate, Action-Time Monitor, Post-Action Auditor, Escalation Router). An
+evidence record has two channels: a \emph{payload} (the field values a naive
+consumer sees) and \emph{metadata} (freshness, lineage, provenance, version). A
+corruption class declares a \emph{channel}: payload-visible or metadata-borne. This
+tag is load-bearing---a payload-only critic structurally cannot see a metadata-borne
+defect.
+
+\paragraph{Predicates and responses.} Six parameterized predicates---%
+\texttt{freshness(max\_age)}, \texttt{lineage\_present},
+\texttt{golden\_record\_unique}, \texttt{cross\_source\_consistent(tol)},
+\texttt{schema\_conformant}, \texttt{complete(required)}---are authored as a YAML
+constraint spec (class $\in$ hard/soft/escalation; verification point; response
+protocol; operating point). Responses are \emph{block}, \emph{degrade autonomy},
+\emph{escalate}, or \emph{quarantine-and-substitute}.
+
+\paragraph{Downstream-only remediation.} On \emph{quarantine-and-substitute}, the
+gate replaces the offending value with a known-good value drawn \emph{only} from a
+governed buffer---a downstream, versioned store keyed by content-addressed evidence
+IDs. The gate is read-only over the evidence set and \textbf{never writes to any
+source store}. Every admitted action logs the versioned evidence set it relied on,
+giving full lineage from action back to the exact records.
+
+\section{Formal results}\label{sec:formal}
+\begin{assumption}\label{as:addr}
+Each evidence record has a content-addressed identifier $\mathrm{eid}(r)=H(\text{payload}(r),\text{metadata}(r))$
+for a collision-resistant $H$. Remediation creates new buffer records and never
+mutates a source record.
+\end{assumption}
+
+\begin{proposition}[Lineage preservation under downstream-only remediation]\label{prop:lineage}
+Under Assumption~\ref{as:addr}, for every admitted action $a$ there is a recorded
+evidence set $E(a)$ whose identifiers resolve to the exact records $a$ relied upon,
+and every source record referenced by $E(a)$ is bit-identical to its pre-action
+state.
+\end{proposition}
+\begin{proof}
+The gate logs $E(a)=\{\mathrm{eid}(r):r\in \text{evidence}(a)\}$ at admission. A
+substitution introduces a new buffer record $r'$ with a fresh identifier
+$\mathrm{eid}(r')$ and appends it to $E(a)$; it performs no write to any $r$ in a
+source store (Assumption~\ref{as:addr}). Hence every $\mathrm{eid}\in E(a)$
+resolves, by collision-resistance of $H$, to the unique record whose payload and
+metadata hash to it; and since no source record was written, each such source
+record equals its pre-action state. Therefore the map $a\mapsto E(a)\mapsto$
+records is total and state-preserving. \qed
+\end{proof}
+
+\begin{proposition}[Evidence-error-to-ADR bound]\label{prop:bound}
+Let $\varepsilon$ be the fraction of actions whose evidence carries a material
+defect, $\rho\in[0,1]$ the conversion probability (that a material defect induces a
+material action deviation), $d$ the gate's detection rate on the defect's channel,
+and $s$ the substitution success probability. Assuming the defect is independent of
+the demand realisation and that detection/recovery act only on detected defects,
+\[
+\mathrm{ADR}_{\text{no gate}} \le \varepsilon\rho, \qquad
+\mathrm{ADR}_{\text{gate}} \le \varepsilon\rho\,(1-ds).
+\]
+\end{proposition}
+\begin{proof}[Proof sketch]
+Without a gate, a material action deviation requires both a material defect
+(prob.\ $\varepsilon$) and conversion (prob.\ $\rho$); independence gives the product
+as an upper bound (it is exact when detection is $0$ and conversion is homogeneous).
+A gate removes a defect from the loss path when it both detects ($d$) and
+successfully substitutes ($s$); the surviving fraction is $1-ds$, scaling the bound.
+\end{proof}
+\noindent\emph{Honesty note.} These are \emph{upper bounds}, not equalities: $\rho$
+is not constant across episodes---it is the elasticity-weighted conversion, which
+the pilot estimates empirically (elasticity $\PZcElasticity$ for the competent
+agent). We do not claim a tight closed form; the bound's value is qualitative
+(gating multiplies the ceiling by $1-ds$).
+
+\section{The Phase 0 pilot}\label{sec:pilot}
+We ran a three-run live pilot on a priced single-period (newsvendor) replenishment
+task, where the cost-minimising order depends on the unit price; a stale price
+yields a wrong order and a currency loss versus the same-seed clean counterfactual.
+Agent \texttt{claude-sonnet-5}, judge \texttt{claude-haiku-4-5}; total spend
+\$\PhaseZeroSpend.
+
+\begin{table}[t]\centering
+\begin{tabular}{lcccccc}
+\toprule
+run & prompt & scored & verdict & agent-ADR & oracle-ADR & elasticity \\
+\midrule
+0a & naive & \PZaScored/100 & AMBIGUOUS & \PZaAdr & \PZaOracleAdr & \PZaElasticity \\
+0b & policy & \PZbScored/100 & \emph{rejected} & --- & --- & \PZbElasticity \\
+0c & policy & \PZcScored/\PZcEpisodes & \textbf{SUPPORTED} & \PZcAdr & \PZcOracleAdr & \PZcElasticity \\
+\bottomrule
+\end{tabular}
+\caption{Phase 0 pilot (real live numbers, generated from the results branches).
+Behavioral marker/judge AUC on 0c: \PZcMarkerAuc/\PZcJudgeAuc; explicit data-flags
+\PZcFlags.}
+\end{table}
+
+\paragraph{Silence, and the incompetence shield.} On the valid run (0c) the competent
+agent acts on the stale price \PZcAdr{} of the time---matching the metadata-blind
+oracle (\PZcOracleAdr)---while its transcripts carry no discriminating signal
+(marker AUC \PZcMarkerAuc, judge AUC \PZcJudgeAuc, both at chance; flags \PZcFlags).
+The naive agent (0a) converts \PZaAdr: it is \emph{inelastic}, barely tracking the
+price, and is thus shielded from the defect only by being bad at the task. Making the
+agent competent (elasticity \PZcElasticity) made it vulnerable.
+
+\paragraph{Methods integrity: GIGO in our own pipeline.} Run 0b returned
+\texttt{SUPPORTED} on only \PZbScored/100 scored pairs---the agent's replies were
+truncated before the decision line, and a brittle parser dropped the rest. A verdict
+read from five pairs is meaningless. We report 0b as-is; it motivated a
+\emph{validity precondition} (any run scoring $<80/100$ is \texttt{INVALID}
+regardless of metrics). We caught garbage-in-garbage-out in our own measurement
+instrument---a fitting first result for a data-quality project, reported rather than
+hidden.
+
+\section{GIGO-Bench}\label{sec:gigo}
+GIGO-Bench freezes a conditions matrix: eight taxonomy-v0 corruption classes
+$\times$ four rates $\{2,5,10,20\%\}$ $\times$ six mitigation arms (A no-gate, B
+advisory, C payload-only critic, D DQ gate, E oracle, F$(v)$ upstream cleaning),
+$=192$ cells. Metrics: ADR; loss (median/P90/P99/mean); detection rate by
+class$\times$arm; false-block rate; completion rate; recovery ratio; gate overhead
+latency; staleness-bound coverage. Seeds and workload-level splits are frozen;
+\texttt{make gigo-verify} checks a re-run against the committed reference within
+per-cell tolerances. The checked-in reference is the deterministic \emph{mock}
+matrix (a pipeline reference); live numbers land via the Part-4 experiment kits.
+
+\section{Results (H1--H4)}\label{sec:results}
+All cells below are pre-registered (\texttt{reports/prereg/}) and render as
+\texttt{[pending]} until the corresponding workflow is fired.
+
+\begin{itemize}
+\item \textbf{H1 (Silence), full:} \ResHoneFull{}. Prediction: agent-ADR $\ge 20\%$
+on metadata-borne classes; behavioral AUC $\le 0.60$.
+\item \textbf{H1 capability ladder:} \ResHoneLadder{}. Registered prediction: ADR and
+behavioral AUC approximately \emph{flat} across
+haiku-4-5\,$\to$\,sonnet-5\,$\to$\,opus-4-8\,$\to$\,fable-5 (silence is
+capability-invariant).
+\item \textbf{H2 (Detection asymmetry):} \ResHtwo{}. Prediction: C\,$\approx$\,D on
+payload-visible; C\,$\ll$\,D on metadata-borne.
+\item \textbf{H3 (Gating dominance):} \ResHthree{}. Prediction: D Pareto-dominates
+B, C, F$(v)$ on loss-avoided vs.\ false-block at matched completion.
+\item \textbf{H4 (Downstream sufficiency):} \ResHfour{}. Registered target: recovery
+$\ge 0.80$; zero source writes; 100\% lineage completeness.
+\item \textbf{Ablations:} \ResAblations{}. \textbf{Tier-2 validation:} \ResTier{}.
+\end{itemize}
+Every figure is generated by a \texttt{figures/} pipeline from logged results only;
+no number is hand-entered.
+
+\section{The economics hook}
+ADR is the action-level micro-foundation of the firm-level adoption bottleneck.
+If autonomous value is a $\min(\cdot)$ of complements---capability \emph{and}
+trustworthy evidence---then raising capability while evidence quality lags does not
+move the $\min$. ADR measures exactly the complement that gating restores: the rate
+at which competent action is silently converted into loss.
+
+\section{Governance mapping}
+This is the only section using risk language. Loss classes map to EU AI Act Article
+10 (data governance) obligations and to risk tiers: metadata-borne evidence defects
+are precisely the ``examination in view of possible biases'' and data-quality
+management the Act requires, and ISO/IEC 5259\verifyc{} supplies the dimension
+vocabulary. SARC-DQ's versioned evidence sets are auditable artifacts for such
+obligations.
+
+\section{Limitations}
+Pilot scope (three runs); synthetic substrate; single domain (replenishment);
+LLM-judge validity (validated on 20 hand-checkable cases, not exhaustively);
+model-version sensitivity; controlled assumptions, not deployment-grade rates. The
+mock GIGO matrix is a pipeline reference, not evidence about real models.
+
+\section{Reproducibility}
+Exact commands: \texttt{make quality} (lint/type/test), \texttt{make smoke}
+(Phase 0 mock), \texttt{make gigo-verify} (benchmark drift), \texttt{make paper}
+(regenerate macros + compile). Phase 0 config hashes: naive
+\texttt{c8202a18b58754d8}, policy \texttt{e785bdc87009b84c}. Live pilot spend
+\$\PhaseZeroSpend. Results-branch index: \texttt{results/phase0-live},
+\texttt{results/phase0b-live}, \texttt{results/phase0c-live}; experiment results
+land on \texttt{results/<exp>-live}. Seeds, splits, and metric definitions are in
+\texttt{benchmarks/gigo/SPEC.md}.
+
+\begin{thebibliography}{99}
+\bibitem{agentnoisebench} AgentNoiseBench (arXiv:2602.11348, ICML 2026).\verifyc{}
+\bibitem{noisytoolbench} NoisyToolBench.\verifyc{}
+\bibitem{toolemu} ToolEmu.\verifyc{}
+\bibitem{toolsfail} ``Tools Fail'': silent tool errors.\verifyc{}
+\bibitem{taubench} $\tau$-bench / $\tau^2$-bench.\verifyc{}
+\bibitem{iso5259} ISO/IEC 5259, Data quality for analytics and ML.\verifyc{}
+\bibitem{raha} Raha / Baran error detection and repair.\verifyc{}
+\bibitem{magellan} Magellan / DeepMatcher entity matching.\verifyc{}
+\bibitem{sarc} SARC: Governance-by-Architecture for Agentic AI (arXiv:2605.07728).\verifyc{}
+\bibitem{greensarc} Green SARC: predictive cost + carbon governance (arXiv:2606.15954).\verifyc{}
+\end{thebibliography}
+
+\end{document}

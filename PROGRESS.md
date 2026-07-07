@@ -56,7 +56,14 @@ Total live spend: **$5.1331**.
   precondition, budget cap, `<<HUMAN>>` marks). 68 tests.
   **REMAINING (human item 2 territory):** arm-level LIVE agent wiring — the six arms
   run mock only; wiring real Claude into arms B/C/D/F is the work before firing.
-- [ ] **Part 5 — The paper (compiles today)**
+- [x] **Part 5 — The paper (compiles today)** — `paper/sarc-dq.tex` (12-section
+  macro-driven working paper: DRAFT watermark on every page, Prop 1 lineage-preservation
+  proof + Prop 2 honest ADR upper bound, real Phase 0 pilot table, ⟨VERIFY⟩ bibliography);
+  `paper/scripts/make_macros.py` emits `generated/results.tex` from every
+  `paper/data/**/reference_summary.json` — no result value is hand-typed, missing runs
+  render `\pending{id}` → "— [pending: id]". `paper/Makefile` + `.github/workflows/paper.yml`
+  (regenerate macros → latex-action → PDF artifact). Statically validated: all custom
+  macros defined, braces balanced, single document env.
 - [ ] **Part 6 — Release hygiene**
 
 ## Key decisions
