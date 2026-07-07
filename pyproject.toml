@@ -60,6 +60,9 @@ sarc_dq = ["py.typed", "specs/*.yaml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Put the repo root on sys.path so `benchmarks` imports under a bare `pytest`
+# (CI runs `pytest`, not `python -m pytest`, which would otherwise add cwd).
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 99
