@@ -75,9 +75,12 @@ Total live spend: **$5.1331**.
 
 ## Definition of done — status
 
-- `make paper` compiles (validated statically: macros defined, braces balanced, one
-  document env; CI uses latex-action). Full prose + real Phase 0 numbers + `[pending]`
-  everywhere else + DRAFT watermark. ✅
+- `make paper` compiles: the `paper` workflow builds the PDF via latex-action. Two
+  post-hoc build fixes were needed that static macro/brace validation could not catch:
+  (a) CI runs bare `pytest`, so the repo root was not on `sys.path` and `benchmarks`
+  failed to import — fixed with `pythonpath = ["."]`; (b) the DRAFT watermark's
+  `\rotatebox` needs `graphicx`, which was not loaded — added `\usepackage{graphicx}`.
+  Full prose + real Phase 0 numbers + `[pending]` everywhere else + DRAFT watermark. ✅
 - No fabricated result: every printed value flows from `reference_summary.json` via
   generated macros; unrun renders `[pending]`. ✅
 - Phase 0 frozen record intact: `--prompt naive` reproduces `reports/reference_smoke.json`
