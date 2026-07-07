@@ -1,6 +1,70 @@
-# PROGRESS — sarc-dq Build-to-Complete campaign
+# PROGRESS — sarc-dq campaign tracker
 
-Resume rule: a fresh session reads this file + the BUILD-TO-COMPLETE brief and
+**Active campaign: MASTER BRIEF FINAL (`CLAUDE_CODE_MASTER_BRIEF_FINAL.md`)** — takes
+sarc-dq from CI-green-with-[pending] to arXiv-ready v1.0. Parts 0–2 this session →
+human merges + fires workflows → "Part 3" in a fresh session after results land.
+Branch `claude/new-session-f1dhsq` off `main`; PR base `main`. Standing rules: no
+fabricated result (values flow from committed `reference_summary.json` via macros;
+missing/failed render `[pending]` or reported failed); Phase 0 frozen (extend-only);
+PREREG verdicts computed by committed code against frozen thresholds (no post-hoc
+edits); the DRAFT watermark is removed only by `make final`, which this campaign
+PREPARES but NEVER RUNS.
+
+### FINAL campaign — Part status
+- [x] **FINAL Part 0 — Research-calibrated taxonomy** — `scripts/calibrate_taxonomy.py`
+  (deterministic, $0, `--check` in CI) emits `src/sarc_dq/specs/taxonomy_v1_calibrated.yaml`
+  (every parameter carries a provenance block: computed | literature | default+flagged),
+  rewrites `benchmarks/gigo/CALIBRATION.md`, and writes `reports/TAXONOMY_VETO_SCREEN.md`
+  (≤10-min author veto). Paper: "Taxonomy grounding" subsection (Rahm&Do, Kim,
+  Wang&Strong, ISO 8000, Sambasivan) + prevalence anchors (HBR 47%, Experian 17–32%,
+  Li/Dong ~70%) + realism band + non-arbitrary-parameter methods sentence + Limitations
+  sentence on literature-thin classes; 11 bibliography entries added. Datasets not
+  vendored (multi-GB) → CI runs the literature/default path; `computed` rows render as
+  flagged defaults naming the pending Tier-2 dataset. **Human item: the veto screen.**
+- [x] **FINAL Part 1 — Audit fixes.**
+  1. **Live arm wiring** — `src/sarc_dq/live_arms.py` (`apply_arm_live` mirrors the mock
+     arm structure exactly; real `claude-sonnet-5` agent + `claude-opus-4-8` payload-only
+     `AnthropicCritic`; per-arm spend from usage fields; `FakeAgent`/`FakeCritic` +
+     `make_live(fake=)` drive the whole path at $0). `harness.apply_arm` left
+     **byte-identical** → gigo-verify still passes (192 cells). `experiments.py --arm live`
+     now runs the live matrix (`--fake` = $0 CI); the "not wired" stub is gone.
+  2. **`scripts/derive_phase0a_metrics.py`** — derives 0a elasticity + clean-arm regret
+     from the committed `results/phase0-live` JSONL with provenance (branch, file,
+     commit `d853f7d`). Real values: **elasticity 0.000** (naive agent inelastic),
+     **clean_regret_median 2520** — vendored to `paper/data/phase0/phase0a_derived.summary.json`;
+     `make_macros` fills `\PZaElasticity`/`\PZaRegret` (0a cells no longer `[pending]`).
+     **This retires the 0a human-item candidate** (real, provenance-tracked, not the mock).
+  3. **Adversarial zero-write test** (`tests/test_zero_write.py`) — every source record
+     bit-identical after quarantine-substitute across all 8 classes (Prop 1 assumption).
+  4. **0b footnote** — pilot-table caption marks 0b elasticity diagnostic-only / invalid.
+  5. **Provenance SHAs** — `_provenance` blocks on all `paper/data/phase0/*.json` naming
+     branch + commit (0a `d853f7d`, 0b `fe504d1`, 0c `3fb4aa3`).
+  6. **Citations** — resolved ToolEmu (Ruan, ICLR 2024), τ-bench (Yao, 2406.12045),
+     ISO/IEC 5259 (2024), Raha (Mahdavi SIGMOD 2019), Magellan (Konda VLDB 2016),
+     AgentNoiseBench; inline `⟨VERIFY⟩` dropped on resolved cites. NoisyToolBench,
+     "Tools Fail", AgentSpec, MI9, ISO 8000, Experian, Sambasivan stay `⟨VERIFY⟩`.
+  78 tests; gigo mock + Phase 0 frozen both still verify.
+- [x] **FINAL Part 2 — Pre-flight + firing checklist + PR.** Pre-flight green at $0:
+  full mock matrix + `gigo-verify` (192 cells), live path via `--arm live --fake`,
+  `calibrate-check`, Phase 0 frozen record. `reports/FIRING_CHECKLIST.md` — per
+  experiment: workflow name, firing order (h1-full, h1-ladder, h2, h4, h3, ablations,
+  tier2), budget arithmetic from the Phase 0 per-turn anchor (\$0.010 Sonnet / \$0.030
+  Opus critic / \$0.050 Fable) vs each PREREG cap (flags h1-ladder's ~\$298 > \$250 →
+  subsample), the 80%-scored validity precondition, fable-5's non-ZDR-key + refusal-
+  class note, and 2–3 eyeball numbers per branch. **STOP after the PR is open** — the
+  human merges and fires the seven workflows; "Part 3" resumes in a fresh session.
+
+### Human items remaining (target: exactly four)
+1. **Taxonomy v1 author veto** — `reports/TAXONOMY_VETO_SCREEN.md` (≤10 min; silence = accept).
+2. **Fire the seven experiment workflows** — `reports/FIRING_CHECKLIST.md` (spend-gated, $1000 envelope).
+3. **Claims sign-off** — review the compiled paper; only `make final` lifts the DRAFT watermark (prepared in Part 3, never run here).
+4. **arXiv upload** — from the author's account (Part 3 produces the `make arxiv` tarball + `CLAIMS_CHECKLIST.md`).
+
+---
+
+## Prior campaign (Build-to-Complete) — merged to main via PR #6
+
+Resume rule: a fresh session reads this file + the brief and
 continues from the first unfinished Part. Everything must stay mypy --strict
 clean, ruff clean, pytest green, CI green at $0. The Phase 0 record is frozen
 (extend-only): the three `results/*-live` branches, both PREREG files, the

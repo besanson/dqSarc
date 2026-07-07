@@ -60,5 +60,26 @@
       "spend_usd": 1.9589249999999998
     }
   },
-  "spend_total_usd": 5.1331
+  "spend_total_usd": 5.1331,
+  "_provenance": {
+    "consolidated_from": [
+      {
+        "run": "phase0",
+        "branch": "results/phase0-live",
+        "commit": "d853f7d04bf5dedc1c7b843914a7a1b9b3eddb30"
+      },
+      {
+        "run": "phase0b",
+        "branch": "results/phase0b-live",
+        "commit": "fe504d14aab4bed7d21f3b7748b1fe820b40ffd6"
+      },
+      {
+        "run": "phase0c",
+        "branch": "results/phase0c-live",
+        "commit": "3fb4aa3fb30b1d7b450acc889fb9b42995b04346"
+      }
+    ],
+    "phase0a_derived": "paper/data/phase0/phase0a_derived.summary.json",
+    "note": "programmatic consolidation of the three live summaries; extend-only"
+  }
 }

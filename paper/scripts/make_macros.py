@@ -63,6 +63,9 @@ def build() -> list[str]:
     p0 = _load(DATA / "phase0" / "reference_summary.json") or {"runs": {}}
     runs = p0.get("runs", {})
     a, b, c = runs.get("phase0a", {}), runs.get("phase0b", {}), runs.get("phase0c", {})
+    # 0a elasticity / clean-regret are derived post-hoc from the results-branch JSONL
+    # (scripts/derive_phase0a_metrics.py); prefer the derived file when present.
+    a_deriv = _load(DATA / "phase0" / "phase0a_derived.summary.json") or {}
 
     lines += [
         "% --- Phase 0 pilot (real live numbers) ---",
@@ -72,10 +75,21 @@ def build() -> list[str]:
         macro("PZaOracleAdr", _pct(a.get("oracle_adr")), "phase0a"),
         macro(
             "PZaElasticity",
-            _num(a.get("elasticity_median"), 3)
-            if a.get("elasticity_median") is not None
-            else None,
+            _num(a_deriv.get("elasticity_median"), 3)
+            if a_deriv.get("elasticity_median") is not None
+            else (
+                _num(a.get("elasticity_median"), 3)
+                if a.get("elasticity_median") is not None
+                else None
+            ),
             "phase0a-elasticity",
+        ),
+        macro(
+            "PZaRegret",
+            _num(a_deriv.get("clean_regret_median"), 0)
+            if a_deriv.get("clean_regret_median") is not None
+            else None,
+            "phase0a-regret",
         ),
         macro("PZbScored", str(b.get("n_scored", "")) or None, "phase0b"),
         macro("PZbElasticity", _num(b.get("elasticity_median"), 3), "phase0b"),

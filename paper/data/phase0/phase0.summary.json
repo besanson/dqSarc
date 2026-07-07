@@ -61,5 +61,11 @@
   },
   "kill_verdict": "AMBIGUOUS",
   "kill_detail": "AUC=0.500, ADR=0.00%, flagged=0.00% fall between the thresholds \u2014 report and stop.",
-  "spend_usd": 1.3740049999999997
+  "spend_usd": 1.3740049999999997,
+  "_provenance": {
+    "source_branch": "results/phase0-live",
+    "source_commit": "d853f7d04bf5dedc1c7b843914a7a1b9b3eddb30",
+    "source_file": "reports/SMOKE_TEST.summary.json",
+    "note": "vendored verbatim from the live results branch; extend-only"
+  }
 }

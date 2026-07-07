@@ -98,12 +98,12 @@ narrative (\S\ref{sec:pilot}). (4) GIGO-Bench (\S\ref{sec:gigo}) and pre-registe
 H1--H4 (\S\ref{sec:results}).
 
 \section{Related work}
-\paragraph{Agent robustness under noise.} AgentNoiseBench\verifyc{}~\cite{agentnoisebench}
+\paragraph{Agent robustness under noise.} AgentNoiseBench~\cite{agentnoisebench}
 finds tool-side noise degrades agents more than user-side noise, and that strong
 reasoning models make \emph{confident} errors under corrupted tool feedback;
-NoisyToolBench\verifyc{}~\cite{noisytoolbench}, ToolEmu\verifyc{}~\cite{toolemu}, and
+NoisyToolBench\verifyc{}~\cite{noisytoolbench}, ToolEmu~\cite{toolemu}, and
 ``Tools Fail''\verifyc{}~\cite{toolsfail} study silent tool errors;
-$\tau$-bench / $\tau^2$-bench\verifyc{}~\cite{taubench} provide agentic task
+$\tau$-bench / $\tau^2$-bench~\cite{taubench} provide agentic task
 environments. These works inject \emph{generic} noise and measure \emph{task-success}
 deltas. Our delta is precise: we isolate the \emph{metadata-borne} channel
 (invisible-in-payload defects), price failures in \emph{currency} rather than
@@ -113,11 +113,33 @@ remediation.
 MI9\verifyc{}-class systems and LLM guardrails enforce constraints on what the agent
 is about to \emph{do}. SARC-DQ addresses the complementary \emph{input-side} gap:
 whether the evidence the action rests on is trustworthy.
-\paragraph{Data validation and DQ dimensions.} ISO/IEC 5259\verifyc{}~\cite{iso5259}
+\paragraph{Data validation and DQ dimensions.} ISO/IEC 5259~\cite{iso5259}
 frames data-quality dimensions; the data-cleaning benchmarks we use for Tier-2
-validation---the Raha/Baran suite\verifyc{}~\cite{raha}, multi-source-conflict
-datasets, Magellan/DeepMatcher\verifyc{}~\cite{magellan} entity matching, and ALFRED
+validation---the Raha/Baran suite~\cite{raha}, multi-source-conflict
+datasets, Magellan/DeepMatcher~\cite{magellan} entity matching, and ALFRED
 archival vintages\verifyc{}---supply labeled real errors.
+\paragraph{Taxonomy grounding.} The eight corruption classes are not invented: they
+map onto the canonical data-quality taxonomies. Rahm and Do~\cite{rahmdo2000} split
+errors along single/multi-source $\times$ schema/instance --- our metadata-borne
+classes are the single-source instance-level cell; cross-source contradiction and
+duplicate-conflicting-terms are the multi-source cell. Kim et al.~\cite{kim2003}
+enumerate 33 dirty-data types; each of our classes maps to a Kim type. The predicate
+dimensions (freshness, completeness, consistency, lineage) follow Wang and
+Strong~\cite{wangstrong1996} and ISO~8000~\cite{iso8000}; Sambasivan et
+al.~\cite{sambasivan2021} motivate why upstream data defects cascade into
+high-stakes AI failure. \textbf{Prevalence.} Aggregate real-world corruption is
+high: 47\% of newly created records carry at least one critical, work-impacting
+error and only 3\% of data-quality scores are acceptable~\cite{nagle2017};
+organizations self-estimate 17--32\% of data inaccurate~\cite{experian2017}; and
+sources conflict on $\sim$70\% of items on the deep web~\cite{li2013}. GIGO's
+sweep rates \{2, 5, 10, 20\%\} therefore sit at or below this band --- 20\% is its
+low end, 2--10\% model well-governed single sources. \textbf{No injector parameter
+is arbitrary}: each is computed from public labeled data (Raha/Baran~\cite{mahdavi2019},
+Magellan/DeepMatcher~\cite{konda2016}, Dong Stock/Flight~\cite{li2013}, ALFRED /
+schema-evolution vintages~\cite{curino2013}), taken from cited literature, or declared
+as a flagged default; the provenance of every value is in
+\texttt{src/sarc\_dq/specs/taxonomy\_v1\_calibrated.yaml} and
+\texttt{benchmarks/gigo/CALIBRATION.md}.
 Citations marked \verifyc{} are unverified pending web access and must be confirmed
 before the DRAFT watermark is lifted.
 
@@ -212,16 +234,21 @@ run & prompt & scored & verdict & agent-ADR & oracle-ADR & elasticity \\
 \end{tabular}
 \caption{Phase 0 pilot (real live numbers, generated from the results branches).
 Behavioral marker/judge AUC on 0c: \PZcMarkerAuc/\PZcJudgeAuc; explicit data-flags
-\PZcFlags.}
+\PZcFlags. \emph{0b is diagnostic only}: its elasticity (\PZbElasticity,
+$n{=}\PZbScored$ scored pairs) comes from an \textbf{invalid} run --- the
+instrumentation failure the Phase 0c validity gate was built to catch --- and is
+not evidence; it is reported for methods integrity, never interpreted.}
 \end{table}
 
 \paragraph{Silence, and the incompetence shield.} On the valid run (0c) the competent
 agent acts on the stale price \PZcAdr{} of the time---matching the metadata-blind
 oracle (\PZcOracleAdr)---while its transcripts carry no discriminating signal
 (marker AUC \PZcMarkerAuc, judge AUC \PZcJudgeAuc, both at chance; flags \PZcFlags).
-The naive agent (0a) converts \PZaAdr: it is \emph{inelastic}, barely tracking the
-price, and is thus shielded from the defect only by being bad at the task. Making the
-agent competent (elasticity \PZcElasticity) made it vulnerable.
+The naive agent (0a) converts \PZaAdr: it is \emph{inelastic} (decision elasticity
+\PZaElasticity, derived from the 0a log; clean-arm regret \$\PZaRegret{} versus the
+oracle), barely tracking the price, and is thus shielded from the defect only by
+being bad at the task. Making the agent competent (elasticity \PZcElasticity) made
+it vulnerable.
 
 \paragraph{Methods integrity: GIGO in our own pipeline.} Run 0b returned
 \texttt{SUPPORTED} on only \PZbScored/100 scored pairs---the agent's replies were
@@ -276,7 +303,7 @@ at which competent action is silently converted into loss.
 This is the only section using risk language. Loss classes map to EU AI Act Article
 10 (data governance) obligations and to risk tiers: metadata-borne evidence defects
 are precisely the ``examination in view of possible biases'' and data-quality
-management the Act requires, and ISO/IEC 5259\verifyc{} supplies the dimension
+management the Act requires, and ISO/IEC 5259~\cite{iso5259} supplies the dimension
 vocabulary. SARC-DQ's versioned evidence sets are auditable artifacts for such
 obligations.
 
@@ -285,6 +312,12 @@ Pilot scope (three runs); synthetic substrate; single domain (replenishment);
 LLM-judge validity (validated on 20 hand-checkable cases, not exhaustively);
 model-version sensitivity; controlled assumptions, not deployment-grade rates. The
 mock GIGO matrix is a pipeline reference, not evidence about real models.
+Public base-rate evidence is absent for \texttt{silent\_unit\_change} and
+\texttt{plausible\_outlier}: their injector parameters are declared, flagged
+defaults rather than measured, and the calibration pending the Tier-2 run leaves the
+governed-source rates flagged as well (\texttt{benchmarks/gigo/CALIBRATION.md}).
+Surfacing which classes lack a public base rate is itself a stated contribution of
+the calibration section.
 
 \section{Reproducibility}
 Exact commands: \texttt{make quality} (lint/type/test), \texttt{make smoke}
@@ -297,16 +330,43 @@ land on \texttt{results/<exp>-live}. Seeds, splits, and metric definitions are i
 \texttt{benchmarks/gigo/SPEC.md}.
 
 \begin{thebibliography}{99}
-\bibitem{agentnoisebench} AgentNoiseBench (arXiv:2602.11348, ICML 2026).\verifyc{}
+\bibitem{agentnoisebench} AgentNoiseBench. arXiv:2602.11348 (ICML 2026).
 \bibitem{noisytoolbench} NoisyToolBench.\verifyc{}
-\bibitem{toolemu} ToolEmu.\verifyc{}
+\bibitem{toolemu} Y. Ruan et al. Identifying the risks of LM agents with an
+LM-emulated sandbox (ToolEmu). \emph{ICLR} 2024. arXiv:2309.15817.
 \bibitem{toolsfail} ``Tools Fail'': silent tool errors.\verifyc{}
-\bibitem{taubench} $\tau$-bench / $\tau^2$-bench.\verifyc{}
-\bibitem{iso5259} ISO/IEC 5259, Data quality for analytics and ML.\verifyc{}
-\bibitem{raha} Raha / Baran error detection and repair.\verifyc{}
-\bibitem{magellan} Magellan / DeepMatcher entity matching.\verifyc{}
+\bibitem{taubench} S. Yao et al. $\tau$-bench: a benchmark for tool-agent-user
+interaction. arXiv:2406.12045.
+\bibitem{iso5259} ISO/IEC 5259 (2024 series), Data quality for analytics and ML.
+\bibitem{raha} See~\cite{mahdavi2019} (Raha/Baran).
+\bibitem{magellan} See~\cite{konda2016} (Magellan/DeepMatcher).
 \bibitem{sarc} SARC: Governance-by-Architecture for Agentic AI (arXiv:2605.07728).\verifyc{}
 \bibitem{greensarc} Green SARC: predictive cost + carbon governance (arXiv:2606.15954).\verifyc{}
+% --- Taxonomy grounding (structure) ---
+\bibitem{rahmdo2000} E. Rahm and H. H. Do. Data cleaning: problems and current
+approaches. \emph{IEEE Data Eng. Bull.} 23(4), 2000.
+\bibitem{kim2003} W. Kim, B.-J. Choi, E.-K. Hong, S.-K. Kim, and D. Lee. A taxonomy
+of dirty data. \emph{Data Mining and Knowledge Discovery} 7(1), 2003.
+\bibitem{wangstrong1996} R. Y. Wang and D. M. Strong. Beyond accuracy: what data
+quality means to data consumers. \emph{J. Management Information Systems} 12(4), 1996.
+\bibitem{iso8000} ISO 8000, Data quality --- master data.\verifyc{}
+\bibitem{sambasivan2021} N. Sambasivan et al. ``Everyone wants to do the model work,
+not the data work'': data cascades in high-stakes AI. \emph{CHI} 2021.\verifyc{}
+% --- Prevalence anchors ---
+\bibitem{nagle2017} T. Nagle, T. C. Redman, and D. Sammon. Only 3\% of companies'
+data meets basic quality standards. \emph{Harvard Business Review}, 2017
+(Friday Afternoon Measurement).
+\bibitem{experian2017} Experian. Global data management benchmark reports, 2013--2017
+(perception survey).\verifyc{}
+\bibitem{li2013} X. Li, X. L. Dong, K. Lyons, W. Meng, and D. Srivastava. Truth
+finding on the deep web: is the problem solved? \emph{PVLDB} 6(2), 2013.
+\bibitem{curino2013} C. Curino, H. J. Moon, A. Deutsch, and C. Zaniolo. Automating
+the database schema evolution process. \emph{VLDB Journal} 22(1), 2013 (MediaWiki).
+% --- Calibration datasets (Tier-2) ---
+\bibitem{mahdavi2019} M. Mahdavi et al. Raha: a configuration-free error detection
+system. \emph{SIGMOD} 2019.
+\bibitem{konda2016} P. Konda et al. Magellan: toward building entity matching
+management systems. \emph{PVLDB} 9(12), 2016.
 \end{thebibliography}
 
 \end{document}
