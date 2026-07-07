@@ -49,7 +49,13 @@ Total live spend: **$5.1331**.
   `--verify` (`make gigo-verify`, per-cell tolerances), frozen `reference_summary.json`
   (192 cells), CALIBRATION.md stub. CI runs gigo-verify. Perf: spec loaded once per
   condition (was per-episode). 59 tests.
-- [ ] **Part 4 — Experiment execution kits**
+- [x] **Part 4 — Experiment execution kits** — `benchmarks/experiments.py` dispatcher
+  (mock stand-in $0; live arm gated with a clear TODO); 7 `.github/workflows/exp-*.yml`
+  (workflow_dispatch, secret-gated, artifact upload if:always, `results/<exp>-live`,
+  contents:write); 7 `reports/prereg/*.md` (frozen predictions, pass/kill, validity
+  precondition, budget cap, `<<HUMAN>>` marks). 68 tests.
+  **REMAINING (human item 2 territory):** arm-level LIVE agent wiring — the six arms
+  run mock only; wiring real Claude into arms B/C/D/F is the work before firing.
 - [ ] **Part 5 — The paper (compiles today)**
 - [ ] **Part 6 — Release hygiene**
 

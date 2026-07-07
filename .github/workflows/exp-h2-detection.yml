@@ -1,0 +1,65 @@
+name: exp-h2-detection
+
+# Manually triggered LIVE experiment kit (H2 (Detection asymmetry)). Real Claude — costs money.
+# Predictions are pre-registered in reports/prereg/h2-detection.md (frozen before any run).
+# Orchestration only; no experiment code, prompts, or config changed by this file.
+# Results -> results/h2-detection-live. Requires an ANTHROPIC_API_KEY repository secret.
+on:
+  workflow_dispatch:
+    inputs:
+      episodes:
+        description: "Episodes per condition"
+        required: true
+        default: "100"
+
+permissions:
+  contents: write
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check ANTHROPIC_API_KEY secret is present
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY repository secret is not set."
+            exit 1
+          fi
+          echo "ANTHROPIC_API_KEY is present."
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e ".[dev,live,gate]"
+      - name: Run experiment h2-detection (LIVE)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EPISODES: ${{ inputs.episodes }}
+        run: |
+          mkdir -p reports/exp
+          python -m benchmarks.experiments --exp h2-detection --arm live \
+            --episodes "$EPISODES" --out reports/exp/h2-detection_summary.json
+      - name: Upload experiment artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: exp-h2-detection-results
+          path: reports/exp/
+          if-no-files-found: error
+      - name: Commit results to results/h2-detection-live
+        env:
+          EPISODES: ${{ inputs.episodes }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B results/h2-detection-live
+          git add -f reports/exp/h2-detection_summary.json
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "h2-detection live results (${EPISODES} episodes, run ${RUN_ID})"
+          git push --force origin results/h2-detection-live
