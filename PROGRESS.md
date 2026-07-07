@@ -21,8 +21,29 @@ PREPARES but NEVER RUNS.
   sentence on literature-thin classes; 11 bibliography entries added. Datasets not
   vendored (multi-GB) → CI runs the literature/default path; `computed` rows render as
   flagged defaults naming the pending Tier-2 dataset. **Human item: the veto screen.**
-- [ ] **FINAL Part 1 — Audit fixes** (live arm wiring B/C/D/F, derive_phase0a_metrics,
-  zero-write test, 0b footnote, provenance SHAs, citation resolution)
+- [x] **FINAL Part 1 — Audit fixes.**
+  1. **Live arm wiring** — `src/sarc_dq/live_arms.py` (`apply_arm_live` mirrors the mock
+     arm structure exactly; real `claude-sonnet-5` agent + `claude-opus-4-8` payload-only
+     `AnthropicCritic`; per-arm spend from usage fields; `FakeAgent`/`FakeCritic` +
+     `make_live(fake=)` drive the whole path at $0). `harness.apply_arm` left
+     **byte-identical** → gigo-verify still passes (192 cells). `experiments.py --arm live`
+     now runs the live matrix (`--fake` = $0 CI); the "not wired" stub is gone.
+  2. **`scripts/derive_phase0a_metrics.py`** — derives 0a elasticity + clean-arm regret
+     from the committed `results/phase0-live` JSONL with provenance (branch, file,
+     commit `d853f7d`). Real values: **elasticity 0.000** (naive agent inelastic),
+     **clean_regret_median 2520** — vendored to `paper/data/phase0/phase0a_derived.summary.json`;
+     `make_macros` fills `\PZaElasticity`/`\PZaRegret` (0a cells no longer `[pending]`).
+     **This retires the 0a human-item candidate** (real, provenance-tracked, not the mock).
+  3. **Adversarial zero-write test** (`tests/test_zero_write.py`) — every source record
+     bit-identical after quarantine-substitute across all 8 classes (Prop 1 assumption).
+  4. **0b footnote** — pilot-table caption marks 0b elasticity diagnostic-only / invalid.
+  5. **Provenance SHAs** — `_provenance` blocks on all `paper/data/phase0/*.json` naming
+     branch + commit (0a `d853f7d`, 0b `fe504d1`, 0c `3fb4aa3`).
+  6. **Citations** — resolved ToolEmu (Ruan, ICLR 2024), τ-bench (Yao, 2406.12045),
+     ISO/IEC 5259 (2024), Raha (Mahdavi SIGMOD 2019), Magellan (Konda VLDB 2016),
+     AgentNoiseBench; inline `⟨VERIFY⟩` dropped on resolved cites. NoisyToolBench,
+     "Tools Fail", AgentSpec, MI9, ISO 8000, Experian, Sambasivan stay `⟨VERIFY⟩`.
+  78 tests; gigo mock + Phase 0 frozen both still verify.
 - [ ] **FINAL Part 2 — Pre-flight + FIRING_CHECKLIST.md + PR (base main), STOP**
 
 ---

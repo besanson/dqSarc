@@ -82,5 +82,11 @@
       "min": null,
       "max": null
     }
+  },
+  "_provenance": {
+    "source_branch": "results/phase0c-live",
+    "source_commit": "3fb4aa3fb30b1d7b450acc889fb9b42995b04346",
+    "source_file": "reports/SMOKE_TEST.summary.json",
+    "note": "vendored verbatim from the live results branch; extend-only"
   }
 }

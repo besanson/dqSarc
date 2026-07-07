@@ -98,12 +98,12 @@ narrative (\S\ref{sec:pilot}). (4) GIGO-Bench (\S\ref{sec:gigo}) and pre-registe
 H1--H4 (\S\ref{sec:results}).
 
 \section{Related work}
-\paragraph{Agent robustness under noise.} AgentNoiseBench\verifyc{}~\cite{agentnoisebench}
+\paragraph{Agent robustness under noise.} AgentNoiseBench~\cite{agentnoisebench}
 finds tool-side noise degrades agents more than user-side noise, and that strong
 reasoning models make \emph{confident} errors under corrupted tool feedback;
-NoisyToolBench\verifyc{}~\cite{noisytoolbench}, ToolEmu\verifyc{}~\cite{toolemu}, and
+NoisyToolBench\verifyc{}~\cite{noisytoolbench}, ToolEmu~\cite{toolemu}, and
 ``Tools Fail''\verifyc{}~\cite{toolsfail} study silent tool errors;
-$\tau$-bench / $\tau^2$-bench\verifyc{}~\cite{taubench} provide agentic task
+$\tau$-bench / $\tau^2$-bench~\cite{taubench} provide agentic task
 environments. These works inject \emph{generic} noise and measure \emph{task-success}
 deltas. Our delta is precise: we isolate the \emph{metadata-borne} channel
 (invisible-in-payload defects), price failures in \emph{currency} rather than
@@ -113,10 +113,10 @@ remediation.
 MI9\verifyc{}-class systems and LLM guardrails enforce constraints on what the agent
 is about to \emph{do}. SARC-DQ addresses the complementary \emph{input-side} gap:
 whether the evidence the action rests on is trustworthy.
-\paragraph{Data validation and DQ dimensions.} ISO/IEC 5259\verifyc{}~\cite{iso5259}
+\paragraph{Data validation and DQ dimensions.} ISO/IEC 5259~\cite{iso5259}
 frames data-quality dimensions; the data-cleaning benchmarks we use for Tier-2
-validation---the Raha/Baran suite\verifyc{}~\cite{raha}, multi-source-conflict
-datasets, Magellan/DeepMatcher\verifyc{}~\cite{magellan} entity matching, and ALFRED
+validation---the Raha/Baran suite~\cite{raha}, multi-source-conflict
+datasets, Magellan/DeepMatcher~\cite{magellan} entity matching, and ALFRED
 archival vintages\verifyc{}---supply labeled real errors.
 \paragraph{Taxonomy grounding.} The eight corruption classes are not invented: they
 map onto the canonical data-quality taxonomies. Rahm and Do~\cite{rahmdo2000} split
@@ -234,16 +234,21 @@ run & prompt & scored & verdict & agent-ADR & oracle-ADR & elasticity \\
 \end{tabular}
 \caption{Phase 0 pilot (real live numbers, generated from the results branches).
 Behavioral marker/judge AUC on 0c: \PZcMarkerAuc/\PZcJudgeAuc; explicit data-flags
-\PZcFlags.}
+\PZcFlags. \emph{0b is diagnostic only}: its elasticity (\PZbElasticity,
+$n{=}\PZbScored$ scored pairs) comes from an \textbf{invalid} run --- the
+instrumentation failure the Phase 0c validity gate was built to catch --- and is
+not evidence; it is reported for methods integrity, never interpreted.}
 \end{table}
 
 \paragraph{Silence, and the incompetence shield.} On the valid run (0c) the competent
 agent acts on the stale price \PZcAdr{} of the time---matching the metadata-blind
 oracle (\PZcOracleAdr)---while its transcripts carry no discriminating signal
 (marker AUC \PZcMarkerAuc, judge AUC \PZcJudgeAuc, both at chance; flags \PZcFlags).
-The naive agent (0a) converts \PZaAdr: it is \emph{inelastic}, barely tracking the
-price, and is thus shielded from the defect only by being bad at the task. Making the
-agent competent (elasticity \PZcElasticity) made it vulnerable.
+The naive agent (0a) converts \PZaAdr: it is \emph{inelastic} (decision elasticity
+\PZaElasticity, derived from the 0a log; clean-arm regret \$\PZaRegret{} versus the
+oracle), barely tracking the price, and is thus shielded from the defect only by
+being bad at the task. Making the agent competent (elasticity \PZcElasticity) made
+it vulnerable.
 
 \paragraph{Methods integrity: GIGO in our own pipeline.} Run 0b returned
 \texttt{SUPPORTED} on only \PZbScored/100 scored pairs---the agent's replies were
@@ -298,7 +303,7 @@ at which competent action is silently converted into loss.
 This is the only section using risk language. Loss classes map to EU AI Act Article
 10 (data governance) obligations and to risk tiers: metadata-borne evidence defects
 are precisely the ``examination in view of possible biases'' and data-quality
-management the Act requires, and ISO/IEC 5259\verifyc{} supplies the dimension
+management the Act requires, and ISO/IEC 5259~\cite{iso5259} supplies the dimension
 vocabulary. SARC-DQ's versioned evidence sets are auditable artifacts for such
 obligations.
 
@@ -325,14 +330,16 @@ land on \texttt{results/<exp>-live}. Seeds, splits, and metric definitions are i
 \texttt{benchmarks/gigo/SPEC.md}.
 
 \begin{thebibliography}{99}
-\bibitem{agentnoisebench} AgentNoiseBench (arXiv:2602.11348, ICML 2026).\verifyc{}
+\bibitem{agentnoisebench} AgentNoiseBench. arXiv:2602.11348 (ICML 2026).
 \bibitem{noisytoolbench} NoisyToolBench.\verifyc{}
-\bibitem{toolemu} ToolEmu.\verifyc{}
+\bibitem{toolemu} Y. Ruan et al. Identifying the risks of LM agents with an
+LM-emulated sandbox (ToolEmu). \emph{ICLR} 2024. arXiv:2309.15817.
 \bibitem{toolsfail} ``Tools Fail'': silent tool errors.\verifyc{}
-\bibitem{taubench} $\tau$-bench / $\tau^2$-bench.\verifyc{}
-\bibitem{iso5259} ISO/IEC 5259, Data quality for analytics and ML.\verifyc{}
-\bibitem{raha} Raha / Baran error detection and repair.\verifyc{}
-\bibitem{magellan} Magellan / DeepMatcher entity matching.\verifyc{}
+\bibitem{taubench} S. Yao et al. $\tau$-bench: a benchmark for tool-agent-user
+interaction. arXiv:2406.12045.
+\bibitem{iso5259} ISO/IEC 5259 (2024 series), Data quality for analytics and ML.
+\bibitem{raha} See~\cite{mahdavi2019} (Raha/Baran).
+\bibitem{magellan} See~\cite{konda2016} (Magellan/DeepMatcher).
 \bibitem{sarc} SARC: Governance-by-Architecture for Agentic AI (arXiv:2605.07728).\verifyc{}
 \bibitem{greensarc} Green SARC: predictive cost + carbon governance (arXiv:2606.15954).\verifyc{}
 % --- Taxonomy grounding (structure) ---

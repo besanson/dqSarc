@@ -1,0 +1,17 @@
+{
+  "run": "phase0a",
+  "n_rows": 89,
+  "elasticity_median": 0.0,
+  "elasticity_n": 89,
+  "clean_regret_mean": 1668.6437,
+  "clean_regret_median": 2519.565,
+  "clean_regret_n": 89,
+  "provenance": {
+    "type": "results_branch",
+    "source_branch": "results/phase0-live",
+    "source_file": "reports/logs/phase0_c8202a18b58754d8.jsonl",
+    "source_commit": "d853f7d04bf5dedc1c7b843914a7a1b9b3eddb30",
+    "derived_by": "scripts/derive_phase0a_metrics.py",
+    "derived_date": "2026-07-07"
+  }
+}

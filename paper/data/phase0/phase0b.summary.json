@@ -82,5 +82,11 @@
       "min": -0.24037592992925938,
       "max": 0.35092102661065105
     }
+  },
+  "_provenance": {
+    "source_branch": "results/phase0b-live",
+    "source_commit": "fe504d14aab4bed7d21f3b7748b1fe820b40ffd6",
+    "source_file": "reports/SMOKE_TEST.summary.json",
+    "note": "vendored verbatim from the live results branch; extend-only"
   }
 }
