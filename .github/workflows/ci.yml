@@ -21,11 +21,11 @@ jobs:
       - name: Install
         run: pip install -e ".[dev]"
       - name: Lint
-        run: ruff check src tests benchmarks
+        run: ruff check src tests benchmarks scripts
       - name: Format check
-        run: ruff format --check src tests benchmarks
+        run: ruff format --check src tests benchmarks scripts
       - name: Type check
-        run: mypy src/sarc_dq benchmarks
+        run: mypy src/sarc_dq benchmarks scripts
       - name: Test
         run: pytest -q
       # The Phase 0 pipeline must stay runnable end-to-end at $0 (mock arm), so a
@@ -39,3 +39,6 @@ jobs:
       # GIGO-Bench reference must not drift (Green SARC discipline).
       - name: GIGO-Bench verify against frozen reference
         run: make gigo-verify
+      # The research-calibrated taxonomy artifacts must be regenerated, not hand-edited.
+      - name: Taxonomy calibration up to date
+        run: make calibrate-check

@@ -1,6 +1,35 @@
-# PROGRESS — sarc-dq Build-to-Complete campaign
+# PROGRESS — sarc-dq campaign tracker
 
-Resume rule: a fresh session reads this file + the BUILD-TO-COMPLETE brief and
+**Active campaign: MASTER BRIEF FINAL (`CLAUDE_CODE_MASTER_BRIEF_FINAL.md`)** — takes
+sarc-dq from CI-green-with-[pending] to arXiv-ready v1.0. Parts 0–2 this session →
+human merges + fires workflows → "Part 3" in a fresh session after results land.
+Branch `claude/new-session-f1dhsq` off `main`; PR base `main`. Standing rules: no
+fabricated result (values flow from committed `reference_summary.json` via macros;
+missing/failed render `[pending]` or reported failed); Phase 0 frozen (extend-only);
+PREREG verdicts computed by committed code against frozen thresholds (no post-hoc
+edits); the DRAFT watermark is removed only by `make final`, which this campaign
+PREPARES but NEVER RUNS.
+
+### FINAL campaign — Part status
+- [x] **FINAL Part 0 — Research-calibrated taxonomy** — `scripts/calibrate_taxonomy.py`
+  (deterministic, $0, `--check` in CI) emits `src/sarc_dq/specs/taxonomy_v1_calibrated.yaml`
+  (every parameter carries a provenance block: computed | literature | default+flagged),
+  rewrites `benchmarks/gigo/CALIBRATION.md`, and writes `reports/TAXONOMY_VETO_SCREEN.md`
+  (≤10-min author veto). Paper: "Taxonomy grounding" subsection (Rahm&Do, Kim,
+  Wang&Strong, ISO 8000, Sambasivan) + prevalence anchors (HBR 47%, Experian 17–32%,
+  Li/Dong ~70%) + realism band + non-arbitrary-parameter methods sentence + Limitations
+  sentence on literature-thin classes; 11 bibliography entries added. Datasets not
+  vendored (multi-GB) → CI runs the literature/default path; `computed` rows render as
+  flagged defaults naming the pending Tier-2 dataset. **Human item: the veto screen.**
+- [ ] **FINAL Part 1 — Audit fixes** (live arm wiring B/C/D/F, derive_phase0a_metrics,
+  zero-write test, 0b footnote, provenance SHAs, citation resolution)
+- [ ] **FINAL Part 2 — Pre-flight + FIRING_CHECKLIST.md + PR (base main), STOP**
+
+---
+
+## Prior campaign (Build-to-Complete) — merged to main via PR #6
+
+Resume rule: a fresh session reads this file + the brief and
 continues from the first unfinished Part. Everything must stay mypy --strict
 clean, ruff clean, pytest green, CI green at $0. The Phase 0 record is frozen
 (extend-only): the three `results/*-live` branches, both PREREG files, the

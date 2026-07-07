@@ -1,7 +1,7 @@
 LINT_PATHS = src tests benchmarks
 
 .PHONY: install test lint format-check format typecheck quality smoke reproduce verify \
-        gigo-reproduce gigo-verify paper clean
+        gigo-reproduce gigo-verify calibrate calibrate-check paper clean
 
 install:
 	pip install -e ".[dev]"
@@ -45,6 +45,14 @@ gigo-reproduce:
 
 gigo-verify:
 	python -m benchmarks.gigo.reproduce --verify benchmarks/gigo/reference_summary.json
+
+# Regenerate the research-calibrated taxonomy (v1 YAML + CALIBRATION.md + veto screen).
+calibrate:
+	python scripts/calibrate_taxonomy.py
+
+# CI: fail if the committed calibration artifacts are stale.
+calibrate-check:
+	python scripts/calibrate_taxonomy.py --check
 
 # Regenerate the paper's result macros from all reference_summary.json files and
 # compile (needs a LaTeX toolchain; CI uses xu-cheng/latex-action).
