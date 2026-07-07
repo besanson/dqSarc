@@ -44,7 +44,21 @@ PREPARES but NEVER RUNS.
      AgentNoiseBench; inline `⟨VERIFY⟩` dropped on resolved cites. NoisyToolBench,
      "Tools Fail", AgentSpec, MI9, ISO 8000, Experian, Sambasivan stay `⟨VERIFY⟩`.
   78 tests; gigo mock + Phase 0 frozen both still verify.
-- [ ] **FINAL Part 2 — Pre-flight + FIRING_CHECKLIST.md + PR (base main), STOP**
+- [x] **FINAL Part 2 — Pre-flight + firing checklist + PR.** Pre-flight green at $0:
+  full mock matrix + `gigo-verify` (192 cells), live path via `--arm live --fake`,
+  `calibrate-check`, Phase 0 frozen record. `reports/FIRING_CHECKLIST.md` — per
+  experiment: workflow name, firing order (h1-full, h1-ladder, h2, h4, h3, ablations,
+  tier2), budget arithmetic from the Phase 0 per-turn anchor (\$0.010 Sonnet / \$0.030
+  Opus critic / \$0.050 Fable) vs each PREREG cap (flags h1-ladder's ~\$298 > \$250 →
+  subsample), the 80%-scored validity precondition, fable-5's non-ZDR-key + refusal-
+  class note, and 2–3 eyeball numbers per branch. **STOP after the PR is open** — the
+  human merges and fires the seven workflows; "Part 3" resumes in a fresh session.
+
+### Human items remaining (target: exactly four)
+1. **Taxonomy v1 author veto** — `reports/TAXONOMY_VETO_SCREEN.md` (≤10 min; silence = accept).
+2. **Fire the seven experiment workflows** — `reports/FIRING_CHECKLIST.md` (spend-gated, $1000 envelope).
+3. **Claims sign-off** — review the compiled paper; only `make final` lifts the DRAFT watermark (prepared in Part 3, never run here).
+4. **arXiv upload** — from the author's account (Part 3 produces the `make arxiv` tarball + `CLAIMS_CHECKLIST.md`).
 
 ---
 
