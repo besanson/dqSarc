@@ -103,17 +103,28 @@ src/sarc_dq/
   config.py        frozen run config, model-ID pins, config-hash + seed registry
   records.py       EvidenceRecord: payload/metadata split, versioned evidence ids
   substrate.py     priced newsvendor IBP episode (paired counterfactuals)
-  injectors/       corruption framework + Phase 0 stale-price class (channel-tagged)
+  injectors/       Phase 0 stale-price class (channel-tagged) — frozen
+  taxonomy/        corruption taxonomy v0: framework + 8 channel/site-tagged classes
+  dq_predicates.py 6 parameterized DQ predicates (freshness, lineage, …)
+  dq_spec.py       YAML constraint-spec loader (sarc-governance style)
+  specs/           dq_predicates.yaml — the constraint spec
+  gate.py          PreActionGate + GovernedBuffer (downstream-only remediation)
+  harness.py       6 mitigation arms (A–F) + matrix runner with H4 recovery
   agent/           payload-only decision interface; mock + live Claude agents
   judge/           LLM-judge doubt scoring; mock + live; 20 hand-checkable cases
   markers.py       lexical uncertainty / data-flag markers
   metrics.py       loss, ADR, discrimination AUC, paired-seed bootstrap CIs
   phase0.py        the Phase 0 protocol (dual-channel logging)
   report.py        renders reports/SMOKE_TEST.md from logged results only
-benchmarks/phase0_smoke.py   runnable entrypoint + --verify
-tests/             28 deterministic tests
-reports/           SMOKE_TEST.md, GATE0_BRIEF.md, frozen reference_smoke.json
-docs/              architecture, predicates, relationship-to-{sarc,greensarc}
+benchmarks/
+  phase0_smoke.py  Phase 0 runnable entrypoint + --verify
+  gigo/            GIGO-Bench: SPEC.md, reproduce.py (--verify), reference (192 cells)
+  experiments.py   H1–H4 dispatcher (mock $0; live arm gated)
+tests/             68 deterministic tests
+reports/           SMOKE_TEST.md, PHASE0_CLOSEOUT.md, prereg/, frozen reference_smoke.json
+paper/             macro-driven LaTeX working paper (make paper → sarc-dq.pdf)
+docs/              architecture, predicates, benchmark, relationship-to-{sarc,greensarc}
+.github/workflows/ ci, phase0-live, exp-*, paper
 ```
 
 ## Reproducibility
@@ -138,6 +149,23 @@ items genuinely need a human:
    feeds the paper macros.
 3. **Claims sign-off** — review the compiled paper and lift the DRAFT watermark
    once the results land and the claims are owned.
+
+## The paper
+
+The working paper lives in [`paper/`](paper/) and compiles today:
+
+```bash
+make paper            # regenerate result macros + compile → paper/sarc-dq.pdf
+```
+
+**No result value is hand-authored.** `paper/scripts/make_macros.py` reads every
+`paper/data/**/reference_summary.json` and emits `generated/results.tex`; a value
+that does not exist yet renders `\pending{<id>}` → "**—** `[pending: id]`". The
+Phase 0 pilot numbers are real (vendored from the `results/*-live` branches);
+H1–H4 stay pending until the experiment workflows are fired. Every page carries a
+**DRAFT** watermark until claims sign-off, and citations marked `⟨VERIFY⟩` are
+unverified. CI builds the PDF on every `paper/**` change
+([`.github/workflows/paper.yml`](.github/workflows/paper.yml)).
 
 ## License
 

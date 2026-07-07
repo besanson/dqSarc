@@ -64,7 +64,27 @@ Total live spend: **$5.1331**.
   render `\pending{id}` → "— [pending: id]". `paper/Makefile` + `.github/workflows/paper.yml`
   (regenerate macros → latex-action → PDF artifact). Statically validated: all custom
   macros defined, braces balanced, single document env.
-- [ ] **Part 6 — Release hygiene**
+- [x] **Part 6 — Release hygiene** — `docs/benchmark.md` added (GIGO-Bench
+  orientation → SPEC.md is authority); `docs/` now covers architecture, predicates,
+  benchmark, relationship-to-{sarc,greensarc}. **LICENSE Apache→MIT** to resolve the
+  mismatch (pyproject/CITATION/README all declared MIT; only the LICENSE file was
+  Apache — aligned to the majority declaration). CITATION.cff present, version 0.1.0
+  consistent across pyproject/CITATION. `pip install -e .` clean; `import sarc_dq` OK.
+  README final pass: repository-layout block refreshed to the full build (taxonomy,
+  gate, harness, gigo, paper), 68 tests, paper build section added.
+
+## Definition of done — status
+
+- `make paper` compiles (validated statically: macros defined, braces balanced, one
+  document env; CI uses latex-action). Full prose + real Phase 0 numbers + `[pending]`
+  everywhere else + DRAFT watermark. ✅
+- No fabricated result: every printed value flows from `reference_summary.json` via
+  generated macros; unrun renders `[pending]`. ✅
+- Phase 0 frozen record intact: `--prompt naive` reproduces `reports/reference_smoke.json`
+  (config_hash `c8202a18b58754d8`, verify OK) after the full build. ✅
+- Quality gate: ruff clean, `mypy src/sarc_dq benchmarks paper/scripts` clean, pytest 68
+  green, matrix/gigo mock paths at $0. ✅
+- Exactly three human items named (below). ✅
 
 ## Key decisions
 
