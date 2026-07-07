@@ -16,17 +16,21 @@ Pre-Action Gate with *metadata access* does.
 >
 > **Alpha, research artifact — this is *not* a turnkey production system.**
 >
-> **What it *is* right now:** the repository scaffold + the **Phase 0 smoke test**
-> — the first hard-stop gate, which asks a single question: *does the
-> silent-failure effect exist at all?* The harness runs end-to-end, is typed
-> (`mypy --strict`), tested, and green under CI, and produces a watermarked
-> `reports/SMOKE_TEST.md`.
+> **What it *is* right now:** **Phase 0 is closed and SUPPORTED** (see
+> [`reports/PHASE0_CLOSEOUT.md`](reports/PHASE0_CLOSEOUT.md)) on a real 3-run live
+> pilot ($5.13, `claude-sonnet-5`). The `build-to-complete` campaign then adds, on
+> top of that pilot: the corruption taxonomy v0 + DQ predicate schema, the six-arm
+> harness and DQ Pre-Action Gate, the frozen GIGO-Bench spec, experiment execution
+> kits (built, not run), and a compiling working paper whose every result value is
+> macro-generated from `reference_summary.json` files. Progress is tracked in
+> [`PROGRESS.md`](PROGRESS.md). Everything is typed (`mypy --strict`), tested, and
+> green under CI at **$0** — every arm and every injector has a deterministic mock
+> path.
 >
-> **What it *is not* yet:** the DQ predicate family, the Pre-Action Gate, the full
-> corruption taxonomy, GIGO-Bench, and the H1–H4 experiments all live *behind*
-> later gates and are **not built yet**. No claim in this repo about real Claude
-> behaviour has been measured — the only numbers produced so far come from an
-> **offline mock agent** and are labelled, loudly, as a pipeline dry-run.
+> **What it *is not* yet:** the H1–H4 experiments have **not been run** — their
+> result cells render `—` `[pending]` under a DRAFT watermark until the workflows
+> are fired. No H1–H4 number in this repo is invented; the only measured numbers
+> are the Phase 0 pilot's. Three human items remain (see bottom of this README).
 
 ## The conversion chain
 
@@ -57,23 +61,31 @@ pip install -e ".[dev,live]" && export ANTHROPIC_API_KEY=sk-...
 python -m benchmarks.phase0_smoke --arm live --episodes 100
 ```
 
-## Phase 0 pipeline status (mock arm — **not a scientific result**)
+## Headline — Phase 0 pilot (real live numbers, run 0c)
 
-These numbers come from the deterministic, offline **mock** agent + judge. They
-exist only to prove the metrics and kill-criterion wiring are correct, and must
-not be cited. The real H1 answer comes from the live arm.
+Source: `results/phase0c-live` → `paper/data/phase0/reference_summary.json`
+(`claude-sonnet-5` agent, `claude-haiku-4-5` judge). This is a **pilot**, not the
+GIGO-Bench matrix.
 
-| metric (mock dry-run) | value |
+| metric (0c, valid: 100/100 scored) | value |
 |---|---|
-| Action Defect Rate | 43.0% |
-| Behavioral marker AUC | 0.500 |
+| Action Defect Rate (agent) | **42%** |
+| Action Defect Rate (metadata-blind oracle) | 43% |
+| Decision elasticity (agent tracks the optimum) | 0.992 |
+| Behavioral marker AUC | 0.505 |
 | LLM-judge doubt AUC | 0.500 |
-| Kill-criterion verdict | SUPPORTED (pipeline shape only) |
-| API spend | $0.0000 |
+| Explicit data-flag rate | 0% |
+| Kill-criterion verdict | **SUPPORTED** |
 
-A metadata-blind agent leaves *no lexical trace of doubt* (AUC = chance) while its
-actions are *materially wrong* (high ADR) — the expected signature of a silent
-failure, and exactly what the live run will test on real models.
+**Competence buys conversion, not detection.** The *naive* agent (run 0a) is
+inelastic — it barely tracks the price, so a stale price doesn't convert (ADR 0%),
+protected only by being bad at the task. The *policy-instructed* agent (0c) is
+elastic (0.992) and therefore inherits the corruption (ADR 42%) while expressing
+no doubt (AUC ≈ chance). Making the agent better made it more vulnerable, because
+the discriminating signal was never in its context. A methods-integrity aside: run
+0b returned `SUPPORTED` on only **5/100** scored pairs — garbage-in-garbage-out in
+our *own* pipeline — which is exactly why the harness now has a validity gate
+(`INVALID` if scored < 80/100). Full story: `reports/PHASE0_CLOSEOUT.md`.
 
 ## How it maps to the source repos
 
@@ -111,6 +123,21 @@ Every run is seeded, logs its `config_hash`, and writes a dual-channel
 ADR / AUC / flag-rate against the frozen `reports/reference_smoke.json`. Nothing
 is ever tuned on evaluation seeds; the mock reference is frozen before it is
 checked. All report numbers come from logged results — none is hand-entered.
+
+## Three human items
+
+Everything buildable without live compute or human judgment is automated. Three
+items genuinely need a human:
+
+1. **Taxonomy v0 revision** — answer the ten questions in
+   [`reports/TAXONOMY_REVISION_GUIDE.md`](reports/TAXONOMY_REVISION_GUIDE.md);
+   each answer maps to injector parameters. The taxonomy is *scaffolding*, not the
+   contribution.
+2. **Fire the experiment workflows** — the Phase 4 kits (`.github/workflows/exp-*.yml`)
+   are secret-gated and print spend; each writes a `results/<exp>-live` branch that
+   feeds the paper macros.
+3. **Claims sign-off** — review the compiled paper and lift the DRAFT watermark
+   once the results land and the claims are owned.
 
 ## License
 

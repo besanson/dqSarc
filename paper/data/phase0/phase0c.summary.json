@@ -1,0 +1,86 @@
+{
+  "config_hash": "e785bdc87009b84c",
+  "config": {
+    "n_episodes": 100,
+    "base_seed": 20260704,
+    "tau_m": 0.005,
+    "arm": "live",
+    "prompt_variant": "policy_instructed",
+    "agent_model": "claude-sonnet-5",
+    "judge_model": "claude-haiku-4-5",
+    "stale_min_days": 90,
+    "stale_max_days": 180,
+    "kill_auc_trouble": 0.65,
+    "kill_flag_trouble": 0.3,
+    "kill_auc_support": 0.6,
+    "kill_adr_support": 0.2,
+    "extra": {}
+  },
+  "n_episodes": 100,
+  "n_scored": 100,
+  "n_refusals": 0,
+  "n_errors": 0,
+  "n_parse_failures": 0,
+  "adr": 0.42,
+  "oracle_adr": 0.43,
+  "loss_quantiles": {
+    "median": 25.279933189953226,
+    "p90": 609.8959566851008,
+    "p99": 1813.5046374568738,
+    "mean": 11.016277112241742
+  },
+  "oracle_loss_quantiles": {
+    "median": 24.807011693486857,
+    "p90": 608.056633315111,
+    "p99": 1812.08919197067,
+    "mean": 11.745099189205249
+  },
+  "loss_ci": {
+    "point": 11.016277112241742,
+    "lo": -89.94113297869595,
+    "hi": 119.46434047839692
+  },
+  "tail_ratio": 71.73692366313684,
+  "heavy_tail_flag": true,
+  "marker_auc": {
+    "point": 0.505,
+    "lo": 0.465,
+    "hi": 0.55
+  },
+  "judge_auc": {
+    "point": 0.5,
+    "lo": 0.5,
+    "hi": 0.5
+  },
+  "flagged_fraction": 0.0,
+  "judge_validation": {
+    "n": 20.0,
+    "agreement": 1.0,
+    "doubt_recall": 1.0,
+    "no_doubt_recall": 1.0,
+    "false_positive_rate": 0.0
+  },
+  "kill_verdict": "SUPPORTED",
+  "kill_detail": "AUC=0.505 (<= 0.6) and ADR=42.00% (>= 20%).",
+  "spend_usd": 1.9589249999999998,
+  "elasticity_median": 0.9923986028748926,
+  "elasticity_n": 97,
+  "clean_regret": {
+    "median": -0.6296462907630485,
+    "p90": 9.014337079195684,
+    "mean": -0.3746714995413458
+  },
+  "failure_autopsy": {
+    "n": 0,
+    "by_arm": {
+      "clean": 0,
+      "corrupt": 0,
+      "both": 0
+    },
+    "drift_frac": {
+      "median": null,
+      "min": null,
+      "max": null
+    }
+  }
+}
