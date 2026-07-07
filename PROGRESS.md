@@ -30,7 +30,13 @@ Total live spend: **$5.1331**.
 ## Part status
 
 - [x] **Part 0 — Closeout** — PHASE0_CLOSEOUT.md, README rewrite (register + is/is-not + 0c table), consolidated `paper/data/phase0/reference_summary.json`. Elasticity JSON fix already merged in 0c. *(in progress → will flip to done at commit)*
-- [ ] **Part 1 — Taxonomy v0 + DQ predicate schema**
+- [x] **Part 1 — Taxonomy v0 + DQ predicate schema** — `sarc_dq/taxonomy/` (generalized
+  framework + 8 classes, channel/site/rate/ground-truth; Phase 0 `injectors/` left
+  frozen); `sarc_dq/dq_predicates.py` (6 parameterized predicates) + `dq_spec.py`
+  loader over `specs/dq_predicates.yaml` (sarc-governance style); TAXONOMY_V0.md
+  (REVISION-REQUESTED) + TAXONOMY_REVISION_GUIDE.md (10 questions). PyYAML in
+  `[gate]`/`[dev]`. 51 tests. **v0 predicate gaps (intentional):** silent_unit_change,
+  duplicate_vendor_conflicting_terms, plausible_outlier — flagged in the guide.
 - [ ] **Part 2 — Full harness (6 arms) + DQ Pre-Action Gate**
 - [ ] **Part 3 — GIGO-Bench freeze**
 - [ ] **Part 4 — Experiment execution kits**

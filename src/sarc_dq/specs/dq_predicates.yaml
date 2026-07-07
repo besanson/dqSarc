@@ -1,0 +1,94 @@
+# SARC-DQ constraint specification — DQ predicate family (taxonomy v0)
+#
+# Authored in the sarc-governance YAML style (id / class / verif / response /
+# predicate / operating_point). PARAMETERIZED: a taxonomy revision edits the
+# params here, not the Python. `targets` documents which taxonomy-v0 classes each
+# constraint is designed to catch (H2 channel in brackets).
+#
+# class:    hard | soft | escalation
+# verif:    PAG (Pre-Action Gate) | AATM (Action-Time Monitor) | PAA (Post-Action Auditor)
+# response: block | degrade | escalate | quarantine_substitute
+
+constraints:
+  - id: c_freshness
+    class: hard
+    verif: PAG
+    response: quarantine_substitute
+    predicate:
+      name: freshness
+      params:
+        max_age_days: 30
+    operating_point: 30
+    targets: [stale_master_data]        # metadata-borne
+    description: >-
+      Quarantine any evidence record older than max_age_days and substitute a
+      fresh value from the governed buffer if one is available.
+
+  - id: c_golden_unique
+    class: hard
+    verif: PAG
+    response: quarantine_substitute
+    predicate:
+      name: golden_record_unique
+      params: {}
+    operating_point: 1
+    targets: [superseded_golden_record]  # metadata-borne
+    description: >-
+      Block acting on a record that has a superseded version readable alongside
+      the current golden; substitute the current-golden value.
+
+  - id: c_cross_source
+    class: escalation
+    verif: PAG
+    response: escalate
+    predicate:
+      name: cross_source_consistent
+      params:
+        tolerance: 0.02
+        field: unit_cost
+    operating_point: 0.02
+    targets: [cross_source_contradiction]  # payload-visible
+    description: >-
+      Escalate when two sources disagree on the same key beyond the relative
+      tolerance; a human resolves which source is authoritative.
+
+  - id: c_schema
+    class: hard
+    verif: PAG
+    response: block
+    predicate:
+      name: schema_conformant
+      params:
+        fields:
+          unit_cost: float
+    operating_point: 1
+    targets: [schema_drift, missing_mandatory_field]  # payload-visible
+    description: >-
+      Block records whose site field is renamed or retyped away from the
+      registered schema.
+
+  - id: c_complete
+    class: hard
+    verif: PAG
+    response: block
+    predicate:
+      name: complete
+      params:
+        required_fields: [sku, unit_cost, currency]
+    operating_point: 1
+    targets: [missing_mandatory_field]  # payload-visible
+    description: >-
+      Block records missing any mandatory field.
+
+  - id: c_lineage
+    class: soft
+    verif: PAA
+    response: escalate
+    predicate:
+      name: lineage_present
+      params: {}
+    operating_point: 1
+    targets: [plausible_outlier]  # metadata-borne (lineage is the only tell)
+    description: >-
+      Flag (post-action) any admitted record lacking provenance; a plausible
+      outlier is only catchable via lineage, so absence of lineage is itself a risk.
