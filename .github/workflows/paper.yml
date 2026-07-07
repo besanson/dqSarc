@@ -1,0 +1,33 @@
+name: paper
+
+on:
+  push:
+    paths:
+      - "paper/**"
+      - ".github/workflows/paper.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Regenerate result macros from the reference_summary.json files so no result
+      # value is hand-authored; missing values render [pending].
+      - name: Generate result macros
+        run: python paper/scripts/make_macros.py
+      - name: Compile the working paper
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: paper
+          root_file: sarc-dq.tex
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sarc-dq-paper
+          path: paper/sarc-dq.pdf
+          if-no-files-found: error

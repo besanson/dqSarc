@@ -1,6 +1,7 @@
 LINT_PATHS = src tests benchmarks
 
-.PHONY: install test lint format-check format typecheck quality smoke reproduce verify clean
+.PHONY: install test lint format-check format typecheck quality smoke reproduce verify \
+        gigo-reproduce gigo-verify paper clean
 
 install:
 	pip install -e ".[dev]"
@@ -36,6 +37,20 @@ reproduce: smoke
 
 verify:
 	python -m benchmarks.phase0_smoke --verify reports/reference_smoke.json
+
+# GIGO-Bench (Part 3, frozen). reproduce runs the full class×rate×arm matrix;
+# verify re-runs and checks per-cell tolerances against the committed reference.
+gigo-reproduce:
+	python -m benchmarks.gigo.reproduce --out artifacts/gigo_summary.json
+
+gigo-verify:
+	python -m benchmarks.gigo.reproduce --verify benchmarks/gigo/reference_summary.json
+
+# Regenerate the paper's result macros from all reference_summary.json files and
+# compile (needs a LaTeX toolchain; CI uses xu-cheng/latex-action).
+paper:
+	python paper/scripts/make_macros.py
+	$(MAKE) -C paper
 
 clean:
 	rm -rf artifacts dist build .pytest_cache .mypy_cache .ruff_cache *.egg-info
