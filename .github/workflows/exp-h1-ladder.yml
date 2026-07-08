@@ -35,6 +35,14 @@ jobs:
           python-version: "3.12"
       - name: Install
         run: pip install -e ".[dev,live,gate]"
+      - name: Seed resume from prior partial results (if any)
+        run: |
+          mkdir -p reports/exp
+          git fetch origin "results/h1-ladder-live" --depth=1 2>/dev/null || true
+          git show "origin/results/h1-ladder-live:reports/exp/h1-ladder_summary.json" \
+            > "reports/exp/h1-ladder_summary.json" 2>/dev/null \
+            && echo "resuming from prior partial results" \
+            || echo "fresh run (no prior partial)"
       - name: Run experiment h1-ladder (LIVE)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -42,7 +50,8 @@ jobs:
         run: |
           mkdir -p reports/exp
           python -m benchmarks.experiments --exp h1-ladder --arm live \
-            --episodes "$EPISODES" --out reports/exp/h1-ladder_summary.json
+            --episodes "$EPISODES" --concurrency 8 --max-minutes 320 \
+            --out reports/exp/h1-ladder_summary.json
       - name: Upload experiment artifacts
         if: always()
         uses: actions/upload-artifact@v4

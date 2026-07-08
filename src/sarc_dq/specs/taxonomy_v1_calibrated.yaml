@@ -2,7 +2,6 @@
 # Taxonomy v1: every parameter carries a provenance block.
 # provenance.type: computed | literature | default (default => flagged).
 version: v1
-generated: 2026-07-07
 classes:
   stale_master_data:
     default_rate:
