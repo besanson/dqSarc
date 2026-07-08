@@ -13,6 +13,16 @@ the results branch before firing the next.
 - `make calibrate-check` — taxonomy v1 provenance up to date ✅
 - Phase 0 frozen record still verifies (`--prompt naive`) ✅
 
+**Runner robustness (built in).** The live runner runs episodes **concurrently**
+(`--concurrency 8`, so a kit finishes in a fraction of the old sequential time),
+**checkpoints per condition**, and **resumes** from the results branch on a re-run —
+so if a run is interrupted (GitHub's 6h ceiling, or the account runs out of
+credits), just **re-fire the same workflow** and it picks up where it left off, never
+re-paying for completed cells. A `--max-minutes 320` budget stops it cleanly before
+the 6h cutoff, and an API-error burst (e.g. credit exhaustion) aborts gracefully with
+partial results committed. If a run stops early, its summary carries `stopped_early`
+with the reason.
+
 **Validity precondition (all experiments).** A condition is **INVALID** (no verdict
 read) if fewer than **80%** of its paired episodes score — the Phase 0c gate,
 generalized. Refusals and parse failures are their own outcome classes, excluded

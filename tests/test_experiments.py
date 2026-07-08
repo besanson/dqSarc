@@ -27,6 +27,60 @@ def test_live_fake_path_runs_at_zero_dollars() -> None:
     assert cell["C"]["detection_rate"] > 0.0 and cell["D"]["detection_rate"] > 0.0
 
 
+def test_live_resumes_and_checkpoints(tmp_path) -> None:
+    # First run leaves a checkpoint file; a second run resumes (no recompute) and the
+    # summary is unchanged. Concurrency>1 must not change results (deterministic seeds).
+    out = tmp_path / "h2.json"
+    r1 = run(
+        "h2-detection", n_episodes=6, arm_mode="live", fake=True, concurrency=4, out_path=str(out)
+    )
+    assert out.exists() and r1["cells_done"] == r1["cells_total"]
+    r2 = run(
+        "h2-detection", n_episodes=6, arm_mode="live", fake=True, concurrency=1, out_path=str(out)
+    )
+    assert r2["matrix"] == r1["matrix"]  # resumed: identical, concurrency-invariant
+
+
+def test_live_deadline_stops_gracefully(tmp_path) -> None:
+    out = tmp_path / "h1.json"
+    r = run(
+        "h1-full", n_episodes=4, arm_mode="live", fake=True, max_minutes=0.0, out_path=str(out)
+    )
+    # A zero budget stops before doing work, but still writes a (partial) summary.
+    assert r["stopped_early"] is not None and r["stopped_early"]["reason"] == "deadline"
+    assert out.exists()
+
+
+def test_live_api_error_burst_aborts_and_saves_partial(tmp_path) -> None:
+    # A systemic API failure (e.g. out of credits) must not crash the run or lose
+    # spend: it aborts gracefully, records the reason, and keeps partial results.
+    from benchmarks.experiments import _run_live_matrix
+
+    class _BoomAgent:
+        model = "fake:boom"
+
+        def decide(self, *a, **k):
+            raise RuntimeError("credit balance is too low")
+
+    class _OkCritic:
+        model = "fake:critic"
+
+        def review(self, evidence):
+            from sarc_dq.live_arms import CriticVerdict
+
+            return CriticVerdict(False)
+
+    import sarc_dq.live_arms as la
+
+    orig = la.make_live
+    la.make_live = lambda fake=False: (_BoomAgent(), _OkCritic())  # type: ignore[assignment]
+    try:
+        r = _run_live_matrix(arms=("A",), n_episodes=4, fake=False, error_budget=4)
+    finally:
+        la.make_live = orig
+    assert r["stopped_early"] is not None and r["stopped_early"]["reason"] == "api_errors"
+
+
 def test_live_real_path_is_import_gated() -> None:
     # Without the optional anthropic SDK, the real (non-fake) live path refuses to
     # silently no-op — it raises rather than pretending to have run.
