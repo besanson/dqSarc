@@ -392,3 +392,24 @@ def make_live(*, fake: bool = False) -> tuple[Agent, Critic]:
     from sarc_dq.agent.anthropic_agent import AnthropicAgent
 
     return AnthropicAgent(model=AGENT_MODEL), AnthropicCritic()
+
+
+# The capability ladder for H1 (`h1-ladder`): the same silence measurement run on a
+# rising capability ladder. Silence should be ~flat — the discriminating signal is
+# not in the payload-only context at any tier. fable-5 needs a non-ZDR key and its
+# refusals are their own outcome class (never scored as a defect).
+LADDER_MODELS: tuple[str, ...] = (
+    "claude-haiku-4-5",
+    "claude-sonnet-5",
+    "claude-opus-4-8",
+    "claude-fable-5",
+)
+
+
+def make_agent_for(model: str, *, fake: bool = False) -> Agent:
+    """Build a single agent pinned to ``model`` (a ladder rung), or a fake ($0)."""
+    if fake:
+        return FakeAgent(model=f"fake:{model}")
+    from sarc_dq.agent.anthropic_agent import AnthropicAgent
+
+    return AnthropicAgent(model=model)

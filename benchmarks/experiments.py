@@ -111,6 +111,8 @@ def _run_condition_live(
     material = detected = completed = spend_it = spend_ot = 0
     n_corr = false_block = n_clean = errors = 0
     usd = 0.0
+    losses: list[float] = []  # realised loss over corrupted+completed episodes
+    eff_losses: list[float] = []  # over ALL corrupted (blocked/avoided = 0) -> recovery basis
     workers = max(1, concurrency)
     with ThreadPoolExecutor(max_workers=workers) as ex:
         for corrupt, o, err in ex.map(worker, range(n_episodes)):
@@ -126,6 +128,10 @@ def _run_condition_live(
                     detected += 1
                 if o.completed and o.material:
                     material += 1
+                acted_loss = o.loss if (o.completed and o.loss is not None) else None
+                if acted_loss is not None:
+                    losses.append(acted_loss)
+                eff_losses.append(acted_loss if acted_loss is not None else 0.0)
             else:
                 n_clean += 1
                 if not o.completed:
@@ -137,12 +143,32 @@ def _run_condition_live(
         "detection_rate": detected / n_corr if n_corr else 0.0,
         "false_block_rate": false_block / n_clean if n_clean else 0.0,
         "completion_rate": completed / n_episodes if n_episodes else 0.0,
+        "loss_mean_corrupted": round(sum(losses) / len(losses), 4) if losses else 0.0,
+        "loss_eff_corrupted": round(sum(eff_losses) / len(eff_losses), 4) if eff_losses else 0.0,
         "n_corrupted": n_corr,
         "n_errors": errors,
         "usd": round(usd, 6),
         "input_tokens": spend_it,
         "output_tokens": spend_ot,
     }, errors
+
+
+def fill_recovery_ratio(matrix: dict[str, Any]) -> None:
+    """H4: fill arm-D ``recovery_ratio`` for every cell carrying arms A, D, E.
+
+    ``recovery_ratio = (effA - effD)/(effA - effE)`` where ``eff`` is mean loss over
+    ALL corrupted episodes (blocked/avoided count as 0). Arm A is ungated (loss
+    ceiling), arm E is the oracle (loss floor), so ``effA - effE > 0`` on real data;
+    the guard skips cells where that span is non-positive (e.g. a degenerate class or
+    a fake-agent run) rather than emitting a divide-by-zero or nonsense ratio."""
+    for rates in matrix.values():
+        for cell in rates.values():
+            if {"A", "D", "E"} <= set(cell):
+                eff_a = cell["A"].get("loss_eff_corrupted")
+                eff_d = cell["D"].get("loss_eff_corrupted")
+                eff_e = cell["E"].get("loss_eff_corrupted")
+                if None not in (eff_a, eff_d, eff_e) and (eff_a - eff_e) > 1e-9:
+                    cell["D"]["recovery_ratio"] = round((eff_a - eff_d) / (eff_a - eff_e), 4)
 
 
 def _run_live_matrix(
@@ -156,41 +182,69 @@ def _run_live_matrix(
     resume_from: dict[str, Any] | None = None,
     on_checkpoint: Any = None,
     error_budget: int = 16,
+    ladder_models: tuple[str, ...] | None = None,
 ) -> dict[str, Any]:
-    """Live class × rate × arm matrix via ``apply_arm_live``. ``fake=True`` is $0.
+    """Live class × rate × {arm | ladder-model} matrix via ``apply_arm_live``.
 
     Robust for real paid runs: episodes run concurrently; results are checkpointed
     per condition (so a re-run resumes and nothing paid-for is lost); a wall-clock
     ``max_minutes`` budget stops cleanly before GitHub's 6h ceiling; and a burst of
-    API errors (billing/auth) aborts gracefully with partial results saved."""
+    API errors (billing/auth) aborts gracefully with partial results saved.
+
+    ``ladder_models`` (H1 capability ladder) sweeps the axis over models instead of
+    arms — arm A run once per model, keyed by model id. Otherwise the axis is ``arms``
+    on a single shared agent. When A/D/E are all present in a cell, arm D's
+    ``recovery_ratio = (effA - effD)/(effA - effE)`` (H4) is filled from loss."""
     import time
 
-    from sarc_dq.live_arms import make_live
+    from sarc_dq.live_arms import FakeCritic, make_agent_for, make_live
     from sarc_dq.taxonomy import get
 
-    agent, critic = make_live(fake=fake)
+    # Axis = ladder models (arm A each) or arms (shared agent). unit: label -> (arm, agent).
+    critic: Any
+    if ladder_models:
+        unit: dict[str, tuple[str, Any]] = {
+            m: ("A", make_agent_for(m, fake=fake)) for m in ladder_models
+        }
+        critic = FakeCritic()  # arm A never reviews evidence
+        axis = list(ladder_models)
+    else:
+        shared_agent, critic = make_live(fake=fake)
+        unit = {a: (a, shared_agent) for a in arms}
+        axis = list(arms)
+
     matrix: dict[str, Any] = {}
     total_usd = 0.0
     done: set[tuple[str, str, str]] = set()
-    if resume_from and isinstance(resume_from.get("matrix"), dict):
+    # Only resume from a checkpoint written by THIS code for the SAME axis. The
+    # ``config.axis`` key is new-schema-only; a pre-fix summary (keyed by ``config.arms``,
+    # and — for h3/h4 — lacking the loss/recovery keys, or — for h1-ladder — keyed by
+    # arm "A" instead of by model) is discarded so every cell recomputes fresh rather
+    # than resuming with stale or incomplete data. Interrupted new-code runs still
+    # resume normally (their axis matches), so nothing paid-for is re-paid.
+    prior_axis = (resume_from or {}).get("config", {}).get("axis")
+    axis_matches = prior_axis is not None and list(prior_axis) == axis
+    if resume_from and axis_matches and isinstance(resume_from.get("matrix"), dict):
         matrix = resume_from["matrix"]
         total_usd = float(resume_from.get("total_usd", 0.0) or 0.0)
         for cn, rates in matrix.items():
-            for rk, per_arm in rates.items():
-                for a in per_arm:
-                    done.add((cn, rk, a))
+            for rk, per_lbl in rates.items():
+                for lbl in per_lbl:
+                    done.add((cn, rk, lbl))
 
     deadline = time.monotonic() + max_minutes * 60 if max_minutes is not None else None
     stopped: dict[str, Any] | None = None
     errors_total = 0
-    conditions = [(c, r, a) for c in registered() for r in RATES for a in arms]
+    conditions = [(c, r, lbl) for c in registered() for r in RATES for lbl in axis]
 
     def snapshot() -> dict[str, Any]:
+        fill_recovery_ratio(matrix)
         return {
             "config": {
                 "n_episodes": n_episodes,
                 "base_seed": base_seed,
-                "arms": list(arms),
+                "axis": axis,
+                "axis_kind": "ladder_models" if ladder_models else "arms",
                 "fake": fake,
                 "concurrency": concurrency,
                 "max_minutes": max_minutes,
@@ -202,17 +256,18 @@ def _run_live_matrix(
             "stopped_early": stopped,
         }
 
-    for cls_name, rate, arm in conditions:
+    for cls_name, rate, label in conditions:
         rk = f"{rate:.2f}"
-        if (cls_name, rk, arm) in done:
+        if (cls_name, rk, label) in done:
             continue
         if deadline is not None and time.monotonic() > deadline:
             stopped = {
                 "reason": "deadline",
-                "at": f"{cls_name}/{rk}/{arm}",
+                "at": f"{cls_name}/{rk}/{label}",
                 "max_minutes": max_minutes,
             }
             break
+        arm, agent = unit[label]
         per_arm, n_err = _run_condition_live(
             get(cls_name),
             rate,
@@ -224,15 +279,15 @@ def _run_live_matrix(
             concurrency=concurrency,
         )
         errors_total += n_err
-        matrix.setdefault(cls_name, {}).setdefault(rk, {})[arm] = per_arm
+        matrix.setdefault(cls_name, {}).setdefault(rk, {})[label] = per_arm
         total_usd += per_arm["usd"]
-        done.add((cls_name, rk, arm))
+        done.add((cls_name, rk, label))
         if on_checkpoint is not None:
             on_checkpoint(snapshot())
         if errors_total >= error_budget:
             stopped = {
                 "reason": "api_errors",
-                "at": f"{cls_name}/{rk}/{arm}",
+                "at": f"{cls_name}/{rk}/{label}",
                 "errors": errors_total,
                 "hint": "likely out of API credits, or an auth/rate problem — "
                 "check console.anthropic.com; re-run to resume from here",
@@ -255,10 +310,18 @@ def run(
         raise SystemExit(f"unknown experiment {exp!r}; known: {sorted(EXPERIMENTS)}")
     arms, intent = EXPERIMENTS[exp]
     if arm_mode == "live":
+        from sarc_dq.live_arms import LADDER_MODELS
+
+        # H1 ladder sweeps models (arm A each); every other kit sweeps its arms.
+        ladder = LADDER_MODELS if exp == "h1-ladder" else None
         note = (
             "LIVE via apply_arm_live with FAKE agent/critic ($0 pipeline check)"
             if fake
-            else "LIVE — real Claude (claude-sonnet-5 agent, claude-opus-4-8 critic); spend logged"
+            else (
+                "LIVE — capability ladder (haiku->sonnet->opus->fable), arm A; spend logged"
+                if ladder
+                else "LIVE — real Claude (sonnet-5 agent, opus-4-8 critic); spend logged"
+            )
         )
         envelope = {"experiment": exp, "intent": intent, "arm_mode": arm_mode, "note": note}
         # Resume from a prior (possibly partial) summary at out_path, if present.
@@ -281,6 +344,7 @@ def run(
             max_minutes=max_minutes,
             resume_from=resume_from,
             on_checkpoint=checkpoint,
+            ladder_models=ladder,
         )
         result = {**envelope, **matrix}
         if out_path:  # always persist the final summary, even if no condition ran
