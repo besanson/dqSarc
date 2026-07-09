@@ -164,6 +164,60 @@ def test_h4_live_cells_carry_loss_and_recovery_keys() -> None:
         assert "loss_eff_corrupted" in any_cell[arm]
 
 
+def test_h4_paired_loss_gives_zero_oracle_floor_and_populates_recovery() -> None:
+    # The paired-loss fix (v2): arm E acts on the true price, so its corruption loss is
+    # 0 by construction on EVERY cell — the recovery denominator's floor. Arm A carries
+    # a positive corruption loss, so (effA - effE) > 0 and recovery_ratio populates.
+    out = run("h4-recovery", n_episodes=40, arm_mode="live", fake=True)
+    assert out["config"]["loss_model"] == "paired-counterfactual-v2"
+    m = out["matrix"]
+    pooled = {a: [0.0, 0] for a in ("A", "D", "E")}
+    recovered = 0
+    for rates in m.values():
+        for cell in rates.values():
+            for a in ("A", "D", "E"):
+                assert cell["E"]["loss_eff_corrupted"] == 0.0  # oracle floor, exact
+                pooled[a][0] += cell[a]["loss_eff_corrupted"] * cell[a]["n_corrupted"]
+                pooled[a][1] += cell[a]["n_corrupted"]
+            if cell["D"].get("recovery_ratio") is not None:
+                recovered += 1
+    la = pooled["A"][0] / pooled["A"][1]
+    le = pooled["E"][0] / pooled["E"][1]
+    assert le == 0.0 and la > 0.0  # positive pooled corruption loss above a zero floor
+    assert recovered > 0  # at least some cells have a well-defined recovery ratio
+
+
+def test_paired_materiality_zeros_the_oracle_adr() -> None:
+    # ADR is judged on corruption-induced (paired) loss, not raw loss-vs-optimum. Arm E
+    # acts on the true price, so it has zero corruption loss and therefore ZERO ADR on
+    # every cell — the agent-noise control. Under the old raw-loss materiality an oracle
+    # on clean data scored ADR ~0.73; this test guards against that regression.
+    out = run("h4-recovery", n_episodes=40, arm_mode="live", fake=True)
+    for rates in out["matrix"].values():
+        for cell in rates.values():
+            assert cell["E"]["adr"] == 0.0  # oracle: no corruption defects, ever
+
+
+def test_live_resume_discards_stale_loss_model(tmp_path) -> None:
+    # A checkpoint written under an older loss model must NOT be resumed — its cells
+    # carry incomparable numbers. Same-axis but stale loss_model => recompute fresh.
+    import json
+
+    out = tmp_path / "h4.json"
+    out.write_text(
+        json.dumps(
+            {
+                "config": {"axis": ["A", "D", "E"], "loss_model": "raw-v1"},
+                "matrix": {"stale_price": {"0.20": {"A": {"loss_eff_corrupted": 999.0}}}},
+                "total_usd": 42.0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    r = run("h4-recovery", n_episodes=4, arm_mode="live", fake=True, out_path=str(out))
+    assert r["total_usd"] < 42.0  # stale checkpoint discarded, not carried forward
+
+
 def test_h1_ladder_sweeps_four_models() -> None:
     # h1-ladder sweeps arm A across the capability ladder: each cell is keyed by model
     # id (not arm), one per rung.
