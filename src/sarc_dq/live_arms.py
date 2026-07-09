@@ -97,6 +97,7 @@ def _decide_order(
     record: EvidenceRecord,
     *,
     advisory: bool,
+    prompt_variant: str = "naive",
 ) -> tuple[float | None, str, float, int, int]:
     """Return (order_qty, outcome_class, usd, in_tok, out_tok) from a real agent turn.
 
@@ -104,7 +105,7 @@ def _decide_order(
     as its own outcome class — never scored as a defect.
     """
     try:
-        decision = agent.decide(episode, record, advisory=advisory)
+        decision = agent.decide(episode, record, advisory=advisory, prompt_variant=prompt_variant)
     except (KeyError, ValueError, TypeError):
         # A malformed payload (schema drift / missing field) can't form a normal
         # decision context — carried as an error outcome, never a defect.
@@ -132,8 +133,16 @@ def apply_arm_live(
     tau_m: float,
     agent: Agent,
     critic: Critic,
+    prompt_variant: str = "naive",
 ) -> LiveArmOutcome:
-    """Run one arm live. Mirrors ``harness.apply_arm`` structure; real decider."""
+    """Run one arm live. Mirrors ``harness.apply_arm`` structure; real decider.
+
+    ``prompt_variant`` selects the agent instruction: ``"naive"`` (Phase 0a, no
+    formula) or ``"policy_instructed"`` (the explicit newsvendor policy). The
+    GIGO/DQ experiments use ``policy_instructed`` so the decider is *competent*
+    (price-elastic) but still metadata-blind — a stale price it acts on converts to
+    a real loss, isolating the data-quality defect from raw decision incompetence.
+    """
     primary = evidence[0]
     true_p = episode.true_unit_cost
     eids = tuple(r.evidence_id() for r in evidence)
@@ -171,7 +180,9 @@ def apply_arm_live(
         extra_it: int = 0,
         extra_ot: int = 0,
     ) -> LiveArmOutcome:
-        order, oc, usd, it, ot = _decide_order(agent, episode, record, advisory=advisory)
+        order, oc, usd, it, ot = _decide_order(
+            agent, episode, record, advisory=advisory, prompt_variant=prompt_variant
+        )
         usd, it, ot = usd + extra_usd, it + extra_it, ot + extra_ot
         if order is None:  # refusal / error — no action; not a defect
             return LiveArmOutcome(
@@ -209,7 +220,7 @@ def apply_arm_live(
                     dict(primary.ground_truth),
                 )
                 c_order, _c_oc, c_usd, c_it, c_ot = _decide_order(
-                    agent, episode, true_rec, advisory=False
+                    agent, episode, true_rec, advisory=False, prompt_variant=prompt_variant
                 )
                 usd, it, ot = usd + c_usd, it + c_it, ot + c_ot
                 if c_order is not None:

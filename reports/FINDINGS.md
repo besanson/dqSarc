@@ -73,18 +73,42 @@ frozen `elasticity = 0.000`. The prompt supplies unit_cost, the demand forecast,
 holding/stockout costs, and the explicit newsvendor policy — so the inelasticity is
 a behavioural finding about the agent, not a missing input.
 
-**Consequence.** If price corruption does not change the agent's action, it cannot
-convert to an order loss. So:
-
-- **H1 "silence converts to loss" (ADR ≥ 20%)** — not supported. The agent is
-  silent *and* inelastic; the danger is silent propagation of bad data, not a
-  mis-costed order.
-- **H3 (loss-avoided frontier), H4 (recovery ratio)** — no loss signal to avoid or
-  recover. Re-running would confirm ≈ 0, not rescue the claim; they are not fired.
-
 Two classes (`schema_drift`, `missing_mandatory_field`) remove/retype the price;
 the agent then fails to act (completion 0.78 at rate 0.20, `n_errors = 0`) — a
 loud completion failure, not a silent conversion.
+
+## 2a. Correction: the inelasticity is a PROMPT artifact, and the experiments were mis-wired
+
+The inelasticity above is **not** an immutable property of the agent — it is an
+artifact of the **naive** prompt (no formula), which the experiments used by
+default. Your own frozen Phase 0 data shows the same agent is price-elastic once
+handed the newsvendor policy:
+
+| prompt | formula given? | `elasticity_median` |
+|---|---|---|
+| naive (Phase 0a; what h1-full ran) | no | **0.000** |
+| policy_instructed (Phase 0b) | yes | **0.976** |
+| policy_instructed (Phase 0c) | yes | **0.992** |
+
+`policy_instructed` was created in Phase 0b precisely to remove the competence
+confound: it supplies the ordering policy but **no** data-quality language, so the
+decider is *competent yet still metadata-blind*. That is the correct agent for the
+loss experiments — any loss is then attributable to the undetected corruption, not
+to the agent being unable to optimise. The experiments defaulted to `naive`
+(`live_arms.py` never passed a variant), which conflated "can't optimise" with
+"can't detect" and is why the loss signal vanished.
+
+**Fix (this change):** `prompt_variant` is threaded through the experiment path and
+the live experiments now default to `policy_instructed` (recorded in every summary's
+`config.prompt_variant`; a naive checkpoint is not resumed by a policy run). Under a
+competent, metadata-blind decider, a stale price it acts on is *expected* to convert
+to a real order loss, and the gate's substitution to recover it — so H1/H3/H4 should
+have signal again. This is to be confirmed by a `policy_instructed` h1-full re-probe
+(~$12) before committing to the full re-runs; the outcome is not yet measured.
+
+**Status of H1/H3/H4:** pending the `policy_instructed` re-runs. The earlier
+"no signal / pivot to detection" conclusion applied only to the mis-wired naive runs
+and is withdrawn.
 
 ## 3. What survives: the detection asymmetry (H2)
 
