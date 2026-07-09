@@ -216,7 +216,15 @@ def _run_live_matrix(
     matrix: dict[str, Any] = {}
     total_usd = 0.0
     done: set[tuple[str, str, str]] = set()
-    if resume_from and isinstance(resume_from.get("matrix"), dict):
+    # Only resume from a checkpoint written by THIS code for the SAME axis. The
+    # ``config.axis`` key is new-schema-only; a pre-fix summary (keyed by ``config.arms``,
+    # and — for h3/h4 — lacking the loss/recovery keys, or — for h1-ladder — keyed by
+    # arm "A" instead of by model) is discarded so every cell recomputes fresh rather
+    # than resuming with stale or incomplete data. Interrupted new-code runs still
+    # resume normally (their axis matches), so nothing paid-for is re-paid.
+    prior_axis = (resume_from or {}).get("config", {}).get("axis")
+    axis_matches = prior_axis is not None and list(prior_axis) == axis
+    if resume_from and axis_matches and isinstance(resume_from.get("matrix"), dict):
         matrix = resume_from["matrix"]
         total_usd = float(resume_from.get("total_usd", 0.0) or 0.0)
         for cn, rates in matrix.items():

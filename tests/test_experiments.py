@@ -41,6 +41,30 @@ def test_live_resumes_and_checkpoints(tmp_path) -> None:
     assert r2["matrix"] == r1["matrix"]  # resumed: identical, concurrency-invariant
 
 
+def test_live_resume_discards_stale_axis_checkpoint(tmp_path) -> None:
+    # A pre-fix summary (old schema: config.arms, no config.axis) must NOT be resumed —
+    # its cells would be marked done and never recompute the newly-added loss/recovery.
+    # h1-ladder is the sharp case: old cells keyed by arm "A", new axis keyed by model.
+    import json
+
+    out = tmp_path / "h1-ladder.json"
+    out.write_text(
+        json.dumps(
+            {
+                "config": {"arms": ["A"]},  # old schema, no "axis"
+                "matrix": {"stale_price": {"0.20": {"A": {"adr": 0.0}}}},
+                "total_usd": 99.0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    r = run("h1-ladder", n_episodes=4, arm_mode="live", fake=True, out_path=str(out))
+    # Fresh run: cells keyed by model, not by stale "A"; stale total_usd not carried in.
+    any_cell = next(iter(next(iter(r["matrix"].values())).values()))
+    assert "A" not in any_cell
+    assert r["total_usd"] < 99.0
+
+
 def test_live_deadline_stops_gracefully(tmp_path) -> None:
     out = tmp_path / "h1.json"
     r = run(
