@@ -187,6 +187,17 @@ def test_h4_paired_loss_gives_zero_oracle_floor_and_populates_recovery() -> None
     assert recovered > 0  # at least some cells have a well-defined recovery ratio
 
 
+def test_paired_materiality_zeros_the_oracle_adr() -> None:
+    # ADR is judged on corruption-induced (paired) loss, not raw loss-vs-optimum. Arm E
+    # acts on the true price, so it has zero corruption loss and therefore ZERO ADR on
+    # every cell — the agent-noise control. Under the old raw-loss materiality an oracle
+    # on clean data scored ADR ~0.73; this test guards against that regression.
+    out = run("h4-recovery", n_episodes=40, arm_mode="live", fake=True)
+    for rates in out["matrix"].values():
+        for cell in rates.values():
+            assert cell["E"]["adr"] == 0.0  # oracle: no corruption defects, ever
+
+
 def test_live_resume_discards_stale_loss_model(tmp_path) -> None:
     # A checkpoint written under an older loss model must NOT be resumed — its cells
     # carry incomparable numbers. Same-axis but stale loss_model => recompute fresh.

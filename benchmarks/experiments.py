@@ -28,8 +28,10 @@ from sarc_dq.taxonomy import registered
 
 # Loss-instrumentation version stamped into every live summary. Bumped when the loss
 # definition changes so a checkpoint from an older definition is NOT resumed (it would
-# mix incomparable numbers). v2 = paired counterfactual loss (agent-noise cancelled),
-# replacing v1's raw loss-vs-optimum which was confounded by the agent's decision noise.
+# mix incomparable numbers). v2 = paired counterfactual (agent-noise cancelled): BOTH
+# the H3/H4 loss AND the ADR materiality are judged on corruption-induced loss, replacing
+# v1's raw loss-vs-optimum which was confounded by the agent's ~2519 decision noise (under
+# v1 an oracle acting on clean data scored ADR 0.73).
 LOSS_MODEL = "paired-counterfactual-v2"
 
 # exp id -> (arms exercised, one-line intent). Classes default to all 8.

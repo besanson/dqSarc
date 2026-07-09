@@ -214,6 +214,13 @@ def apply_arm_live(
                 usd, it, ot = usd + c_usd, it + c_it, ot + c_ot
                 if c_order is not None:
                     loss_paired = episode.realised_cost(order) - episode.realised_cost(c_order)
+        # Materiality (and thus ADR) is judged on the CORRUPTION-induced loss, not the
+        # raw loss-vs-optimum. Raw loss carries the agent's decision noise (Phase 0a
+        # clean-regret ~2519), which alone clears the threshold — so an oracle acting on
+        # clean data would score "material". Using loss_paired makes arm E's ADR 0 by
+        # construction and leaves ADR measuring real defects. Only corrupted episodes can
+        # be material (materiality is a corruption concept); a clean episode never is.
+        material = loss_paired is not None and loss_paired >= tau_m * clean_cost
         return LiveArmOutcome(
             arm=arm,
             completed=True,
@@ -221,7 +228,7 @@ def apply_arm_live(
             believed_price=bp,
             order_qty=order,
             loss=loss,
-            material=loss >= tau_m * clean_cost,
+            material=material,
             response=response,
             substituted=substituted,
             outcome_class=OUTCOME_OK,
