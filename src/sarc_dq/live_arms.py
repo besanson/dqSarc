@@ -79,6 +79,11 @@ class LiveArmOutcome:
     input_tokens: int
     output_tokens: int
     evidence_ids: tuple[str, ...]
+    # Noise-cancelled loss for H3/H4: this order's realised cost minus the SAME agent's
+    # order on the true price (same demand draw), so the agent's own decision noise
+    # (Phase 0a clean-regret) cancels and only the corruption effect remains. Set on
+    # completed corrupted episodes; None otherwise (arm E is 0 by construction).
+    loss_paired: float | None = None
 
 
 def _price(record: EvidenceRecord) -> float | None:
@@ -187,6 +192,28 @@ def apply_arm_live(
             )
         loss = episode.realised_cost(order) - clean_cost
         bp = believed if believed is not None else _price(record)
+        # Paired loss (H3/H4): only for corrupted episodes that actually acted. Arm E
+        # already decides on the true price, so its corruption loss is 0 by definition
+        # (no counterfactual call). Every other arm pays one extra agent turn on the
+        # true price; that clean order shares this episode's demand draw, so the agent's
+        # baseline decision noise cancels in the difference.
+        loss_paired: float | None = None
+        if corrupted:
+            if arm == "E":
+                loss_paired = 0.0
+            else:
+                true_rec = EvidenceRecord(
+                    primary.record_id,
+                    {**primary.payload, "unit_cost": true_p},
+                    primary.metadata,
+                    dict(primary.ground_truth),
+                )
+                c_order, _c_oc, c_usd, c_it, c_ot = _decide_order(
+                    agent, episode, true_rec, advisory=False
+                )
+                usd, it, ot = usd + c_usd, it + c_it, ot + c_ot
+                if c_order is not None:
+                    loss_paired = episode.realised_cost(order) - episode.realised_cost(c_order)
         return LiveArmOutcome(
             arm=arm,
             completed=True,
@@ -202,6 +229,7 @@ def apply_arm_live(
             input_tokens=it,
             output_tokens=ot,
             evidence_ids=eids,
+            loss_paired=loss_paired,
         )
 
     if arm == "A":

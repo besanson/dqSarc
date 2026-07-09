@@ -26,6 +26,12 @@ from typing import Any
 from sarc_dq.harness import RATES, run_matrix
 from sarc_dq.taxonomy import registered
 
+# Loss-instrumentation version stamped into every live summary. Bumped when the loss
+# definition changes so a checkpoint from an older definition is NOT resumed (it would
+# mix incomparable numbers). v2 = paired counterfactual loss (agent-noise cancelled),
+# replacing v1's raw loss-vs-optimum which was confounded by the agent's decision noise.
+LOSS_MODEL = "paired-counterfactual-v2"
+
 # exp id -> (arms exercised, one-line intent). Classes default to all 8.
 EXPERIMENTS: dict[str, tuple[tuple[str, ...], str]] = {
     "h1-full": (("A",), "silence: all classes, no gate"),
@@ -111,7 +117,10 @@ def _run_condition_live(
     material = detected = completed = spend_it = spend_ot = 0
     n_corr = false_block = n_clean = errors = 0
     usd = 0.0
-    losses: list[float] = []  # realised loss over corrupted+completed episodes
+    # Loss is the PAIRED (noise-cancelled) loss (o.loss_paired): this order's cost minus
+    # the same agent's order on the true price. The raw o.loss (vs the theoretical
+    # optimum) carries the agent's decision noise and is not used for H3/H4.
+    losses: list[float] = []  # paired loss over corrupted+completed episodes
     eff_losses: list[float] = []  # over ALL corrupted (blocked/avoided = 0) -> recovery basis
     workers = max(1, concurrency)
     with ThreadPoolExecutor(max_workers=workers) as ex:
@@ -128,7 +137,7 @@ def _run_condition_live(
                     detected += 1
                 if o.completed and o.material:
                     material += 1
-                acted_loss = o.loss if (o.completed and o.loss is not None) else None
+                acted_loss = o.loss_paired if (o.completed and o.loss_paired is not None) else None
                 if acted_loss is not None:
                     losses.append(acted_loss)
                 eff_losses.append(acted_loss if acted_loss is not None else 0.0)
@@ -216,16 +225,21 @@ def _run_live_matrix(
     matrix: dict[str, Any] = {}
     total_usd = 0.0
     done: set[tuple[str, str, str]] = set()
-    # Only resume from a checkpoint written by THIS code for the SAME axis. The
-    # ``config.axis`` key is new-schema-only; a pre-fix summary (keyed by ``config.arms``,
-    # and — for h3/h4 — lacking the loss/recovery keys, or — for h1-ladder — keyed by
-    # arm "A" instead of by model) is discarded so every cell recomputes fresh rather
-    # than resuming with stale or incomplete data. Interrupted new-code runs still
-    # resume normally (their axis matches), so nothing paid-for is re-paid.
-    prior_axis = (resume_from or {}).get("config", {}).get("axis")
+    # Only resume from a checkpoint written by THIS code for the SAME axis AND the same
+    # loss model. ``config.axis`` is new-schema-only; a pre-fix summary (keyed by
+    # ``config.arms``, or — for h1-ladder — by arm "A" instead of by model) is discarded.
+    # ``config.loss_model`` guards the loss definition: the committed v1 h3/h4 summaries
+    # (raw loss-vs-optimum, agent-noise-confounded) lack the v2 tag, so a re-run recomputes
+    # every cell fresh instead of resuming incomparable numbers. Interrupted v2 runs still
+    # resume normally, so nothing paid-for is re-paid.
+    prior_cfg = (resume_from or {}).get("config", {})
+    prior_axis = prior_cfg.get("axis")
     axis_matches = prior_axis is not None and list(prior_axis) == axis
-    if resume_from and axis_matches and isinstance(resume_from.get("matrix"), dict):
-        matrix = resume_from["matrix"]
+    loss_matches = prior_cfg.get("loss_model") == LOSS_MODEL
+    if resume_from is not None and axis_matches and loss_matches:
+        prior_matrix = resume_from.get("matrix")
+        if isinstance(prior_matrix, dict):
+            matrix = prior_matrix
         total_usd = float(resume_from.get("total_usd", 0.0) or 0.0)
         for cn, rates in matrix.items():
             for rk, per_lbl in rates.items():
@@ -245,6 +259,7 @@ def _run_live_matrix(
                 "base_seed": base_seed,
                 "axis": axis,
                 "axis_kind": "ladder_models" if ladder_models else "arms",
+                "loss_model": LOSS_MODEL,
                 "fake": fake,
                 "concurrency": concurrency,
                 "max_minutes": max_minutes,
