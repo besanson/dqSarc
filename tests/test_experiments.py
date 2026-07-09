@@ -93,6 +93,64 @@ def test_live_real_path_is_import_gated() -> None:
         pytest.skip("anthropic SDK installed; real live path would require a key/spend")
 
 
+def test_fill_recovery_ratio_math() -> None:
+    # H4 recovery on real-shaped (positive-loss) data: A is the ungated ceiling, E the
+    # oracle floor, D the gate under test. ratio = (effA - effD)/(effA - effE).
+    from benchmarks.experiments import fill_recovery_ratio
+
+    matrix = {
+        "stale_price": {
+            "0.20": {
+                "A": {"loss_eff_corrupted": 100.0},
+                "D": {"loss_eff_corrupted": 20.0},
+                "E": {"loss_eff_corrupted": 0.0},
+            }
+        }
+    }
+    fill_recovery_ratio(matrix)
+    # (100 - 20) / (100 - 0) = 0.8
+    assert matrix["stale_price"]["0.20"]["D"]["recovery_ratio"] == 0.8
+
+
+def test_fill_recovery_ratio_skips_degenerate_span() -> None:
+    # If A and E have equal effective loss (no recoverable span), the ratio is left
+    # unset rather than dividing by ~0 or emitting a nonsense number.
+    from benchmarks.experiments import fill_recovery_ratio
+
+    matrix = {
+        "c": {
+            "0.05": {
+                "A": {"loss_eff_corrupted": 5.0},
+                "D": {"loss_eff_corrupted": 5.0},
+                "E": {"loss_eff_corrupted": 5.0},
+            }
+        }
+    }
+    fill_recovery_ratio(matrix)
+    assert "recovery_ratio" not in matrix["c"]["0.05"]["D"]
+
+
+def test_h4_live_cells_carry_loss_and_recovery_keys() -> None:
+    # h4-recovery must emit loss metrics on every arm and a recovery_ratio slot on D.
+    out = run("h4-recovery", n_episodes=6, arm_mode="live", fake=True)
+    any_cell = next(iter(next(iter(out["matrix"].values())).values()))
+    assert set(any_cell) == {"A", "D", "E"}
+    for arm in ("A", "D", "E"):
+        assert "loss_mean_corrupted" in any_cell[arm]
+        assert "loss_eff_corrupted" in any_cell[arm]
+
+
+def test_h1_ladder_sweeps_four_models() -> None:
+    # h1-ladder sweeps arm A across the capability ladder: each cell is keyed by model
+    # id (not arm), one per rung.
+    from sarc_dq.live_arms import LADDER_MODELS
+
+    out = run("h1-ladder", n_episodes=4, arm_mode="live", fake=True)
+    assert out["config"]["axis_kind"] == "ladder_models"
+    any_cell = next(iter(next(iter(out["matrix"].values())).values()))
+    assert set(any_cell) == set(LADDER_MODELS)
+
+
 def test_every_experiment_has_a_prereg() -> None:
     from pathlib import Path
 
