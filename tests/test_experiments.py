@@ -198,6 +198,36 @@ def test_paired_materiality_zeros_the_oracle_adr() -> None:
             assert cell["E"]["adr"] == 0.0  # oracle: no corruption defects, ever
 
 
+def test_live_experiments_default_to_policy_instructed() -> None:
+    # The DQ experiments must run the competent (price-elastic) decider, not the naive
+    # prompt under which the agent ignores unit cost. The variant is recorded in config
+    # for auditability, and a naive-prompt checkpoint is not resumed by a policy run.
+    out = run("h1-full", n_episodes=4, arm_mode="live", fake=True)
+    assert out["config"]["prompt_variant"] == "policy_instructed"
+
+
+def test_live_resume_discards_stale_prompt_variant(tmp_path) -> None:
+    import json
+
+    out = tmp_path / "h1.json"
+    out.write_text(
+        json.dumps(
+            {
+                "config": {
+                    "axis": ["A"],
+                    "loss_model": "paired-counterfactual-v2",
+                    "prompt_variant": "naive",  # the inelastic run
+                },
+                "matrix": {"stale_master_data": {"0.20": {"A": {"adr": 0.0}}}},
+                "total_usd": 55.0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    r = run("h1-full", n_episodes=4, arm_mode="live", fake=True, out_path=str(out))
+    assert r["total_usd"] < 55.0  # naive checkpoint discarded, recomputed under policy
+
+
 def test_live_resume_discards_stale_loss_model(tmp_path) -> None:
     # A checkpoint written under an older loss model must NOT be resumed — its cells
     # carry incomparable numbers. Same-axis but stale loss_model => recompute fresh.

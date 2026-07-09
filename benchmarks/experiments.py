@@ -83,6 +83,7 @@ def _run_condition_live(
     agent: Any,
     critic: Any,
     concurrency: int,
+    prompt_variant: str = "naive",
 ) -> tuple[dict[str, Any], int]:
     """Run one (class, rate, arm) condition. Episodes run concurrently — the calls
     are network-bound, so a bounded thread pool cuts wall-clock time by ~``concurrency``.
@@ -111,6 +112,7 @@ def _run_condition_live(
                 tau_m=TAU_M_DEFAULT,
                 agent=agent,
                 critic=critic,
+                prompt_variant=prompt_variant,
             )
             return corrupt, o, None
         except BaseException as exc:  # billing/auth/network — surfaced, not swallowed
@@ -194,6 +196,7 @@ def _run_live_matrix(
     on_checkpoint: Any = None,
     error_budget: int = 16,
     ladder_models: tuple[str, ...] | None = None,
+    prompt_variant: str = "naive",
 ) -> dict[str, Any]:
     """Live class × rate × {arm | ladder-model} matrix via ``apply_arm_live``.
 
@@ -238,7 +241,11 @@ def _run_live_matrix(
     prior_axis = prior_cfg.get("axis")
     axis_matches = prior_axis is not None and list(prior_axis) == axis
     loss_matches = prior_cfg.get("loss_model") == LOSS_MODEL
-    if resume_from is not None and axis_matches and loss_matches:
+    # A summary written under a different prompt variant (e.g. the naive-prompt
+    # h1-full, where the agent is price-inelastic) is not comparable to a
+    # policy_instructed run and must be recomputed fresh, not resumed.
+    prompt_matches = prior_cfg.get("prompt_variant", "naive") == prompt_variant
+    if resume_from is not None and axis_matches and loss_matches and prompt_matches:
         prior_matrix = resume_from.get("matrix")
         if isinstance(prior_matrix, dict):
             matrix = prior_matrix
@@ -262,6 +269,7 @@ def _run_live_matrix(
                 "axis": axis,
                 "axis_kind": "ladder_models" if ladder_models else "arms",
                 "loss_model": LOSS_MODEL,
+                "prompt_variant": prompt_variant,
                 "fake": fake,
                 "concurrency": concurrency,
                 "max_minutes": max_minutes,
@@ -294,6 +302,7 @@ def _run_live_matrix(
             agent=agent,
             critic=critic,
             concurrency=concurrency,
+            prompt_variant=prompt_variant,
         )
         errors_total += n_err
         matrix.setdefault(cls_name, {}).setdefault(rk, {})[label] = per_arm
@@ -322,6 +331,7 @@ def run(
     concurrency: int = 8,
     max_minutes: float | None = 330.0,
     out_path: str | None = None,
+    prompt_variant: str = "policy_instructed",
 ) -> dict[str, Any]:
     if exp not in EXPERIMENTS:
         raise SystemExit(f"unknown experiment {exp!r}; known: {sorted(EXPERIMENTS)}")
@@ -362,6 +372,7 @@ def run(
             resume_from=resume_from,
             on_checkpoint=checkpoint,
             ladder_models=ladder,
+            prompt_variant=prompt_variant,
         )
         result = {**envelope, **matrix}
         if out_path:  # always persist the final summary, even if no condition ran
@@ -406,6 +417,15 @@ def main(argv: Any = None) -> int:
         help="live: wall-clock budget; stop cleanly + save partial before this",
     )
     p.add_argument("--out", default="artifacts/exp_summary.json")
+    p.add_argument(
+        "--prompt",
+        choices=["naive", "policy_instructed"],
+        default="policy_instructed",
+        help="live agent instruction. policy_instructed (default) gives the explicit "
+        "newsvendor policy so the decider is competent (price-elastic) but still "
+        "metadata-blind — the correct setup for the data-quality experiments. naive "
+        "reproduces the Phase 0a prompt (no formula; the agent is price-inelastic).",
+    )
     args = p.parse_args(argv)
 
     result = run(
@@ -416,6 +436,7 @@ def main(argv: Any = None) -> int:
         concurrency=args.concurrency,
         max_minutes=args.max_minutes,
         out_path=args.out,
+        prompt_variant=args.prompt,
     )
     _write_json(args.out, result)
     stopped = result.get("stopped_early")
