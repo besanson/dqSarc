@@ -177,34 +177,32 @@ written to `reports/VERIFICATION-<date>-<stage>.md`. Nothing fired; $0 spent.
 **Merged before this program:** #10 (paired counterfactual loss + materiality),
 #11 (policy_instructed prompt — competent, metadata-blind decider).
 
-### Done
-- **W3 core** — rate-cell sampling independence. `sarc_dq.substrate.corruption_decision`
-  makes the corruption mask/injection rate-dependent; live + mock both use it; GIGO
-  reference regenerated; 3 regression tests. Gate green (91 pytest, mypy, ruff, gigo,
-  frozen Phase 0 hash). Report: `reports/VERIFICATION-2026-07-09-W3.md`.
+### Done (committed to branch claude/new-session-f1dhsq)
+- **W3 core** — rate-cell sampling independence (`corruption_decision`); live+mock;
+  GIGO regenerated; regression tests. `reports/VERIFICATION-2026-07-09-W3.md`.
+- **FINDINGS §6** — sampler bug; h1-full (2993ece) + h2-detection (a37bf0b) marked
+  INVALID by SHA; 0.585 / 16-16 / $1,080 withdrawn; naive-null retained w/ caveat.
+- **ADDENDUM-2026-07-09** (= W1 a/b/c + W5 + GIGO note + elevated naive-null) and the
+  **fixed-n sampler** (`stratified_corrupt_indices`; H1/H2 fixed_n=25, others true
+  rate; config stamps sampling/fixed_n; resume guards on it).
+- **Spend ledger** (`scripts/spend_ledger.py`; $317.13 / 31.7%) + **VERIFICATION_METHOD.md**
+  (amended V0 freeze check + ledger requirement). Gate green: ruff, mypy(39), 94 pytest, gigo.
 
-### Blocking consequence discovered (must resolve in W1 addendum before firing)
-- The committed `results/h1-full-live` ($32.22) and `results/h2-detection-live` ($56.60)
-  ran under the **buggy** sampler → degenerate low-rate cells. They must be **re-run**
-  under the corrected sampler to be valid. This is not accounted for in the brief's
-  firing sequence and changes the cost plan.
+### Blocking consequence (recorded in FINDINGS §6 / addendum)
+- `results/h1-full-live` ($32.22) and `results/h2-detection-live` ($56.60) ran under the
+  buggy sampler → INVALID → must be re-run under the fixed sampler. Adds ~$89 to the plan.
 
-### Remaining (not started / partial)
-- **W3 rest** — pooled per-class ADR + paired-seed bootstrap CIs in every summary;
-  per-cell n surfaced. Needs per-episode logging (coupled to W2).
-- **W2** — live runner discards transcripts (confirmed). H1 silence claim (P2 AUCs,
-  P3 flags) was never measured → downgrade verdict language AND add transcript +
-  silence-metric logging to the runner going forward.
-- **W4** — no committed verdict code exists; must be written, then run against frozen
-  H2 predictions (expected: P1 fails on schema_drift; P2 fails on silent_unit_change,
-  plausible_outlier, superseded_golden_record) and reported failed-then-reframed.
-- **W1** — dated prereg addendum (retroactive policy_instructed disclosure; prospective
-  pinning; no-new-predicates; GIGO re-freeze note; elevate the naive-null h1 result),
-  + paper "Deviations and clarifications".
-- **W5** — gate-freeze rule for H4 (documented; no new predicates).
-- **W6** — autonomy plumbing (tag-triggers + verification-gate on workflows; self-merge
-  attempt) — deferred until W1–W5 land.
-- **W7** — rewrite FIRING_CHECKLIST.md as FIRING_PLAN.md with corrected costs.
-- **V0** — full pre-merge verification battery once W1–W7 land.
+### Remaining before the corrections PR opens (NOT yet done — net-new infra, do carefully)
+- **W2** — add transcript capture + silence metrics (marker/judge AUC, flag fraction)
+  to the live runner; downgrade H1 silence language until re-measured.
+- **W3 rest** — per-episode logging → pooled per-class ADR + paired-seed bootstrap CIs
+  in every summary; per-cell n surfaced.
+- **W4** — write committed verdict code; run vs frozen H2 predictions (expect P1 fail on
+  schema_drift; P2 fail on silent_unit_change/plausible_outlier/superseded); FINDINGS §5.
+- **W1 remainder** — paper "Deviations and clarifications" subsection.
+- **config_hash** stamping in the live summary (pinned by the addendum; not yet emitted).
+- **W6** — tag-triggers + verification-gate on the h4/h3/ladder workflows; self-merge attempt.
+- **W7** — rewrite FIRING_CHECKLIST.md → FIRING_PLAN.md (autonomous sequence, corrected costs).
+- **V0** — full pre-merge verification battery; then open the PR. Nothing fired; $0 new spend.
 
 ### Human items (unchanged): claims sign-off + arXiv upload remain the only human acts.
