@@ -192,11 +192,13 @@ written to `reports/VERIFICATION-<date>-<stage>.md`. Nothing fired; $0 spent.
 - `results/h1-full-live` ($32.22) and `results/h2-detection-live` ($56.60) ran under the
   buggy sampler → INVALID → must be re-run under the fixed sampler. Adds ~$89 to the plan.
 
+- **W2 (done)** — transcript capture + per-cell marker AUC + flag fraction in the runner;
+  FINDINGS §7 downgrades H1 silence (P2/P3 PENDING instrumented re-run). LLM-judge AUC
+  deferred (model pinned in addendum).
+- **W3 rest (done)** — per-cell material_flags/paired_losses + n_clean; matrix-level
+  `per_class_pooled` with paired-seed bootstrap 95% CIs on ADR and loss.
+
 ### Remaining before the corrections PR opens (NOT yet done — net-new infra, do carefully)
-- **W2** — add transcript capture + silence metrics (marker/judge AUC, flag fraction)
-  to the live runner; downgrade H1 silence language until re-measured.
-- **W3 rest** — per-episode logging → pooled per-class ADR + paired-seed bootstrap CIs
-  in every summary; per-cell n surfaced.
 - **W4** — write committed verdict code; run vs frozen H2 predictions (expect P1 fail on
   schema_drift; P2 fail on silent_unit_change/plausible_outlier/superseded); FINDINGS §5.
 - **W1 remainder** — paper "Deviations and clarifications" subsection.
