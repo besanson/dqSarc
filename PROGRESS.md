@@ -198,11 +198,11 @@ written to `reports/VERIFICATION-<date>-<stage>.md`. Nothing fired; $0 spent.
 - **W3 rest (done)** — per-cell material_flags/paired_losses + n_clean; matrix-level
   `per_class_pooled` with paired-seed bootstrap 95% CIs on ADR and loss.
 
-### Remaining before the corrections PR opens (NOT yet done — net-new infra, do carefully)
-- **W4** — write committed verdict code; run vs frozen H2 predictions (expect P1 fail on
-  schema_drift; P2 fail on silent_unit_change/plausible_outlier/superseded); FINDINGS §5.
+- **W4 (done)** — `benchmarks/verdicts.py`; H2 verdict NOT SUPPORTED, reframed (FINDINGS §5).
+- **config_hash (done)** — sha256 over the scientific config stamped in every live summary.
+
+### Remaining before the corrections PR opens
 - **W1 remainder** — paper "Deviations and clarifications" subsection.
-- **config_hash** stamping in the live summary (pinned by the addendum; not yet emitted).
 - **W6** — tag-triggers + verification-gate on the h4/h3/ladder workflows; self-merge attempt.
 - **W7** — rewrite FIRING_CHECKLIST.md → FIRING_PLAN.md (autonomous sequence, corrected costs).
 - **V0** — full pre-merge verification battery; then open the PR. Nothing fired; $0 new spend.

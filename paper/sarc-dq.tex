@@ -319,6 +319,31 @@ governed-source rates flagged as well (\texttt{benchmarks/gigo/CALIBRATION.md}).
 Surfacing which classes lack a public base rate is itself a stated contribution of
 the calibration section.
 
+\section{Deviations and clarifications}
+We disclose deviations from the pre-registration so verdicts are read against a
+transparent record (full detail in \texttt{reports/FINDINGS.md} and
+\texttt{reports/prereg/ADDENDUM-2026-07-09.md}). (i)~\emph{Prompt variant.} The
+experiments were run under the \texttt{policy\_instructed} agent (the explicit
+newsvendor policy, no data-quality language), pinned after an initial
+\texttt{naive}-prompt run returned a uniform-null ADR that reflects decision
+incompetence, not data quality; the variant existed in Phase~0b/0c precisely to remove
+that confound, and both readings are reported. (ii)~\emph{Loss instrumentation.} Loss
+and materiality are measured against the \emph{same agent's} order on the true price
+(the paired Phase~0 definition), not against the theoretical optimum; under the old
+definition an oracle acting on clean data was scored as heavily defective, i.e.\ the
+metric measured the agent's own decision noise rather than corruption. (iii)~\emph{Rate axis.} H1/H2 fix a per-cell corrupted
+count (rate as a stratification label) so per-corrupted metrics rest on an equal $n$;
+H3/H4 keep true rates, which drive their false-block economics. (iv)~\emph{Silence
+sub-claim.} Transcript-based silence metrics were not logged in the pilot runs; H1's
+loss-conversion (P1) is reported, and the silence claim (P2/P3) rests on Phase~0c and is
+marked pending an instrumented re-run. (v)~\emph{H2 outcome.} The strict channel
+conjunction is not supported: the payload/metadata boundary is empirical, the
+measurement reclassifies \texttt{schema\_drift} (gate-dominated) and
+\texttt{superseded\_golden\_record} (payload-detectable), and names two predicate
+coverage gaps (\texttt{silent\_unit\_change}, \texttt{plausible\_outlier}) held as v1.1
+future work rather than patched. All predictions are reported as measured, including
+where they fail.
+
 \section{Reproducibility}
 Exact commands: \texttt{make quality} (lint/type/test), \texttt{make smoke}
 (Phase 0 mock), \texttt{make gigo-verify} (benchmark drift), \texttt{make paper}

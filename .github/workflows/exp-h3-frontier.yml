@@ -11,6 +11,9 @@ on:
         description: "Episodes per condition"
         required: true
         default: "100"
+  push:
+    tags:
+      - "run-h3-frontier-*"
 
 permissions:
   contents: write
@@ -20,6 +23,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verification gate (tag-triggered autonomous firing only)
+        if: startsWith(github.ref, 'refs/tags/run-')
+        run: |
+          if ! grep -qhE "STATUS:.*PASS" reports/VERIFICATION-*.md 2>/dev/null; then
+            echo "::error::no passing reports/VERIFICATION-*.md on the tagged commit"
+            exit 1
+          fi
+          echo "verification gate passed"
       - name: Check ANTHROPIC_API_KEY secret is present
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
