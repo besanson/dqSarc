@@ -150,6 +150,11 @@ def _run_condition_live(
     # optimum) carries the agent's decision noise and is not used for H3/H4.
     losses: list[float] = []  # paired loss over corrupted+completed episodes
     eff_losses: list[float] = []  # over ALL corrupted (blocked/avoided = 0) -> recovery basis
+    # Per-episode records for pooled bootstrap CIs (W3) and silence metrics (W2).
+    material_flags: list[int] = []  # 1/0 material, per corrupted episode
+    flags_corrupt: list[int] = []  # explicit data-problem flag, per corrupted episode
+    marker_corrupt: list[float] = []  # doubt-marker score on corrupted episodes
+    marker_clean: list[float] = []  # doubt-marker score on clean episodes (silence baseline)
     workers = max(1, concurrency)
     with ThreadPoolExecutor(max_workers=workers) as ex:
         for corrupt, o, err in ex.map(worker, range(n_episodes)):
@@ -163,18 +168,25 @@ def _run_condition_live(
                 n_corr += 1
                 if o.detected:
                     detected += 1
-                if o.completed and o.material:
+                is_material = bool(o.completed and o.material)
+                if is_material:
                     material += 1
+                material_flags.append(1 if is_material else 0)
+                flags_corrupt.append(1 if o.flagged_data_problem else 0)
+                marker_corrupt.append(o.marker_score)
                 acted_loss = o.loss_paired if (o.completed and o.loss_paired is not None) else None
                 if acted_loss is not None:
                     losses.append(acted_loss)
                 eff_losses.append(acted_loss if acted_loss is not None else 0.0)
             else:
                 n_clean += 1
+                marker_clean.append(o.marker_score)
                 if not o.completed:
                     false_block += 1
             if o.completed:
                 completed += 1
+    from sarc_dq.metrics import auc
+
     return {
         "adr": material / n_corr if n_corr else 0.0,
         "detection_rate": detected / n_corr if n_corr else 0.0,
@@ -183,11 +195,56 @@ def _run_condition_live(
         "loss_mean_corrupted": round(sum(losses) / len(losses), 4) if losses else 0.0,
         "loss_eff_corrupted": round(sum(eff_losses) / len(eff_losses), 4) if eff_losses else 0.0,
         "n_corrupted": n_corr,
+        "n_clean": n_clean,
         "n_errors": errors,
+        # Silence (H1): AUC of doubt markers separating corrupted from clean, and the
+        # fraction of corrupted episodes the agent explicitly flagged. AUC 0.5 == silent;
+        # None when a cell has no clean (or no corrupt) episodes to discriminate against.
+        "marker_auc": (
+            round(auc(marker_corrupt, marker_clean), 4)
+            if (marker_corrupt and marker_clean)
+            else None
+        ),
+        "flag_fraction": round(sum(flags_corrupt) / n_corr, 4) if n_corr else 0.0,
+        # Per-corrupted-episode series for matrix-level pooled bootstrap CIs.
+        "material_flags": material_flags,
+        "paired_losses": [round(x, 4) for x in eff_losses],
         "usd": round(usd, 6),
         "input_tokens": spend_it,
         "output_tokens": spend_ot,
     }, errors
+
+
+def pooled_stats(matrix: dict[str, Any]) -> dict[str, Any]:
+    """Per-class pooled ADR and effective-loss with paired-seed bootstrap 95% CIs.
+
+    Pools each arm's per-corrupted-episode series across the rate/label cells of a
+    class, so per-class estimates rest on the full n rather than a single (possibly
+    low-n) cell. This is the estimate verdicts read; individual cells stay for detail.
+    """
+    from sarc_dq.metrics import paired_bootstrap_mean
+
+    out: dict[str, Any] = {}
+    for cls, rates in matrix.items():
+        arms: dict[str, dict[str, list[float]]] = {}
+        for cell in rates.values():
+            for arm, m in cell.items():
+                a = arms.setdefault(arm, {"mat": [], "loss": []})
+                a["mat"] += [float(x) for x in m.get("material_flags", [])]
+                a["loss"] += [float(x) for x in m.get("paired_losses", [])]
+        per_arm: dict[str, Any] = {}
+        for arm, series in arms.items():
+            adr = paired_bootstrap_mean(series["mat"]) if series["mat"] else None
+            loss = paired_bootstrap_mean(series["loss"]) if series["loss"] else None
+            per_arm[arm] = {
+                "n_corrupted": len(series["mat"]),
+                "adr": round(adr.point, 4) if adr else 0.0,
+                "adr_ci95": [round(adr.lo, 4), round(adr.hi, 4)] if adr else None,
+                "loss_eff_mean": round(loss.point, 4) if loss else 0.0,
+                "loss_eff_ci95": [round(loss.lo, 4), round(loss.hi, 4)] if loss else None,
+            }
+        out[cls] = per_arm
+    return out
 
 
 def fill_recovery_ratio(matrix: dict[str, Any]) -> None:
@@ -309,6 +366,7 @@ def _run_live_matrix(
                 "max_minutes": max_minutes,
             },
             "matrix": matrix,
+            "per_class_pooled": pooled_stats(matrix),
             "total_usd": round(total_usd, 6),
             "cells_done": len(done),
             "cells_total": len(conditions),

@@ -174,3 +174,18 @@ a zero. It is therefore retained as the "incompetence shield" result (silence do
 not convert to loss when the decider ignores unit cost), with this sampler caveat
 noted. It will still be re-run under the fixed sampler for uniformity before final
 sign-off, but it is not a blocking invalidation.
+
+## 7. Silence sub-claim (H1 P2/P3) — instrumentation added, verdict downgraded
+
+The prior live runs did not log agent transcripts, so H1's silence predictions — P2
+(behavioural-marker AUC and judge AUC ≤ 0.60) and P3 (explicit-flag fraction < 5%) —
+had **no underlying data**. The runner now captures the agent transcript and computes,
+per cell, a **doubt-marker AUC** (corrupted vs clean) and a **flag fraction**
+(`sarc_dq.markers`), carried in every summary (W2). The **LLM-judge AUC** (second
+P2 quantity) requires a paid judge turn per transcript (model pinned in the addendum)
+and is deferred to the re-runs.
+
+Until the instrumented re-runs land, the H1 verdict is stated as: **P1
+(loss-conversion) is supported under `policy_instructed`; the silence claim (P2/P3)
+rests on Phase 0c and is reported as PENDING an instrumented re-run.** This wording
+is used in FINDINGS and must be used in the paper (W1 "Deviations and clarifications").
