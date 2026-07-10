@@ -5,10 +5,11 @@
 > ⚠️ **PIPELINE DRY-RUN, NOT A SCIENTIFIC RESULT.** This run used the offline, deterministic **mock agent + mock judge** (arm=`mock`, $0, no API). It exists to prove the Phase 0 pipeline runs end-to-end and the metrics/kill-criterion wiring is correct. The real H1 question is answered only by the **live** arm (`--arm live`, real Claude), which the human runs on their own infrastructure with an API key. Do **not** cite these numbers.
 
 - **config hash:** `c8202a18b58754d8`
-- **arm:** `mock`  ·  **agent:** `claude-sonnet-5`  ·  **judge:** `claude-haiku-4-5`
+- **arm:** `mock`  ·  **prompt:** `naive`  ·  **agent:** `claude-sonnet-5`  ·  **judge:** `claude-haiku-4-5`
 - **corruption class:** `stale_unit_price` (metadata-borne)
 - **episodes:** 100 corrupted + 100 clean (same seeds)  ·  **scored:** 100  ·  **refusals:** 0  ·  **errors:** 0 (of which unparseable ORDER: 0)
 - **parse-failure rate:** 0.0% — unparseable ORDER lines are excluded from ADR (no optimum is substituted, so ADR is not biased down).
+- **validity precondition (Phase 0c):** 100/100 scored (100%) vs 80% floor — **PASS**
 - **tau_m (materiality):** 0.50% of clean cost
 
 ## Headline
@@ -48,6 +49,23 @@ loss histogram (lower bound of bin | count):
         1420.7 |  0
         1774.1 | ## 2
 ```
+
+## Decision elasticity (Phase 0b, P4)
+
+Median of Δq_agent / Δq_oracle across episodes with a materially non-zero oracle order change — how much the agent's order *moves with* the (stale) price relative to a perfect solver. ~1.0 = fully elastic (inherits the corruption); ~0 = inelastic (ignores the price).
+
+- **agent elasticity (median):** 0.994 (over 97 episodes with |Δq_oracle| ≥ 1 unit)
+
+## Clean-arm regret vs oracle
+
+Agent clean-arm cost − oracle clean-arm cost: pure decision noise on the *uncorrupted* price, independent of any corruption. Large regret means the agent is a poor newsvendor solver even with good data.
+
+- median -0.74  ·  P90 8.55  ·  mean -0.35 (currency)
+
+## Parse-failure autopsy
+
+- **failed pairs:** 0  ·  by arm — clean 0, corrupt 0, both 0
+- No failed pairs: every episode produced a parseable order on both arms.
 
 ## Judge validation (20 hand-checkable cases)
 
