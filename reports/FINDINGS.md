@@ -139,3 +139,38 @@ Phase 0 was built on; (b) the arm-E control (0.73 on clean data → 0.00) transp
 proves the original metric was measuring noise. The paper's methods section states
 this and shows the control. The pre-registered predictions are reported as measured —
 including H1 not clearing its bar.
+
+## 6. Rate-cell sampling bug — h1-full and h2-detection runs marked INVALID
+
+A second instrumentation bug was found after §2a. The benchmark drew the
+corruption coin from a **rate-independent** seed, so corrupted-episode sets were
+**nested** across rates and **byte-identical** where no draw fell between two
+adjacent rates: the 0.02 and 0.05 cells shared the exact same five episodes
+`{20,26,53,61,83}` with the same injected values. The rate axis was not producing
+independent samples; the low-rate cells were degenerate. Fixed by
+`sarc_dq.substrate.corruption_decision` (rate-dependent mask/injection; shared
+episode population), used by both the live and mock paths; proof and gate in
+`reports/VERIFICATION-2026-07-09-W3.md`.
+
+**INVALID results (produced under the buggy sampler — do not cite):**
+
+| results branch | SHA | spend | status |
+|---|---|---|---|
+| `results/h1-full-live` | `2993ece` | \$32.22 | **INVALID** — re-run under fixed sampler |
+| `results/h2-detection-live` | `a37bf0b` | \$56.60 | **INVALID** — re-run under fixed sampler |
+
+**Figures explicitly WITHDRAWN** (they came from the invalid `h1-full` policy run
+at `2993ece`): the metadata-borne mean ADR of **0.585**, the **16/16** cells-clear-
+20% count, and the **\$1,080** `silent_unit_change` loss. These must not appear in
+the paper or any summary until re-measured under the corrected sampler; the
+generated macros render `[pending]` in the meantime.
+
+**Retained with a caveat — the naive-null run.** The \$13.12 `naive`-prompt h1-full
+run also used the buggy sampler, but its result is a **uniform zero** ADR across all
+eight classes and four rates (the price-inelastic decider never converts corruption
+to a material order defect). A uniform-zero outcome is **insensitive to which
+episodes are corrupted or to cell nesting** — degeneracy cannot manufacture or hide
+a zero. It is therefore retained as the "incompetence shield" result (silence does
+not convert to loss when the decider ignores unit cost), with this sampler caveat
+noted. It will still be re-run under the fixed sampler for uniformity before final
+sign-off, but it is not a blocking invalidation.

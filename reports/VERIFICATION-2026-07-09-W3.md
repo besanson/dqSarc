@@ -77,3 +77,20 @@ verdict may be issued, and no further experiment fired, until that is complete a
 this consequence is resolved in the addendum (W1).
 
 ## STATUS: W3 core PASS. Corrections PR INCOMPLETE — see PROGRESS.md. Nothing fired; $0 spent.
+
+## Spend ledger (required; `python scripts/spend_ledger.py`)
+
+```
+SPEND LEDGER — envelope $1000
+  phase0 (0a+0b+0c)            $    5.13  [frozen pilot]
+  h1-full                      $   32.22  prompt=policy_instructed sampling=None   [INVALID §6]
+  h1-ladder                    $  120.32  prompt=None sampling=None
+  h2-detection                 $   56.60  prompt=None sampling=None                [INVALID §6]
+  h3-frontier                  $   54.13  prompt=None sampling=None
+  h4-recovery                  $   36.75  prompt=None sampling=None
+  ablations                    $   11.98  prompt=None sampling=None
+  RUNNING TOTAL                $  317.13  (31.7% of envelope)
+```
+
+Note: h1-full and h2-detection ($88.82) are INVALID (§6) and will be re-spent under
+the corrected sampler; the envelope accounting keeps the sunk spend visible.

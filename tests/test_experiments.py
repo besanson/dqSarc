@@ -259,6 +259,18 @@ def test_h1_ladder_sweeps_four_models() -> None:
     assert set(any_cell) == set(LADDER_MODELS)
 
 
+def test_h1_h2_use_fixed_n_others_use_rate() -> None:
+    # Rate-axis design (addendum 2026-07-09): H1/H2 fix n_corrupted per cell (rate is a
+    # stratification label); H3/H4/ablations keep true rates.
+    fixed = run("h1-full", n_episodes=100, arm_mode="live", fake=True)
+    assert fixed["config"]["sampling"] == "fixed_n" and fixed["config"]["fixed_n"] == 25
+    cell = next(iter(next(iter(fixed["matrix"].values())).values()))
+    assert cell["A"]["n_corrupted"] == 25  # exactly the fixed count, every cell
+
+    rated = run("h3-frontier", n_episodes=100, arm_mode="live", fake=True)
+    assert rated["config"]["sampling"] == "rate" and rated["config"]["fixed_n"] is None
+
+
 def test_every_experiment_has_a_prereg() -> None:
     from pathlib import Path
 

@@ -34,6 +34,12 @@ from sarc_dq.taxonomy import registered
 # v1 an oracle acting on clean data scored ADR 0.73).
 LOSS_MODEL = "paired-counterfactual-v2"
 
+# Rate-axis design (prereg addendum 2026-07-09). H1/H2 fix the corrupted count per cell
+# (rate becomes a stratification label) so ADR/detection rest on an equal n; the others
+# keep true rates because rate drives the false-block economics they measure.
+FIXED_N_CORRUPTED = 25
+FIXED_N_EXPERIMENTS = frozenset({"h1-full", "h1-ladder", "h2-detection"})
+
 # exp id -> (arms exercised, one-line intent). Classes default to all 8.
 EXPERIMENTS: dict[str, tuple[tuple[str, ...], str]] = {
     "h1-full": (("A",), "silence: all classes, no gate"),
@@ -56,19 +62,30 @@ def _json_safe(obj: Any) -> Any:
     return obj
 
 
-def _episode_evidence(cls: Any, rate: float, i: int, base_seed: int) -> tuple[Any, bool, Any]:
+def _episode_evidence(
+    cls: Any,
+    rate: float,
+    i: int,
+    base_seed: int,
+    *,
+    n_episodes: int | None = None,
+    fixed_n: int | None = None,
+) -> tuple[Any, bool, Any]:
     """Deterministic (episode, corrupt, evidence) for episode index ``i``.
 
     The corruption mask and injection are drawn from a RATE-dependent stream
     (``corruption_decision``) so each ``(class, rate)`` cell is an independent sample,
-    not the nested subsets a rate-independent draw produced.
+    not the nested subsets a rate-independent draw produced. With ``fixed_n`` set, the
+    cell corrupts exactly ``fixed_n`` episodes (rate as a stratification label).
     """
     import random
 
     from sarc_dq.substrate import corruption_decision, episode_seed, make_episode
 
     episode = make_episode(episode_seed(base_seed, i), i)
-    corr_seed, corrupt = corruption_decision(base_seed, i, rate)
+    corr_seed, corrupt = corruption_decision(
+        base_seed, i, rate, n_episodes=n_episodes, fixed_n=fixed_n
+    )
     if corrupt:
         inj = cls.inject(episode.clean_price_record(), episode, random.Random(corr_seed + 1))
         evidence = inj.evidence_set()
@@ -88,6 +105,7 @@ def _run_condition_live(
     critic: Any,
     concurrency: int,
     prompt_variant: str = "naive",
+    fixed_n: int | None = None,
 ) -> tuple[dict[str, Any], int]:
     """Run one (class, rate, arm) condition. Episodes run concurrently — the calls
     are network-bound, so a bounded thread pool cuts wall-clock time by ~``concurrency``.
@@ -102,7 +120,9 @@ def _run_condition_live(
 
     def worker(i: int) -> tuple[bool, Any, BaseException | None]:
         seed = (base_seed * 1_000_003 + i) & 0x7FFFFFFF
-        episode, corrupt, evidence = _episode_evidence(cls, rate, i, base_seed)
+        episode, corrupt, evidence = _episode_evidence(
+            cls, rate, i, base_seed, n_episodes=n_episodes, fixed_n=fixed_n
+        )
         buf = GovernedBuffer({episode.sku: episode.true_unit_cost})
         try:
             o = apply_arm_live(
@@ -201,6 +221,7 @@ def _run_live_matrix(
     error_budget: int = 16,
     ladder_models: tuple[str, ...] | None = None,
     prompt_variant: str = "naive",
+    fixed_n: int | None = None,
 ) -> dict[str, Any]:
     """Live class × rate × {arm | ladder-model} matrix via ``apply_arm_live``.
 
@@ -249,7 +270,14 @@ def _run_live_matrix(
     # h1-full, where the agent is price-inelastic) is not comparable to a
     # policy_instructed run and must be recomputed fresh, not resumed.
     prompt_matches = prior_cfg.get("prompt_variant", "naive") == prompt_variant
-    if resume_from is not None and axis_matches and loss_matches and prompt_matches:
+    sampling_matches = prior_cfg.get("fixed_n", None) == fixed_n
+    if (
+        resume_from is not None
+        and axis_matches
+        and loss_matches
+        and prompt_matches
+        and sampling_matches
+    ):
         prior_matrix = resume_from.get("matrix")
         if isinstance(prior_matrix, dict):
             matrix = prior_matrix
@@ -274,6 +302,8 @@ def _run_live_matrix(
                 "axis_kind": "ladder_models" if ladder_models else "arms",
                 "loss_model": LOSS_MODEL,
                 "prompt_variant": prompt_variant,
+                "sampling": "fixed_n" if fixed_n is not None else "rate",
+                "fixed_n": fixed_n,
                 "fake": fake,
                 "concurrency": concurrency,
                 "max_minutes": max_minutes,
@@ -307,6 +337,7 @@ def _run_live_matrix(
             critic=critic,
             concurrency=concurrency,
             prompt_variant=prompt_variant,
+            fixed_n=fixed_n,
         )
         errors_total += n_err
         matrix.setdefault(cls_name, {}).setdefault(rk, {})[label] = per_arm
@@ -345,6 +376,10 @@ def run(
 
         # H1 ladder sweeps models (arm A each); every other kit sweeps its arms.
         ladder = LADDER_MODELS if exp == "h1-ladder" else None
+        # Rate-axis design (addendum 2026-07-09): H1/H2 fix n_corrupted per cell (rate is
+        # a stratification label) so per-corrupted metrics (ADR, detection) have equal n;
+        # H3/H4/ablations keep true rates (rate drives the false-block economics there).
+        fixed_n = FIXED_N_CORRUPTED if exp in FIXED_N_EXPERIMENTS else None
         note = (
             "LIVE via apply_arm_live with FAKE agent/critic ($0 pipeline check)"
             if fake
@@ -377,6 +412,7 @@ def run(
             on_checkpoint=checkpoint,
             ladder_models=ladder,
             prompt_variant=prompt_variant,
+            fixed_n=fixed_n,
         )
         result = {**envelope, **matrix}
         if out_path:  # always persist the final summary, even if no condition ran
