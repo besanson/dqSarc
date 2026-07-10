@@ -18,6 +18,7 @@ the paired ``reports/prereg/<exp>.md``; nothing here invents a scientific result
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -349,19 +350,40 @@ def _run_live_matrix(
     errors_total = 0
     conditions = [(c, r, lbl) for c in registered() for r in RATES for lbl in axis]
 
+    from sarc_dq.config import TAU_M_DEFAULT
+    from sarc_dq.live_arms import AGENT_MODEL, CRITIC_MODEL
+
+    models: dict[str, Any] = (
+        {"ladder": list(ladder_models)}
+        if ladder_models
+        else {"agent": AGENT_MODEL, "critic": CRITIC_MODEL}
+    )
+
     def snapshot() -> dict[str, Any]:
         fill_recovery_ratio(matrix)
+        # config_hash pins the scientific config (addendum B): a run whose hash differs
+        # from the addendum is INVALID. Operational fields (concurrency, max_minutes) are
+        # excluded — they do not affect results.
+        sci = {
+            "n_episodes": n_episodes,
+            "base_seed": base_seed,
+            "axis": axis,
+            "axis_kind": "ladder_models" if ladder_models else "arms",
+            "loss_model": LOSS_MODEL,
+            "prompt_variant": prompt_variant,
+            "sampling": "fixed_n" if fixed_n is not None else "rate",
+            "fixed_n": fixed_n,
+            "tau_m": TAU_M_DEFAULT,
+            "models": models,
+            "fake": fake,
+        }
+        config_hash = hashlib.sha256(json.dumps(sci, sort_keys=True).encode("utf-8")).hexdigest()[
+            :16
+        ]
         return {
             "config": {
-                "n_episodes": n_episodes,
-                "base_seed": base_seed,
-                "axis": axis,
-                "axis_kind": "ladder_models" if ladder_models else "arms",
-                "loss_model": LOSS_MODEL,
-                "prompt_variant": prompt_variant,
-                "sampling": "fixed_n" if fixed_n is not None else "rate",
-                "fixed_n": fixed_n,
-                "fake": fake,
+                **sci,
+                "config_hash": config_hash,
                 "concurrency": concurrency,
                 "max_minutes": max_minutes,
             },

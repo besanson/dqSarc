@@ -140,6 +140,50 @@ proves the original metric was measuring noise. The paper's methods section stat
 this and shows the control. The pre-registered predictions are reported as measured —
 including H1 not clearing its bar.
 
+## 5. H2 verdict (failed-then-reframed)
+
+The committed verdict code (`benchmarks/verdicts.py`) run against
+`results/h2-detection-live` gives **H2: NOT SUPPORTED** (P1 FAIL, P2 FAIL):
+
+```
+  class                          chan             C     D   result
+  cross_source_contradiction     payload-visible  1.00  1.00  pass  [P1 |C-D|=0.00<=0.15]
+  duplicate_vendor_conflicting.. payload-visible  0.02  0.00  pass  [P1 |C-D|=0.02<=0.15]
+  missing_mandatory_field        payload-visible  0.77  1.00  FAIL  [P1 |C-D|=0.23>0.15]
+  plausible_outlier              metadata-borne   0.00  0.00  FAIL  [P2 D=0.00<0.80]
+  schema_drift                   payload-visible   0.00  1.00  FAIL  [P1 |C-D|=1.00>0.15]
+  silent_unit_change             metadata-borne   0.00  0.00  FAIL  [P2 D=0.00<0.80]
+  stale_master_data              metadata-borne   0.00  1.00  pass  [P2 C=0.00, D=1.00]
+  superseded_golden_record       metadata-borne   1.00  1.00  FAIL  [P2 C=1.00>0.10]
+```
+
+(This run is under the buggy sampler — §6 — so the verdict is INVALID for final sign-off
+and will be re-issued on the corrected `policy_instructed`/fixed-n re-run; detection is
+per-corrupted and class-stable, so the qualitative reframe below is expected to hold.)
+
+**Reframe — the payload/metadata channel boundary is empirical, not definitional.**
+H2 was pre-registered assuming a clean split: payload-visible ⇒ C≈D, metadata-borne ⇒
+C≪D. The measurement refutes that clean split and, more usefully, *reclassifies by
+behaviour*:
+
+- **`schema_drift`** (labelled payload-visible) behaves metadata-borne for detection:
+  the payload-only critic never flags it (C=0.00) while the gate always does (D=1.00) —
+  a renamed/retyped field is a *schema* signal the deterministic gate reads and the
+  content critic misses. **The gate strictly dominates.**
+- **`superseded_golden_record`** (labelled metadata-borne) is detectable from payload:
+  the conflicting companion record lets the critic flag it (C=1.00). The channel label
+  was wrong, not the gate.
+- **Two named predicate-coverage gaps:** `silent_unit_change` and `plausible_outlier`
+  are missed by **both** arms (D=0.00) — the v1 gate has no unit-consistency or
+  in-range-outlier predicate. Reported as a result and documented as **v1.1 future
+  work** (addendum D / W5); the gate is not patched to rescue the prediction.
+
+So the strict H2 conjunction fails, but the load-bearing claim survives on the classes
+where the gate *has* a predicate (freshness `stale_master_data`, schema `schema_drift`):
+a cheap metadata-aware gate catches defects a frontier payload-only critic structurally
+cannot. The failures are informative — they map where the boundary actually lies and
+where the gate needs a predicate — not fatal.
+
 ## 6. Rate-cell sampling bug — h1-full and h2-detection runs marked INVALID
 
 A second instrumentation bug was found after §2a. The benchmark drew the
