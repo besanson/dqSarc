@@ -196,12 +196,21 @@ independent samples; the low-rate cells were degenerate. Fixed by
 episode population), used by both the live and mock paths; proof and gate in
 `reports/VERIFICATION-2026-07-09-W3.md`.
 
-**INVALID results (produced under the buggy sampler — do not cite):**
+**INVALID results — the entire first wave (do not cite):**
 
-| results branch | SHA | spend | status |
+| results branch | SHA | spend | grounds |
 |---|---|---|---|
-| `results/h1-full-live` | `2993ece` | \$32.22 | **INVALID** — re-run under fixed sampler |
-| `results/h2-detection-live` | `a37bf0b` | \$56.60 | **INVALID** — re-run under fixed sampler |
+| `results/h1-full-live` | `2993ece` | \$32.22 | buggy sampler |
+| `results/h2-detection-live` | `a37bf0b` | \$56.60 | pre-fix loss metric, naive prompt, buggy sampler |
+| `results/h3-frontier-live` | `0a6f545` | \$54.13 | pre-fix loss metric, naive prompt, buggy sampler |
+| `results/h4-recovery-live` | `5fc430f` | \$36.75 | pre-fix loss metric, naive prompt, buggy sampler |
+| `results/h1-ladder-live` | `e47f55e` | \$120.32 | naive prompt, buggy sampler |
+| `results/ablations-live` | `47c334d` | \$11.98 | naive prompt, buggy sampler |
+
+**All first-wave experiment runs are invalid and retained on their branches for
+audit.** They are superseded by the corrected re-runs (`policy_instructed`, paired
+loss, fixed sampler / fixed-n where applicable) per `reports/FIRING_PLAN.md`; the
+generated macros render `[pending]` until those land.
 
 **Figures explicitly WITHDRAWN** (they came from the invalid `h1-full` policy run
 at `2993ece`): the metadata-borne mean ADR of **0.585**, the **16/16** cells-clear-
