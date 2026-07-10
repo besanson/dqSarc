@@ -25,19 +25,27 @@ under `policy_instructed`. So the corrected campaign re-runs the full set.
 
 | # | workflow | sampling | est. $ | verify before firing |
 |---|---|---|---|---|
-| 1 | `exp-h1-full` | fixed_n=25 | ~\$32 | corrections PR merged; V0 passed |
-| 2 | `exp-h2-detection` | fixed_n=25 | ~\$57 | stage 1 VERIFICATION pass + ledger |
-| 3 | `exp-h4-recovery` | rate | ~\$90 | stage 2 pass + ledger |
-| 4 | `exp-h3-frontier` | rate | ~\$140 | stage 3 pass + ledger |
-| 5 | `exp-h1-ladder` | fixed_n=25 | ~\$300 ⚠️ | stage 4 pass + ledger; **subsample** |
+| # | workflow | sampling | agent+critic | judge | stage est. | gate |
+|---|---|---|---|---|---|---|
+| 1 | `exp-h1-full` | fixed_n=25 | ~\$32 | ~\$4 | **~\$36** | PR merged; V0.1 passed |
+| 2 | `exp-h2-detection` | fixed_n=25 | ~\$57 | ~\$12 | **~\$69** | stage 1 pass + ledger |
+| 3 | `exp-h4-recovery` | rate | ~\$90 | ~\$12 | **~\$102** | stage 2 pass + ledger |
+| 4 | `exp-h3-frontier` | rate | ~\$140 | ~\$12 | **~\$152** | stage 3 pass + ledger |
+| 5 | `exp-h1-ladder` | fixed_n=25 | ~\$300 | ~\$16 | **~\$316** ⚠️ | stage 4 pass + ledger; **trim** |
 
-⚠️ The 4-model ladder at 100 episodes projects **over its \$250 cap** (policy_instructed
-roughly tripled per-call cost). Subsample to ~60 episodes or rates {label subset} so the
-projection lands under the cap; the workflow stops-and-reports if it would exceed.
+**Judge-scoring cost (addendum B / reviewer).** Every stage now includes a
+`claude-haiku-4-5` **judge turn per transcript, both arms** (the agent's order transcript
+and its clean-price counterfactual), for the H1 silence AUC. Modelled at ~\$0.001/judge
+turn (short transcript in, a score out) × the agent-transcript count.
 
-Envelope: sunk spend is **\$317** (incl. the two invalid runs); the corrected re-runs add
-~\$620, for ~\$0.94k against the **\$1000** cap — tight. `python scripts/spend_ledger.py`
-is pasted in every VERIFICATION report; a stage that would cross the envelope does not fire.
+**Envelope arithmetic.** Sunk first-wave spend (all INVALID, still on branches) is
+**\$317**. Corrected re-runs at full scale total **~\$675** (incl. judge), so
+\$317 + \$675 = **~\$992** — at the ragged edge of the **\$1000** cap, and over it once
+estimate uncertainty (±30%) is admitted. **The addendum C.1 Fable-trim rule therefore
+applies to stage 5** (halve the Fable-5 cell count — Fable is the cost driver), bringing
+the ladder to ~\$240 and the campaign to **~\$0.92k**, safely under. `python
+scripts/spend_ledger.py` is pasted in every VERIFICATION report; a stage whose ledger +
+remaining estimates would cross \$1000 does not fire until trimmed per C.1.
 
 ## Per-stage procedure (autonomous)
 
