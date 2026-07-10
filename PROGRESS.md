@@ -165,3 +165,46 @@ Total live spend: **$5.1331**.
 1. Taxonomy v0 revision pass (Part 1: `reports/TAXONOMY_REVISION_GUIDE.md`).
 2. Fire the experiment workflows (Part 4) and land results branches.
 3. Claims sign-off on the paper (Part 5) before the DRAFT watermark comes off.
+
+---
+
+## Autonomous corrections program (2026-07-09) — IN PROGRESS
+
+Working the CLAUDE_CODE_AUTONOMOUS_CORRECTIONS_AND_RUNS brief (W1–W7 + verification,
+then staged firing). Mode: human does not review; every check is executed as code and
+written to `reports/VERIFICATION-<date>-<stage>.md`. Nothing fired; $0 spent.
+
+**Merged before this program:** #10 (paired counterfactual loss + materiality),
+#11 (policy_instructed prompt — competent, metadata-blind decider).
+
+### Done (committed to branch claude/new-session-f1dhsq)
+- **W3 core** — rate-cell sampling independence (`corruption_decision`); live+mock;
+  GIGO regenerated; regression tests. `reports/VERIFICATION-2026-07-09-W3.md`.
+- **FINDINGS §6** — sampler bug; h1-full (2993ece) + h2-detection (a37bf0b) marked
+  INVALID by SHA; 0.585 / 16-16 / $1,080 withdrawn; naive-null retained w/ caveat.
+- **ADDENDUM-2026-07-09** (= W1 a/b/c + W5 + GIGO note + elevated naive-null) and the
+  **fixed-n sampler** (`stratified_corrupt_indices`; H1/H2 fixed_n=25, others true
+  rate; config stamps sampling/fixed_n; resume guards on it).
+- **Spend ledger** (`scripts/spend_ledger.py`; $317.13 / 31.7%) + **VERIFICATION_METHOD.md**
+  (amended V0 freeze check + ledger requirement). Gate green: ruff, mypy(39), 94 pytest, gigo.
+
+### Blocking consequence (recorded in FINDINGS §6 / addendum)
+- `results/h1-full-live` ($32.22) and `results/h2-detection-live` ($56.60) ran under the
+  buggy sampler → INVALID → must be re-run under the fixed sampler. Adds ~$89 to the plan.
+
+- **W2 (done)** — transcript capture + per-cell marker AUC + flag fraction in the runner;
+  FINDINGS §7 downgrades H1 silence (P2/P3 PENDING instrumented re-run). LLM-judge AUC
+  deferred (model pinned in addendum).
+- **W3 rest (done)** — per-cell material_flags/paired_losses + n_clean; matrix-level
+  `per_class_pooled` with paired-seed bootstrap 95% CIs on ADR and loss.
+
+- **W4 (done)** — `benchmarks/verdicts.py`; H2 verdict NOT SUPPORTED, reframed (FINDINGS §5).
+- **config_hash (done)** — sha256 over the scientific config stamped in every live summary.
+
+### Remaining before the corrections PR opens
+- **W1 remainder** — paper "Deviations and clarifications" subsection.
+- **W6** — tag-triggers + verification-gate on the h4/h3/ladder workflows; self-merge attempt.
+- **W7** — rewrite FIRING_CHECKLIST.md → FIRING_PLAN.md (autonomous sequence, corrected costs).
+- **V0** — full pre-merge verification battery; then open the PR. Nothing fired; $0 new spend.
+
+### Human items (unchanged): claims sign-off + arXiv upload remain the only human acts.

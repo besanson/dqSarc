@@ -185,3 +185,60 @@ def make_episode(seed: int, index: int) -> Episode:
         now_day=now_day,
         realised_demand=realised_demand,
     )
+
+
+def episode_seed(base_seed: int, i: int) -> int:
+    """Rate-independent per-episode seed (shared episode population across rates)."""
+    return (base_seed * 1_000_003 + i) & 0x7FFFFFFF
+
+
+def _corr_seed(base_seed: int, i: int, rate: float) -> int:
+    rate_key = int(round(rate * 1_000_000))
+    return (episode_seed(base_seed, i) * 2_654_435_761 + rate_key) & 0x7FFFFFFF
+
+
+def stratified_corrupt_indices(
+    base_seed: int, rate: float, n_episodes: int, fixed_n: int
+) -> frozenset[int]:
+    """The exact ``fixed_n`` corrupted episode indices for a fixed-count cell.
+
+    Used when ``rate`` is a **stratification label** rather than a prevalence: each
+    cell corrupts exactly ``fixed_n`` episodes (chosen by a rate-seeded shuffle), so
+    per-corrupted metrics (ADR, detection) have a stable, equal n across cells. The
+    per-rate seed keeps the four label cells independent (not the same episodes).
+    """
+    rate_key = int(round(rate * 1_000_000))
+    idxs = list(range(n_episodes))
+    random.Random((base_seed * 40_503 + rate_key) & 0x7FFFFFFF).shuffle(idxs)
+    return frozenset(idxs[: min(fixed_n, n_episodes)])
+
+
+def corruption_decision(
+    base_seed: int,
+    i: int,
+    rate: float,
+    *,
+    n_episodes: int | None = None,
+    fixed_n: int | None = None,
+) -> tuple[int, bool]:
+    """Corruption draw for episode ``i``. Returns ``(corr_seed, corrupt)``.
+
+    Default (``fixed_n=None``): a rate-DEPENDENT Bernoulli draw at probability ``rate``
+    — so each ``(class, rate)`` cell is an INDEPENDENT sample. A rate-independent draw
+    (the pre-fix behaviour) made the corrupted sets nested across rates and byte-
+    identical whenever no draw fell between two adjacent rates (0.02 and 0.05 shared
+    the same five episodes). The episode itself (``episode_seed``) stays rate-
+    independent, so the demand population is shared while the corruption mask is not.
+
+    Fixed-count (``fixed_n`` set, needs ``n_episodes``): exactly ``fixed_n`` episodes
+    per cell are corrupted (rate as a stratification label). Used by the H1/H2 re-runs
+    so ADR/detection rest on an equal n per cell (addendum 2026-07-09).
+    """
+    corr_seed = _corr_seed(base_seed, i, rate)
+    if fixed_n is not None:
+        if n_episodes is None:
+            raise ValueError("fixed_n requires n_episodes")
+        corrupt = i in stratified_corrupt_indices(base_seed, rate, n_episodes, fixed_n)
+    else:
+        corrupt = random.Random(corr_seed).random() < rate
+    return corr_seed, corrupt

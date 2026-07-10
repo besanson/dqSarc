@@ -259,6 +259,33 @@ def test_h1_ladder_sweeps_four_models() -> None:
     assert set(any_cell) == set(LADDER_MODELS)
 
 
+def test_h1_h2_use_fixed_n_others_use_rate() -> None:
+    # Rate-axis design (addendum 2026-07-09): H1/H2 fix n_corrupted per cell (rate is a
+    # stratification label); H3/H4/ablations keep true rates.
+    fixed = run("h1-full", n_episodes=100, arm_mode="live", fake=True)
+    assert fixed["config"]["sampling"] == "fixed_n" and fixed["config"]["fixed_n"] == 25
+    cell = next(iter(next(iter(fixed["matrix"].values())).values()))
+    assert cell["A"]["n_corrupted"] == 25  # exactly the fixed count, every cell
+
+    rated = run("h3-frontier", n_episodes=100, arm_mode="live", fake=True)
+    assert rated["config"]["sampling"] == "rate" and rated["config"]["fixed_n"] is None
+
+
+def test_summary_carries_silence_and_pooled_ci() -> None:
+    # W2: per-cell silence metrics (marker AUC, flag fraction). W3: matrix-level pooled
+    # per-class ADR with a paired-seed bootstrap 95% CI, on the full pooled n.
+    out = run("h1-full", n_episodes=100, arm_mode="live", fake=True)
+    cell = next(iter(next(iter(out["matrix"].values())).values()))["A"]
+    assert "marker_auc" in cell and "flag_fraction" in cell
+    assert len(cell["material_flags"]) == cell["n_corrupted"]
+    pooled = out["per_class_pooled"]
+    any_arm = next(iter(next(iter(pooled.values())).values()))
+    assert any_arm["adr_ci95"] is not None and len(any_arm["adr_ci95"]) == 2
+    assert any_arm["adr_ci95"][0] <= any_arm["adr"] <= any_arm["adr_ci95"][1]
+    # FakeAgent expresses no doubt -> marker AUC is the silent baseline (~0.5).
+    assert cell["marker_auc"] == 0.5
+
+
 def test_every_experiment_has_a_prereg() -> None:
     from pathlib import Path
 

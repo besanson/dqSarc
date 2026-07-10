@@ -36,6 +36,7 @@ from typing import Any, Protocol
 from sarc_dq.agent.base import OUTCOME_ERROR, OUTCOME_OK, AgentDecision
 from sarc_dq.agent.base import Agent as AgentProto
 from sarc_dq.gate import PreActionGate
+from sarc_dq.markers import extract
 from sarc_dq.pricing import usd_for
 from sarc_dq.records import EvidenceRecord
 from sarc_dq.substrate import Episode
@@ -84,6 +85,10 @@ class LiveArmOutcome:
     # (Phase 0a clean-regret) cancels and only the corruption effect remains. Set on
     # completed corrupted episodes; None otherwise (arm E is 0 by construction).
     loss_paired: float | None = None
+    # Silence signal (H1): doubt-marker count and explicit data-problem flag extracted
+    # from the agent's own transcript. 0 / False when no agent turn ran (e.g. blocked).
+    marker_score: float = 0.0
+    flagged_data_problem: bool = False
 
 
 def _price(record: EvidenceRecord) -> float | None:
@@ -98,26 +103,35 @@ def _decide_order(
     *,
     advisory: bool,
     prompt_variant: str = "naive",
-) -> tuple[float | None, str, float, int, int]:
-    """Return (order_qty, outcome_class, usd, in_tok, out_tok) from a real agent turn.
+) -> tuple[float | None, str, float, int, int, str]:
+    """Return (order_qty, outcome_class, usd, in_tok, out_tok, transcript) from a turn.
 
     A refusal or error yields ``order_qty=None`` (no action executes) and is carried
-    as its own outcome class — never scored as a defect.
+    as its own outcome class — never scored as a defect. The transcript is returned so
+    the caller can score silence markers (expressed doubt) on the agent's own words.
     """
     try:
         decision = agent.decide(episode, record, advisory=advisory, prompt_variant=prompt_variant)
     except (KeyError, ValueError, TypeError):
         # A malformed payload (schema drift / missing field) can't form a normal
         # decision context — carried as an error outcome, never a defect.
-        return None, OUTCOME_ERROR, 0.0, 0, 0
+        return None, OUTCOME_ERROR, 0.0, 0, 0, ""
     if decision.outcome != OUTCOME_OK:
-        return None, decision.outcome, decision.usd, decision.input_tokens, decision.output_tokens
+        return (
+            None,
+            decision.outcome,
+            decision.usd,
+            decision.input_tokens,
+            decision.output_tokens,
+            decision.transcript,
+        )
     return (
         decision.order_qty,
         OUTCOME_OK,
         decision.usd,
         decision.input_tokens,
         decision.output_tokens,
+        decision.transcript,
     )
 
 
@@ -180,10 +194,12 @@ def apply_arm_live(
         extra_it: int = 0,
         extra_ot: int = 0,
     ) -> LiveArmOutcome:
-        order, oc, usd, it, ot = _decide_order(
+        order, oc, usd, it, ot, transcript = _decide_order(
             agent, episode, record, advisory=advisory, prompt_variant=prompt_variant
         )
         usd, it, ot = usd + extra_usd, it + extra_it, ot + extra_ot
+        # Silence markers: does the agent express doubt about the data in its own words?
+        mk = extract(transcript)
         if order is None:  # refusal / error — no action; not a defect
             return LiveArmOutcome(
                 arm=arm,
@@ -200,6 +216,8 @@ def apply_arm_live(
                 input_tokens=it,
                 output_tokens=ot,
                 evidence_ids=eids,
+                marker_score=mk.marker_score,
+                flagged_data_problem=mk.flagged_data_problem,
             )
         loss = episode.realised_cost(order) - clean_cost
         bp = believed if believed is not None else _price(record)
@@ -219,7 +237,7 @@ def apply_arm_live(
                     primary.metadata,
                     dict(primary.ground_truth),
                 )
-                c_order, _c_oc, c_usd, c_it, c_ot = _decide_order(
+                c_order, _c_oc, c_usd, c_it, c_ot, _c_tx = _decide_order(
                     agent, episode, true_rec, advisory=False, prompt_variant=prompt_variant
                 )
                 usd, it, ot = usd + c_usd, it + c_it, ot + c_ot
@@ -248,6 +266,8 @@ def apply_arm_live(
             output_tokens=ot,
             evidence_ids=eids,
             loss_paired=loss_paired,
+            marker_score=mk.marker_score,
+            flagged_data_problem=mk.flagged_data_problem,
         )
 
     if arm == "A":

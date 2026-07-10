@@ -32,7 +32,7 @@ from sarc_dq.dq_spec import load_spec
 from sarc_dq.gate import GovernedBuffer, PreActionGate
 from sarc_dq.metrics import quantiles
 from sarc_dq.records import EvidenceRecord
-from sarc_dq.substrate import Episode, make_episode
+from sarc_dq.substrate import Episode, corruption_decision, episode_seed, make_episode
 from sarc_dq.taxonomy import get as get_class
 
 ARMS = ("A", "B", "C", "D", "E", "F")
@@ -188,13 +188,14 @@ def run_condition(
     corrupted_flags: list[bool] = []
 
     for i in range(n_episodes):
-        seed = (base_seed * 1_000_003 + i) & 0x7FFFFFFF
+        seed = episode_seed(base_seed, i)
         episode = make_episode(seed, i)
         clean_rec = episode.clean_price_record()
-        crng = random.Random(seed)
-        corrupt = crng.random() < rate
+        # Rate-dependent corruption draw so each (class, rate) cell is an independent
+        # sample (not the nested/duplicate cells a rate-independent draw produced).
+        corr_seed, corrupt = corruption_decision(base_seed, i, rate)
         if corrupt:
-            inj = cls.inject(clean_rec, episode, random.Random(seed + 1))
+            inj = cls.inject(clean_rec, episode, random.Random(corr_seed + 1))
             evidence: tuple[EvidenceRecord, ...] = inj.evidence_set()
         else:
             evidence = (clean_rec,)

@@ -139,3 +139,97 @@ Phase 0 was built on; (b) the arm-E control (0.73 on clean data → 0.00) transp
 proves the original metric was measuring noise. The paper's methods section states
 this and shows the control. The pre-registered predictions are reported as measured —
 including H1 not clearing its bar.
+
+## 5. H2 verdict (failed-then-reframed)
+
+The committed verdict code (`benchmarks/verdicts.py`) run against
+`results/h2-detection-live` gives **H2: NOT SUPPORTED** (P1 FAIL, P2 FAIL):
+
+```
+  class                          chan             C     D   result
+  cross_source_contradiction     payload-visible  1.00  1.00  pass  [P1 |C-D|=0.00<=0.15]
+  duplicate_vendor_conflicting.. payload-visible  0.02  0.00  pass  [P1 |C-D|=0.02<=0.15]
+  missing_mandatory_field        payload-visible  0.77  1.00  FAIL  [P1 |C-D|=0.23>0.15]
+  plausible_outlier              metadata-borne   0.00  0.00  FAIL  [P2 D=0.00<0.80]
+  schema_drift                   payload-visible   0.00  1.00  FAIL  [P1 |C-D|=1.00>0.15]
+  silent_unit_change             metadata-borne   0.00  0.00  FAIL  [P2 D=0.00<0.80]
+  stale_master_data              metadata-borne   0.00  1.00  pass  [P2 C=0.00, D=1.00]
+  superseded_golden_record       metadata-borne   1.00  1.00  FAIL  [P2 C=1.00>0.10]
+```
+
+(This run is under the buggy sampler — §6 — so the verdict is INVALID for final sign-off
+and will be re-issued on the corrected `policy_instructed`/fixed-n re-run; detection is
+per-corrupted and class-stable, so the qualitative reframe below is expected to hold.)
+
+**Reframe — the payload/metadata channel boundary is empirical, not definitional.**
+H2 was pre-registered assuming a clean split: payload-visible ⇒ C≈D, metadata-borne ⇒
+C≪D. The measurement refutes that clean split and, more usefully, *reclassifies by
+behaviour*:
+
+- **`schema_drift`** (labelled payload-visible) behaves metadata-borne for detection:
+  the payload-only critic never flags it (C=0.00) while the gate always does (D=1.00) —
+  a renamed/retyped field is a *schema* signal the deterministic gate reads and the
+  content critic misses. **The gate strictly dominates.**
+- **`superseded_golden_record`** (labelled metadata-borne) is detectable from payload:
+  the conflicting companion record lets the critic flag it (C=1.00). The channel label
+  was wrong, not the gate.
+- **Two named predicate-coverage gaps:** `silent_unit_change` and `plausible_outlier`
+  are missed by **both** arms (D=0.00) — the v1 gate has no unit-consistency or
+  in-range-outlier predicate. Reported as a result and documented as **v1.1 future
+  work** (addendum D / W5); the gate is not patched to rescue the prediction.
+
+So the strict H2 conjunction fails, but the load-bearing claim survives on the classes
+where the gate *has* a predicate (freshness `stale_master_data`, schema `schema_drift`):
+a cheap metadata-aware gate catches defects a frontier payload-only critic structurally
+cannot. The failures are informative — they map where the boundary actually lies and
+where the gate needs a predicate — not fatal.
+
+## 6. Rate-cell sampling bug — h1-full and h2-detection runs marked INVALID
+
+A second instrumentation bug was found after §2a. The benchmark drew the
+corruption coin from a **rate-independent** seed, so corrupted-episode sets were
+**nested** across rates and **byte-identical** where no draw fell between two
+adjacent rates: the 0.02 and 0.05 cells shared the exact same five episodes
+`{20,26,53,61,83}` with the same injected values. The rate axis was not producing
+independent samples; the low-rate cells were degenerate. Fixed by
+`sarc_dq.substrate.corruption_decision` (rate-dependent mask/injection; shared
+episode population), used by both the live and mock paths; proof and gate in
+`reports/VERIFICATION-2026-07-09-W3.md`.
+
+**INVALID results (produced under the buggy sampler — do not cite):**
+
+| results branch | SHA | spend | status |
+|---|---|---|---|
+| `results/h1-full-live` | `2993ece` | \$32.22 | **INVALID** — re-run under fixed sampler |
+| `results/h2-detection-live` | `a37bf0b` | \$56.60 | **INVALID** — re-run under fixed sampler |
+
+**Figures explicitly WITHDRAWN** (they came from the invalid `h1-full` policy run
+at `2993ece`): the metadata-borne mean ADR of **0.585**, the **16/16** cells-clear-
+20% count, and the **\$1,080** `silent_unit_change` loss. These must not appear in
+the paper or any summary until re-measured under the corrected sampler; the
+generated macros render `[pending]` in the meantime.
+
+**Retained with a caveat — the naive-null run.** The \$13.12 `naive`-prompt h1-full
+run also used the buggy sampler, but its result is a **uniform zero** ADR across all
+eight classes and four rates (the price-inelastic decider never converts corruption
+to a material order defect). A uniform-zero outcome is **insensitive to which
+episodes are corrupted or to cell nesting** — degeneracy cannot manufacture or hide
+a zero. It is therefore retained as the "incompetence shield" result (silence does
+not convert to loss when the decider ignores unit cost), with this sampler caveat
+noted. It will still be re-run under the fixed sampler for uniformity before final
+sign-off, but it is not a blocking invalidation.
+
+## 7. Silence sub-claim (H1 P2/P3) — instrumentation added, verdict downgraded
+
+The prior live runs did not log agent transcripts, so H1's silence predictions — P2
+(behavioural-marker AUC and judge AUC ≤ 0.60) and P3 (explicit-flag fraction < 5%) —
+had **no underlying data**. The runner now captures the agent transcript and computes,
+per cell, a **doubt-marker AUC** (corrupted vs clean) and a **flag fraction**
+(`sarc_dq.markers`), carried in every summary (W2). The **LLM-judge AUC** (second
+P2 quantity) requires a paid judge turn per transcript (model pinned in the addendum)
+and is deferred to the re-runs.
+
+Until the instrumented re-runs land, the H1 verdict is stated as: **P1
+(loss-conversion) is supported under `policy_instructed`; the silence claim (P2/P3)
+rests on Phase 0c and is reported as PENDING an instrumented re-run.** This wording
+is used in FINDINGS and must be used in the paper (W1 "Deviations and clarifications").
