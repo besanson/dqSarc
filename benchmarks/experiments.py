@@ -57,16 +57,20 @@ def _json_safe(obj: Any) -> Any:
 
 
 def _episode_evidence(cls: Any, rate: float, i: int, base_seed: int) -> tuple[Any, bool, Any]:
-    """Deterministic (episode, corrupt, evidence) for episode index ``i``."""
+    """Deterministic (episode, corrupt, evidence) for episode index ``i``.
+
+    The corruption mask and injection are drawn from a RATE-dependent stream
+    (``corruption_decision``) so each ``(class, rate)`` cell is an independent sample,
+    not the nested subsets a rate-independent draw produced.
+    """
     import random
 
-    from sarc_dq.substrate import make_episode
+    from sarc_dq.substrate import corruption_decision, episode_seed, make_episode
 
-    seed = (base_seed * 1_000_003 + i) & 0x7FFFFFFF
-    episode = make_episode(seed, i)
-    corrupt = random.Random(seed).random() < rate
+    episode = make_episode(episode_seed(base_seed, i), i)
+    corr_seed, corrupt = corruption_decision(base_seed, i, rate)
     if corrupt:
-        inj = cls.inject(episode.clean_price_record(), episode, random.Random(seed + 1))
+        inj = cls.inject(episode.clean_price_record(), episode, random.Random(corr_seed + 1))
         evidence = inj.evidence_set()
     else:
         evidence = (episode.clean_price_record(),)

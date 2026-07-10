@@ -185,3 +185,26 @@ def make_episode(seed: int, index: int) -> Episode:
         now_day=now_day,
         realised_demand=realised_demand,
     )
+
+
+def episode_seed(base_seed: int, i: int) -> int:
+    """Rate-independent per-episode seed (shared episode population across rates)."""
+    return (base_seed * 1_000_003 + i) & 0x7FFFFFFF
+
+
+def corruption_decision(base_seed: int, i: int, rate: float) -> tuple[int, bool]:
+    """Rate-DEPENDENT corruption draw for episode ``i`` at ``rate``.
+
+    Returns ``(corr_seed, corrupt)``. The corruption coin and the injection RNG are
+    seeded from ``rate`` as well as the episode, so each ``(class, rate)`` cell draws
+    an INDEPENDENT corruption sample. A rate-independent draw (the pre-fix behaviour)
+    made the corrupted-episode sets nested across rates — and byte-identical whenever
+    no draw fell between two adjacent rates (e.g. 0.02 and 0.05 shared the same five
+    episodes). The episode itself (``episode_seed``) stays rate-independent, so the
+    underlying demand population is shared while the corruption mask is not.
+    """
+    seed = episode_seed(base_seed, i)
+    rate_key = int(round(rate * 1_000_000))
+    corr_seed = (seed * 2_654_435_761 + rate_key) & 0x7FFFFFFF
+    corrupt = random.Random(corr_seed).random() < rate
+    return corr_seed, corrupt

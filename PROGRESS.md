@@ -165,3 +165,46 @@ Total live spend: **$5.1331**.
 1. Taxonomy v0 revision pass (Part 1: `reports/TAXONOMY_REVISION_GUIDE.md`).
 2. Fire the experiment workflows (Part 4) and land results branches.
 3. Claims sign-off on the paper (Part 5) before the DRAFT watermark comes off.
+
+---
+
+## Autonomous corrections program (2026-07-09) — IN PROGRESS
+
+Working the CLAUDE_CODE_AUTONOMOUS_CORRECTIONS_AND_RUNS brief (W1–W7 + verification,
+then staged firing). Mode: human does not review; every check is executed as code and
+written to `reports/VERIFICATION-<date>-<stage>.md`. Nothing fired; $0 spent.
+
+**Merged before this program:** #10 (paired counterfactual loss + materiality),
+#11 (policy_instructed prompt — competent, metadata-blind decider).
+
+### Done
+- **W3 core** — rate-cell sampling independence. `sarc_dq.substrate.corruption_decision`
+  makes the corruption mask/injection rate-dependent; live + mock both use it; GIGO
+  reference regenerated; 3 regression tests. Gate green (91 pytest, mypy, ruff, gigo,
+  frozen Phase 0 hash). Report: `reports/VERIFICATION-2026-07-09-W3.md`.
+
+### Blocking consequence discovered (must resolve in W1 addendum before firing)
+- The committed `results/h1-full-live` ($32.22) and `results/h2-detection-live` ($56.60)
+  ran under the **buggy** sampler → degenerate low-rate cells. They must be **re-run**
+  under the corrected sampler to be valid. This is not accounted for in the brief's
+  firing sequence and changes the cost plan.
+
+### Remaining (not started / partial)
+- **W3 rest** — pooled per-class ADR + paired-seed bootstrap CIs in every summary;
+  per-cell n surfaced. Needs per-episode logging (coupled to W2).
+- **W2** — live runner discards transcripts (confirmed). H1 silence claim (P2 AUCs,
+  P3 flags) was never measured → downgrade verdict language AND add transcript +
+  silence-metric logging to the runner going forward.
+- **W4** — no committed verdict code exists; must be written, then run against frozen
+  H2 predictions (expected: P1 fails on schema_drift; P2 fails on silent_unit_change,
+  plausible_outlier, superseded_golden_record) and reported failed-then-reframed.
+- **W1** — dated prereg addendum (retroactive policy_instructed disclosure; prospective
+  pinning; no-new-predicates; GIGO re-freeze note; elevate the naive-null h1 result),
+  + paper "Deviations and clarifications".
+- **W5** — gate-freeze rule for H4 (documented; no new predicates).
+- **W6** — autonomy plumbing (tag-triggers + verification-gate on workflows; self-merge
+  attempt) — deferred until W1–W5 land.
+- **W7** — rewrite FIRING_CHECKLIST.md as FIRING_PLAN.md with corrected costs.
+- **V0** — full pre-merge verification battery once W1–W7 land.
+
+### Human items (unchanged): claims sign-off + arXiv upload remain the only human acts.

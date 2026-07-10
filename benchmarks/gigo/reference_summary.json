@@ -23,42 +23,42 @@
     "cross_source_contradiction": {
       "0.02": {
         "A": {
-          "adr": 0.6,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 511.19564090190653,
-          "loss_eff_corrupted": 511.19564090190653,
+          "loss_mean_corrupted": -625.4368305663556,
+          "loss_eff_corrupted": -625.4368305663556,
           "loss_quantiles": {
-            "median": 344.1041270746973,
-            "p90": 1718.8647945873417,
-            "p99": 1718.8647945873417,
-            "mean": 511.19564090190653
+            "median": -1084.9564680339663,
+            "p90": -165.91719309874497,
+            "p99": -165.91719309874497,
+            "mean": -625.4368305663556
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.6,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 511.19564090190653,
-          "loss_eff_corrupted": 511.19564090190653,
+          "loss_mean_corrupted": -625.4368305663556,
+          "loss_eff_corrupted": -625.4368305663556,
           "loss_quantiles": {
-            "median": 344.1041270746973,
-            "p90": 1718.8647945873417,
-            "p99": 1718.8647945873417,
-            "mean": 511.19564090190653
+            "median": -1084.9564680339663,
+            "p90": -165.91719309874497,
+            "p99": -165.91719309874497,
+            "mean": -625.4368305663556
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -68,13 +68,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -83,8 +83,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -100,63 +100,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 201.53604400023033,
-          "loss_eff_corrupted": 201.53604400023033,
+          "loss_mean_corrupted": -542.4782340169832,
+          "loss_eff_corrupted": -542.4782340169832,
           "loss_quantiles": {
-            "median": 0.0,
-            "p90": 1718.8647945873417,
-            "p99": 1718.8647945873417,
-            "mean": 201.53604400023033
+            "median": -1084.9564680339663,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -542.4782340169832
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.6,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 511.19564090190653,
-          "loss_eff_corrupted": 511.19564090190653,
+          "loss_mean_corrupted": -153.3023472240443,
+          "loss_eff_corrupted": -153.3023472240443,
           "loss_quantiles": {
-            "median": 344.1041270746973,
-            "p90": 1718.8647945873417,
-            "p99": 1718.8647945873417,
-            "mean": 511.19564090190653
+            "median": -495.5597405783574,
+            "p90": 1183.4183210521442,
+            "p99": 1183.4183210521442,
+            "mean": -153.3023472240443
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.6,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 511.19564090190653,
-          "loss_eff_corrupted": 511.19564090190653,
+          "loss_mean_corrupted": -153.3023472240443,
+          "loss_eff_corrupted": -153.3023472240443,
           "loss_quantiles": {
-            "median": 344.1041270746973,
-            "p90": 1718.8647945873417,
-            "p99": 1718.8647945873417,
-            "mean": 511.19564090190653
+            "median": -495.5597405783574,
+            "p90": 1183.4183210521442,
+            "p99": 1183.4183210521442,
+            "mean": -153.3023472240443
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -166,13 +166,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -181,8 +181,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -198,63 +198,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 201.53604400023033,
-          "loss_eff_corrupted": 201.53604400023033,
+          "loss_mean_corrupted": -450.38705436836835,
+          "loss_eff_corrupted": -450.38705436836835,
           "loss_quantiles": {
-            "median": 0.0,
-            "p90": 1718.8647945873417,
-            "p99": 1718.8647945873417,
-            "mean": 201.53604400023033
+            "median": -495.5597405783574,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -450.38705436836835
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.5454545454545454,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 215.6303878807792,
-          "loss_eff_corrupted": 215.6303878807792,
+          "loss_mean_corrupted": -99.68192537873234,
+          "loss_eff_corrupted": -99.68192537873234,
           "loss_quantiles": {
-            "median": 197.18127466671103,
-            "p90": 1548.297984508381,
-            "p99": 1718.8647945873417,
-            "mean": 215.6303878807792
+            "median": -296.850517290849,
+            "p90": 1594.8592282032314,
+            "p99": 2787.9969076984707,
+            "mean": -99.68192537873234
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.5454545454545454,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 215.6303878807792,
-          "loss_eff_corrupted": 215.6303878807792,
+          "loss_mean_corrupted": -99.68192537873234,
+          "loss_eff_corrupted": -99.68192537873234,
           "loss_quantiles": {
-            "median": 197.18127466671103,
-            "p90": 1548.297984508381,
-            "p99": 1718.8647945873417,
-            "mean": 215.6303878807792
+            "median": -296.850517290849,
+            "p90": 1594.8592282032314,
+            "p99": 2787.9969076984707,
+            "mean": -99.68192537873234
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -264,13 +264,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -279,8 +279,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 11
+          "recovery_ratio": null,
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -296,63 +296,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.18181818181818182,
+          "adr": 0.15384615384615385,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 25.913621131443673,
-          "loss_eff_corrupted": 25.913621131443673,
+          "loss_mean_corrupted": -321.276009453051,
+          "loss_eff_corrupted": -321.276009453051,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 344.1041270746973,
-            "p99": 1718.8647945873417,
-            "mean": 25.913621131443673
+            "p90": 1594.8592282032314,
+            "p99": 2787.9969076984707,
+            "mean": -321.276009453051
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 176.2526559486083,
-          "loss_eff_corrupted": 176.2526559486083,
+          "loss_mean_corrupted": 73.67748399545958,
+          "loss_eff_corrupted": 73.67748399545958,
           "loss_quantiles": {
-            "median": -115.8175680413733,
-            "p90": 1548.297984508381,
-            "p99": 1916.192838021041,
-            "mean": 176.2526559486083
+            "median": -340.2954141163609,
+            "p90": 1476.86827600562,
+            "p99": 3391.7108448841063,
+            "mean": 73.67748399545958
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 176.2526559486083,
-          "loss_eff_corrupted": 176.2526559486083,
+          "loss_mean_corrupted": 73.67748399545958,
+          "loss_eff_corrupted": 73.67748399545958,
           "loss_quantiles": {
-            "median": -115.8175680413733,
-            "p90": 1548.297984508381,
-            "p99": 1916.192838021041,
-            "mean": 176.2526559486083
+            "median": -340.2954141163609,
+            "p90": 1476.86827600562,
+            "p99": 3391.7108448841063,
+            "mean": 73.67748399545958
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -362,13 +362,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -378,7 +378,7 @@
             "mean": 0.0
           },
           "recovery_ratio": 1.0,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -394,65 +394,65 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.18181818181818182,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 23.68556867912846,
-          "loss_eff_corrupted": 23.68556867912846,
+          "loss_mean_corrupted": 120.37661705995015,
+          "loss_eff_corrupted": 120.37661705995015,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 410.55231388900575,
-            "p99": 1718.8647945873417,
-            "mean": 23.68556867912846
+            "p90": 1154.0343778871247,
+            "p99": 3391.7108448841063,
+            "mean": 120.37661705995015
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     },
     "duplicate_vendor_conflicting_terms": {
       "0.02": {
         "A": {
-          "adr": 0.6,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 622.0692959418827,
-          "loss_eff_corrupted": 622.0692959418827,
+          "loss_mean_corrupted": -768.0213656424821,
+          "loss_eff_corrupted": -768.0213656424821,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 622.0692959418827
+            "median": -1291.552043739308,
+            "p90": -244.49068754565633,
+            "p99": -244.49068754565633,
+            "mean": -768.0213656424821
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.6,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 622.0692959418827,
-          "loss_eff_corrupted": 622.0692959418827,
+          "loss_mean_corrupted": -768.0213656424821,
+          "loss_eff_corrupted": -768.0213656424821,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 622.0692959418827
+            "median": -1291.552043739308,
+            "p90": -244.49068754565633,
+            "p99": -244.49068754565633,
+            "mean": -768.0213656424821
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -462,23 +462,23 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
-          "adr": 0.6,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 622.0692959418827,
-          "loss_eff_corrupted": 622.0692959418827,
+          "loss_mean_corrupted": -768.0213656424821,
+          "loss_eff_corrupted": -768.0213656424821,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 622.0692959418827
+            "median": -1291.552043739308,
+            "p90": -244.49068754565633,
+            "p99": -244.49068754565633,
+            "mean": -768.0213656424821
           },
-          "recovery_ratio": 0.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -494,63 +494,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 249.02629515317875,
-          "loss_eff_corrupted": 249.02629515317875,
+          "loss_mean_corrupted": -645.776021869654,
+          "loss_eff_corrupted": -645.776021869654,
           "loss_quantiles": {
-            "median": 0.0,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 249.02629515317875
+            "median": -1291.552043739308,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -645.776021869654
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 622.0692959418827,
-          "loss_eff_corrupted": 622.0692959418827,
+          "loss_mean_corrupted": 46.91679056887733,
+          "loss_eff_corrupted": 46.91679056887733,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 622.0692959418827
+            "median": -598.3471526435933,
+            "p90": 1564.60420052267,
+            "p99": 1564.60420052267,
+            "mean": 46.91679056887733
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 622.0692959418827,
-          "loss_eff_corrupted": 622.0692959418827,
+          "loss_mean_corrupted": 46.91679056887733,
+          "loss_eff_corrupted": 46.91679056887733,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 622.0692959418827
+            "median": -598.3471526435933,
+            "p90": 1564.60420052267,
+            "p99": 1564.60420052267,
+            "mean": 46.91679056887733
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -560,23 +560,23 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 622.0692959418827,
-          "loss_eff_corrupted": 622.0692959418827,
+          "loss_mean_corrupted": 46.91679056887733,
+          "loss_eff_corrupted": 46.91679056887733,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 622.0692959418827
+            "median": -598.3471526435933,
+            "p90": 1564.60420052267,
+            "p99": 1564.60420052267,
+            "mean": 46.91679056887733
           },
           "recovery_ratio": 0.0,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -592,63 +592,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 249.02629515317875,
-          "loss_eff_corrupted": 249.02629515317875,
+          "loss_mean_corrupted": -541.0788129112425,
+          "loss_eff_corrupted": -541.0788129112425,
           "loss_quantiles": {
-            "median": 0.0,
-            "p90": 2061.2413638117287,
-            "p99": 2061.2413638117287,
-            "mean": 249.02629515317875
+            "median": -598.3471526435933,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -541.0788129112425
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.5454545454545454,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 302.00216615847256,
-          "loss_eff_corrupted": 302.00216615847256,
+          "loss_mean_corrupted": -90.67976696391102,
+          "loss_eff_corrupted": -90.67976696391102,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 1865.21500394352,
-            "p99": 2061.2413638117287,
-            "mean": 302.00216615847256
+            "median": -367.59419495746624,
+            "p90": 2025.5401753595415,
+            "p99": 3458.6766558628005,
+            "mean": -90.67976696391102
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.5454545454545454,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 302.00216615847256,
-          "loss_eff_corrupted": 302.00216615847256,
+          "loss_mean_corrupted": -90.67976696391102,
+          "loss_eff_corrupted": -90.67976696391102,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 1865.21500394352,
-            "p99": 2061.2413638117287,
-            "mean": 302.00216615847256
+            "median": -367.59419495746624,
+            "p90": 2025.5401753595415,
+            "p99": 3458.6766558628005,
+            "mean": -90.67976696391102
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -658,23 +658,23 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
-          "adr": 0.5454545454545454,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 302.00216615847256,
-          "loss_eff_corrupted": 302.00216615847256,
+          "loss_mean_corrupted": -90.67976696391102,
+          "loss_eff_corrupted": -90.67976696391102,
           "loss_quantiles": {
-            "median": 472.4098111636331,
-            "p90": 1865.21500394352,
-            "p99": 2061.2413638117287,
-            "mean": 302.00216615847256
+            "median": -367.59419495746624,
+            "p90": 2025.5401753595415,
+            "p99": 3458.6766558628005,
+            "mean": -90.67976696391102
           },
-          "recovery_ratio": 0.0,
-          "n_corrupted": 11
+          "recovery_ratio": null,
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -690,63 +690,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.18181818181818182,
+          "adr": 0.15384615384615385,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 32.271273677099835,
-          "loss_eff_corrupted": 32.271273677099835,
+          "loss_mean_corrupted": -375.5976596278615,
+          "loss_eff_corrupted": -375.5976596278615,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 472.4098111636331,
-            "p99": 2061.2413638117287,
-            "mean": 32.271273677099835
+            "p90": 2025.5401753595415,
+            "p99": 3458.6766558628005,
+            "mean": -375.5976596278615
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 247.36949340019683,
-          "loss_eff_corrupted": 247.36949340019683,
+          "loss_mean_corrupted": 173.69512701501523,
+          "loss_eff_corrupted": 173.69512701501523,
           "loss_quantiles": {
-            "median": -144.57260343292728,
-            "p90": 1865.21500394352,
-            "p99": 2286.113659987721,
-            "mean": 247.36949340019683
+            "median": -392.24327043164885,
+            "p90": 1898.2281382749698,
+            "p99": 4124.58370235726,
+            "mean": 173.69512701501517
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 247.36949340019683,
-          "loss_eff_corrupted": 247.36949340019683,
+          "loss_mean_corrupted": 173.69512701501523,
+          "loss_eff_corrupted": 173.69512701501523,
           "loss_quantiles": {
-            "median": -144.57260343292728,
-            "p90": 1865.21500394352,
-            "p99": 2286.113659987721,
-            "mean": 247.36949340019683
+            "median": -392.24327043164885,
+            "p90": 1898.2281382749698,
+            "p99": 4124.58370235726,
+            "mean": 173.69512701501517
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -756,23 +756,23 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 247.36949340019683,
-          "loss_eff_corrupted": 247.36949340019683,
+          "loss_mean_corrupted": 173.69512701501523,
+          "loss_eff_corrupted": 173.69512701501523,
           "loss_quantiles": {
-            "median": -144.57260343292728,
-            "p90": 1865.21500394352,
-            "p99": 2286.113659987721,
-            "mean": 247.36949340019683
+            "median": -392.24327043164885,
+            "p90": 1898.2281382749698,
+            "p99": 4124.58370235726,
+            "mean": 173.69512701501517
           },
           "recovery_ratio": 0.0,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -788,65 +788,65 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.18181818181818182,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 45.892032759838706,
-          "loss_eff_corrupted": 45.892032759838706,
+          "loss_mean_corrupted": 226.7012708689634,
+          "loss_eff_corrupted": 226.7012708689634,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 566.227351686015,
-            "p99": 2061.2413638117287,
-            "mean": 45.892032759838706
+            "p90": 1637.881460898745,
+            "p99": 4124.58370235726,
+            "mean": 226.7012708689634
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     },
     "missing_mandatory_field": {
       "0.02": {
         "A": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -284.02398214629375,
+          "loss_eff_corrupted": -284.02398214629375,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -359.6507355604026,
+            "p90": -208.39722873218489,
+            "p99": -208.39722873218489,
+            "mean": -284.02398214629375
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -284.02398214629375,
+          "loss_eff_corrupted": -284.02398214629375,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -359.6507355604026,
+            "p90": -208.39722873218489,
+            "p99": -208.39722873218489,
+            "mean": -284.02398214629375
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -856,13 +856,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -871,8 +871,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -888,63 +888,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 320.1011470810883,
-          "loss_eff_corrupted": 320.1011470810883,
+          "loss_mean_corrupted": -104.19861436609244,
+          "loss_eff_corrupted": -104.19861436609244,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 320.1011470810883
+            "median": -208.39722873218489,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -104.19861436609244
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.4,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -379.38818028551077,
+          "loss_eff_corrupted": -379.38818028551077,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -869.1140524313469,
+            "p90": 1489.548975412621,
+            "p99": 1489.548975412621,
+            "mean": -379.38818028551077
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.4,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -379.38818028551077,
+          "loss_eff_corrupted": -379.38818028551077,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -869.1140524313469,
+            "p90": 1489.548975412621,
+            "p99": 1489.548975412621,
+            "mean": -379.38818028551077
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -954,13 +954,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -969,8 +969,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -986,63 +986,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 320.1011470810883,
-          "loss_eff_corrupted": 320.1011470810883,
+          "loss_mean_corrupted": -203.37894419409486,
+          "loss_eff_corrupted": -203.37894419409486,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 320.1011470810883
+            "median": 0.0,
+            "p90": 55.59827565496744,
+            "p99": 55.59827565496744,
+            "mean": -203.37894419409486
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 233.54872282353998,
-          "loss_eff_corrupted": 233.54872282353998,
+          "loss_mean_corrupted": 1.5087394311847395,
+          "loss_eff_corrupted": 1.5087394311847395,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1406.9194335349985,
-            "mean": 233.54872282353998
+            "median": -262.4384386739239,
+            "p90": 1299.793389955059,
+            "p99": 2566.4620591120565,
+            "mean": 1.5087394311847395
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 233.54872282353998,
-          "loss_eff_corrupted": 233.54872282353998,
+          "loss_mean_corrupted": 1.5087394311847395,
+          "loss_eff_corrupted": 1.5087394311847395,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1406.9194335349985,
-            "mean": 233.54872282353998
+            "median": -262.4384386739239,
+            "p90": 1299.793389955059,
+            "p99": 2566.4620591120565,
+            "mean": 1.5087394311847395
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1052,13 +1052,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1068,7 +1068,7 @@
             "mean": 0.0
           },
           "recovery_ratio": 1.0,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -1084,63 +1084,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.2727272727272727,
+          "adr": 0.23076923076923078,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 158.99520828738878,
-          "loss_eff_corrupted": 158.99520828738878,
+          "loss_mean_corrupted": 41.37423769480931,
+          "loss_eff_corrupted": 41.37423769480931,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 660.1043243893473,
-            "p99": 1199.470590906777,
-            "mean": 158.99520828738878
+            "p90": 1135.6348998333015,
+            "p99": 1299.793389955059,
+            "mean": 41.37423769480931
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 64.32405894570572,
-          "loss_eff_corrupted": 64.32405894570572,
+          "loss_mean_corrupted": 193.02306585404003,
+          "loss_eff_corrupted": 193.02306585404003,
           "loss_quantiles": {
             "median": -90.91461974945742,
-            "p90": 778.5924347052551,
-            "p99": 1406.9194335349985,
-            "mean": 64.32405894570572
+            "p90": 2344.4214172393677,
+            "p99": 3249.8655023866067,
+            "mean": 193.02306585404003
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 64.32405894570572,
-          "loss_eff_corrupted": 64.32405894570572,
+          "loss_mean_corrupted": 193.02306585404003,
+          "loss_eff_corrupted": 193.02306585404003,
           "loss_quantiles": {
             "median": -90.91461974945742,
-            "p90": 778.5924347052551,
-            "p99": 1406.9194335349985,
-            "mean": 64.32405894570572
+            "p90": 2344.4214172393677,
+            "p99": 3249.8655023866067,
+            "mean": 193.02306585404003
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1150,13 +1150,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1166,7 +1166,7 @@
             "mean": 0.0
           },
           "recovery_ratio": 1.0,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -1182,91 +1182,91 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.22727272727272727,
+          "adr": 0.125,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 96.8688890480103,
-          "loss_eff_corrupted": 96.8688890480103,
+          "loss_mean_corrupted": -134.64700185650258,
+          "loss_eff_corrupted": -134.64700185650258,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 618.6401662666858,
-            "p99": 1199.470590906777,
-            "mean": 96.8688890480103
+            "p90": 1262.9355362648712,
+            "p99": 2344.4214172393677,
+            "mean": -134.64700185650258
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     },
     "plausible_outlier": {
       "0.02": {
         "A": {
-          "adr": 0.8,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -346.7050876039193,
+          "loss_eff_corrupted": -346.7050876039193,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1274.6394589389129,
+            "p90": 581.2292837310742,
+            "p99": 581.2292837310742,
+            "mean": -346.7050876039193
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.8,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -346.7050876039193,
+          "loss_eff_corrupted": -346.7050876039193,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1274.6394589389129,
+            "p90": 581.2292837310742,
+            "p99": 581.2292837310742,
+            "mean": -346.7050876039193
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
-          "adr": 0.8,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -346.7050876039193,
+          "loss_eff_corrupted": -346.7050876039193,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1274.6394589389129,
+            "p90": 581.2292837310742,
+            "p99": 581.2292837310742,
+            "mean": -346.7050876039193
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
-          "adr": 0.8,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -346.7050876039193,
+          "loss_eff_corrupted": -346.7050876039193,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1274.6394589389129,
+            "p90": 581.2292837310742,
+            "p99": 581.2292837310742,
+            "mean": -346.7050876039193
           },
-          "recovery_ratio": 0.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -1282,89 +1282,89 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.6,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 504.84856804399044,
-          "loss_eff_corrupted": 504.84856804399044,
+          "loss_mean_corrupted": -637.3197294694564,
+          "loss_eff_corrupted": -637.3197294694564,
           "loss_quantiles": {
-            "median": 499.95543194951006,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 504.84856804399044
+            "median": -1274.6394589389129,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -637.3197294694564
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.8,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -1369.359546017732,
+          "loss_eff_corrupted": -1369.359546017732,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1333.0119595441756,
+            "p90": 620.2784249473407,
+            "p99": 620.2784249473407,
+            "mean": -1369.359546017732
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.8,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -1369.359546017732,
+          "loss_eff_corrupted": -1369.359546017732,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1333.0119595441756,
+            "p90": 620.2784249473407,
+            "p99": 620.2784249473407,
+            "mean": -1369.359546017732
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
-          "adr": 0.8,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -1369.359546017732,
+          "loss_eff_corrupted": -1369.359546017732,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1333.0119595441756,
+            "p90": 620.2784249473407,
+            "p99": 620.2784249473407,
+            "mean": -1369.359546017732
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
-          "adr": 0.8,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 627.960936107678,
-          "loss_eff_corrupted": 627.960936107678,
+          "loss_mean_corrupted": -1369.359546017732,
+          "loss_eff_corrupted": -1369.359546017732,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 627.960936107678
+            "median": -1333.0119595441756,
+            "p90": 620.2784249473407,
+            "p99": 620.2784249473407,
+            "mean": -1369.359546017732
           },
-          "recovery_ratio": 0.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -1380,89 +1380,89 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.6,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 504.84856804399044,
-          "loss_eff_corrupted": 504.84856804399044,
+          "loss_mean_corrupted": -542.3058318971944,
+          "loss_eff_corrupted": -542.3058318971944,
           "loss_quantiles": {
-            "median": 499.95543194951006,
-            "p90": 1358.844267498327,
-            "p99": 1358.844267498327,
-            "mean": 504.84856804399044
+            "median": -836.2113680446018,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -542.3058318971944
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.7272727272727273,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 400.9636174979803,
-          "loss_eff_corrupted": 400.9636174979803,
+          "loss_mean_corrupted": -1.015000702543008,
+          "loss_eff_corrupted": -1.015000702543008,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1502.7732452928685,
-            "p99": 2238.0721081494803,
-            "mean": 400.9636174979803
+            "median": -451.1243854080367,
+            "p90": 3881.8792498084767,
+            "p99": 3884.6397501983956,
+            "mean": -1.015000702543008
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.7272727272727273,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 400.9636174979803,
-          "loss_eff_corrupted": 400.9636174979803,
+          "loss_mean_corrupted": -1.015000702543008,
+          "loss_eff_corrupted": -1.015000702543008,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1502.7732452928685,
-            "p99": 2238.0721081494803,
-            "mean": 400.9636174979803
+            "median": -451.1243854080367,
+            "p90": 3881.8792498084767,
+            "p99": 3884.6397501983956,
+            "mean": -1.015000702543008
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
-          "adr": 0.7272727272727273,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 400.9636174979803,
-          "loss_eff_corrupted": 400.9636174979803,
+          "loss_mean_corrupted": -1.015000702543008,
+          "loss_eff_corrupted": -1.015000702543008,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1502.7732452928685,
-            "p99": 2238.0721081494803,
-            "mean": 400.9636174979803
+            "median": -451.1243854080367,
+            "p90": 3881.8792498084767,
+            "p99": 3884.6397501983956,
+            "mean": -1.015000702543008
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
-          "adr": 0.7272727272727273,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 400.9636174979803,
-          "loss_eff_corrupted": 400.9636174979803,
+          "loss_mean_corrupted": -1.015000702543008,
+          "loss_eff_corrupted": -1.015000702543008,
           "loss_quantiles": {
-            "median": 615.561840318438,
-            "p90": 1502.7732452928685,
-            "p99": 2238.0721081494803,
-            "mean": 400.9636174979803
+            "median": -451.1243854080367,
+            "p90": 3881.8792498084767,
+            "p99": 3884.6397501983956,
+            "mean": -1.015000702543008
           },
-          "recovery_ratio": 0.0,
-          "n_corrupted": 11
+          "recovery_ratio": null,
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -1478,89 +1478,89 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.45454545454545453,
+          "adr": 0.23076923076923078,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 332.32010473893513,
-          "loss_eff_corrupted": 332.32010473893513,
+          "loss_mean_corrupted": 112.74838894843015,
+          "loss_eff_corrupted": 112.74838894843015,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 879.7975397457849,
-            "p99": 1358.844267498327,
-            "mean": 332.32010473893513
+            "p90": 1632.1675016971567,
+            "p99": 3884.6397501983956,
+            "mean": 112.74838894843015
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.6818181818181818,
+          "adr": 0.5833333333333334,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 236.04583430167094,
-          "loss_eff_corrupted": 236.04583430167094,
+          "loss_mean_corrupted": 75.5706007104501,
+          "loss_eff_corrupted": 75.5706007104501,
           "loss_quantiles": {
-            "median": 342.66633363053006,
-            "p90": 1358.844267498327,
-            "p99": 2238.0721081494803,
-            "mean": 236.04583430167094
+            "median": 454.6535721359196,
+            "p90": 1968.6926225669413,
+            "p99": 3807.0535118552343,
+            "mean": 75.5706007104501
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.6818181818181818,
+          "adr": 0.5833333333333334,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 236.04583430167094,
-          "loss_eff_corrupted": 236.04583430167094,
+          "loss_mean_corrupted": 75.5706007104501,
+          "loss_eff_corrupted": 75.5706007104501,
           "loss_quantiles": {
-            "median": 342.66633363053006,
-            "p90": 1358.844267498327,
-            "p99": 2238.0721081494803,
-            "mean": 236.04583430167094
+            "median": 454.6535721359196,
+            "p90": 1968.6926225669413,
+            "p99": 3807.0535118552343,
+            "mean": 75.5706007104501
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
-          "adr": 0.6818181818181818,
+          "adr": 0.5833333333333334,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 236.04583430167094,
-          "loss_eff_corrupted": 236.04583430167094,
+          "loss_mean_corrupted": 75.5706007104501,
+          "loss_eff_corrupted": 75.5706007104501,
           "loss_quantiles": {
-            "median": 342.66633363053006,
-            "p90": 1358.844267498327,
-            "p99": 2238.0721081494803,
-            "mean": 236.04583430167094
+            "median": 454.6535721359196,
+            "p90": 1968.6926225669413,
+            "p99": 3807.0535118552343,
+            "mean": 75.5706007104501
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
-          "adr": 0.6818181818181818,
+          "adr": 0.5833333333333334,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 236.04583430167094,
-          "loss_eff_corrupted": 236.04583430167094,
+          "loss_mean_corrupted": 75.5706007104501,
+          "loss_eff_corrupted": 75.5706007104501,
           "loss_quantiles": {
-            "median": 342.66633363053006,
-            "p90": 1358.844267498327,
-            "p99": 2238.0721081494803,
-            "mean": 236.04583430167094
+            "median": 454.6535721359196,
+            "p90": 1968.6926225669413,
+            "p99": 3807.0535118552343,
+            "mean": 75.5706007104501
           },
           "recovery_ratio": 0.0,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -1576,65 +1576,65 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.36363636363636365,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 185.91374630934178,
-          "loss_eff_corrupted": 185.91374630934178,
+          "loss_mean_corrupted": -331.41516759213283,
+          "loss_eff_corrupted": -331.41516759213283,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 788.6119782778042,
-            "p99": 1358.844267498327,
-            "mean": 185.91374630934178
+            "p90": 1475.7238782801687,
+            "p99": 1655.7982726560222,
+            "mean": -331.41516759213283
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     },
     "schema_drift": {
       "0.02": {
         "A": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -284.02398214629375,
+          "loss_eff_corrupted": -284.02398214629375,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -359.6507355604026,
+            "p90": -208.39722873218489,
+            "p99": -208.39722873218489,
+            "mean": -284.02398214629375
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -284.02398214629375,
+          "loss_eff_corrupted": -284.02398214629375,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -359.6507355604026,
+            "p90": -208.39722873218489,
+            "p99": -208.39722873218489,
+            "mean": -284.02398214629375
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1644,13 +1644,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1659,8 +1659,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -1676,63 +1676,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 320.1011470810883,
-          "loss_eff_corrupted": 320.1011470810883,
+          "loss_mean_corrupted": -104.19861436609244,
+          "loss_eff_corrupted": -104.19861436609244,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 320.1011470810883
+            "median": -208.39722873218489,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -104.19861436609244
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.4,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -379.38818028551077,
+          "loss_eff_corrupted": -379.38818028551077,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -869.1140524313469,
+            "p90": 1489.548975412621,
+            "p99": 1489.548975412621,
+            "mean": -379.38818028551077
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.4,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 234.00010111476968,
-          "loss_eff_corrupted": 234.00010111476968,
+          "loss_mean_corrupted": -379.38818028551077,
+          "loss_eff_corrupted": -379.38818028551077,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 234.00010111476968
+            "median": -869.1140524313469,
+            "p90": 1489.548975412621,
+            "p99": 1489.548975412621,
+            "mean": -379.38818028551077
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1742,13 +1742,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1757,8 +1757,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -1774,63 +1774,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 320.1011470810883,
-          "loss_eff_corrupted": 320.1011470810883,
+          "loss_mean_corrupted": -203.37894419409486,
+          "loss_eff_corrupted": -203.37894419409486,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1199.470590906777,
-            "mean": 320.1011470810883
+            "median": 0.0,
+            "p90": 55.59827565496744,
+            "p99": 55.59827565496744,
+            "mean": -203.37894419409486
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 233.54872282353998,
-          "loss_eff_corrupted": 233.54872282353998,
+          "loss_mean_corrupted": 1.5087394311847395,
+          "loss_eff_corrupted": 1.5087394311847395,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1406.9194335349985,
-            "mean": 233.54872282353998
+            "median": -262.4384386739239,
+            "p90": 1299.793389955059,
+            "p99": 2566.4620591120565,
+            "mean": 1.5087394311847395
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 233.54872282353998,
-          "loss_eff_corrupted": 233.54872282353998,
+          "loss_mean_corrupted": 1.5087394311847395,
+          "loss_eff_corrupted": 1.5087394311847395,
           "loss_quantiles": {
-            "median": 81.63471885645413,
-            "p90": 1199.470590906777,
-            "p99": 1406.9194335349985,
-            "mean": 233.54872282353998
+            "median": -262.4384386739239,
+            "p90": 1299.793389955059,
+            "p99": 2566.4620591120565,
+            "mean": 1.5087394311847395
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1840,13 +1840,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1856,7 +1856,7 @@
             "mean": 0.0
           },
           "recovery_ratio": 1.0,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -1872,63 +1872,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.2727272727272727,
+          "adr": 0.23076923076923078,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 158.99520828738878,
-          "loss_eff_corrupted": 158.99520828738878,
+          "loss_mean_corrupted": 41.37423769480931,
+          "loss_eff_corrupted": 41.37423769480931,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 660.1043243893473,
-            "p99": 1199.470590906777,
-            "mean": 158.99520828738878
+            "p90": 1135.6348998333015,
+            "p99": 1299.793389955059,
+            "mean": 41.37423769480931
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 64.32405894570572,
-          "loss_eff_corrupted": 64.32405894570572,
+          "loss_mean_corrupted": 193.02306585404003,
+          "loss_eff_corrupted": 193.02306585404003,
           "loss_quantiles": {
             "median": -90.91461974945742,
-            "p90": 778.5924347052551,
-            "p99": 1406.9194335349985,
-            "mean": 64.32405894570572
+            "p90": 2344.4214172393677,
+            "p99": 3249.8655023866067,
+            "mean": 193.02306585404003
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4166666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 64.32405894570572,
-          "loss_eff_corrupted": 64.32405894570572,
+          "loss_mean_corrupted": 193.02306585404003,
+          "loss_eff_corrupted": 193.02306585404003,
           "loss_quantiles": {
             "median": -90.91461974945742,
-            "p90": 778.5924347052551,
-            "p99": 1406.9194335349985,
-            "mean": 64.32405894570572
+            "p90": 2344.4214172393677,
+            "p99": 3249.8655023866067,
+            "mean": 193.02306585404003
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1938,13 +1938,13 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -1954,7 +1954,7 @@
             "mean": 0.0
           },
           "recovery_ratio": 1.0,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -1970,91 +1970,91 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.22727272727272727,
+          "adr": 0.125,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 96.8688890480103,
-          "loss_eff_corrupted": 96.8688890480103,
+          "loss_mean_corrupted": -134.64700185650258,
+          "loss_eff_corrupted": -134.64700185650258,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 618.6401662666858,
-            "p99": 1199.470590906777,
-            "mean": 96.8688890480103
+            "p90": 1262.9355362648712,
+            "p99": 2344.4214172393677,
+            "mean": -134.64700185650258
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     },
     "silent_unit_change": {
       "0.02": {
         "A": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": -153.7663504101647,
+          "loss_eff_corrupted": -153.7663504101647,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": -1756.233429476706,
+            "p90": 1448.7007286563767,
+            "p99": 1448.7007286563767,
+            "mean": -153.7663504101647
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": -153.7663504101647,
+          "loss_eff_corrupted": -153.7663504101647,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": -1756.233429476706,
+            "p90": 1448.7007286563767,
+            "p99": 1448.7007286563767,
+            "mean": -153.7663504101647
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": -153.7663504101647,
+          "loss_eff_corrupted": -153.7663504101647,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": -1756.233429476706,
+            "p90": 1448.7007286563767,
+            "p99": 1448.7007286563767,
+            "mean": -153.7663504101647
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": -153.7663504101647,
+          "loss_eff_corrupted": -153.7663504101647,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": -1756.233429476706,
+            "p90": 1448.7007286563767,
+            "p99": 1448.7007286563767,
+            "mean": -153.7663504101647
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -2070,89 +2070,89 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 441.1989962010537,
-          "loss_eff_corrupted": 441.1989962010537,
+          "loss_mean_corrupted": 724.3503643281883,
+          "loss_eff_corrupted": 724.3503643281883,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": 441.1989962010537
+            "median": 0.0,
+            "p90": 1448.7007286563767,
+            "p99": 1448.7007286563767,
+            "mean": 724.3503643281883
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.6,
+          "adr": 1.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": 3266.7280629496145,
+          "loss_eff_corrupted": 3266.7280629496145,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": 2115.974184693252,
+            "p90": 7117.477232847064,
+            "p99": 7117.477232847064,
+            "mean": 3266.7280629496145
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.6,
+          "adr": 1.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": 3266.7280629496145,
+          "loss_eff_corrupted": 3266.7280629496145,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": 2115.974184693252,
+            "p90": 7117.477232847064,
+            "p99": 7117.477232847064,
+            "mean": 3266.7280629496145
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
-          "adr": 0.6,
+          "adr": 1.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": 3266.7280629496145,
+          "loss_eff_corrupted": 3266.7280629496145,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": 2115.974184693252,
+            "p90": 7117.477232847064,
+            "p99": 7117.477232847064,
+            "mean": 3266.7280629496145
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
-          "adr": 0.6,
+          "adr": 1.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -6.873760190049325,
-          "loss_eff_corrupted": -6.873760190049325,
+          "loss_mean_corrupted": 3266.7280629496145,
+          "loss_eff_corrupted": 3266.7280629496145,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": -6.873760190049325
+            "median": 2115.974184693252,
+            "p90": 7117.477232847064,
+            "p99": 7117.477232847064,
+            "mean": 3266.7280629496145
           },
-          "recovery_ratio": null,
-          "n_corrupted": 5
+          "recovery_ratio": 0.0,
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -2168,89 +2168,89 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.6,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 441.1989962010537,
-          "loss_eff_corrupted": 441.1989962010537,
+          "loss_mean_corrupted": 731.4376758548078,
+          "loss_eff_corrupted": 731.4376758548078,
           "loss_quantiles": {
-            "median": 634.1267068386169,
-            "p90": 2691.2232524711917,
-            "p99": 2691.2232524711917,
-            "mean": 441.1989962010537
+            "median": 0.0,
+            "p90": 2115.974184693252,
+            "p99": 2115.974184693252,
+            "mean": 731.4376758548078
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.7272727272727273,
+          "adr": 0.8461538461538461,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1272.7019483686531,
-          "loss_eff_corrupted": 1272.7019483686531,
+          "loss_mean_corrupted": 3165.236074757674,
+          "loss_eff_corrupted": 3165.236074757674,
           "loss_quantiles": {
-            "median": 935.3710324454805,
-            "p90": 4358.177125590151,
-            "p99": 5886.155053015231,
-            "mean": 1272.701948368653
+            "median": 3883.0712517940738,
+            "p90": 7601.6450170232365,
+            "p99": 10522.193843545123,
+            "mean": 3165.236074757674
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.7272727272727273,
+          "adr": 0.8461538461538461,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1272.7019483686531,
-          "loss_eff_corrupted": 1272.7019483686531,
+          "loss_mean_corrupted": 3165.236074757674,
+          "loss_eff_corrupted": 3165.236074757674,
           "loss_quantiles": {
-            "median": 935.3710324454805,
-            "p90": 4358.177125590151,
-            "p99": 5886.155053015231,
-            "mean": 1272.701948368653
+            "median": 3883.0712517940738,
+            "p90": 7601.6450170232365,
+            "p99": 10522.193843545123,
+            "mean": 3165.236074757674
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
-          "adr": 0.7272727272727273,
+          "adr": 0.8461538461538461,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1272.7019483686531,
-          "loss_eff_corrupted": 1272.7019483686531,
+          "loss_mean_corrupted": 3165.236074757674,
+          "loss_eff_corrupted": 3165.236074757674,
           "loss_quantiles": {
-            "median": 935.3710324454805,
-            "p90": 4358.177125590151,
-            "p99": 5886.155053015231,
-            "mean": 1272.701948368653
+            "median": 3883.0712517940738,
+            "p90": 7601.6450170232365,
+            "p99": 10522.193843545123,
+            "mean": 3165.236074757674
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
-          "adr": 0.7272727272727273,
+          "adr": 0.8461538461538461,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1272.7019483686531,
-          "loss_eff_corrupted": 1272.7019483686531,
+          "loss_mean_corrupted": 3165.236074757674,
+          "loss_eff_corrupted": 3165.236074757674,
           "loss_quantiles": {
-            "median": 935.3710324454805,
-            "p90": 4358.177125590151,
-            "p99": 5886.155053015231,
-            "mean": 1272.701948368653
+            "median": 3883.0712517940738,
+            "p90": 7601.6450170232365,
+            "p99": 10522.193843545123,
+            "mean": 3165.236074757674
           },
           "recovery_ratio": 0.0,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -2266,89 +2266,89 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.36363636363636365,
+          "adr": 0.38461538461538464,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 176.08044164442484,
-          "loss_eff_corrupted": 176.08044164442484,
+          "loss_mean_corrupted": 2003.2308308638653,
+          "loss_eff_corrupted": 2003.2308308638653,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 1480.85518102294,
-            "p99": 2691.2232524711917,
-            "mean": 176.08044164442484
+            "p90": 7601.6450170232365,
+            "p99": 10522.193843545123,
+            "mean": 2003.2308308638653
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.7272727272727273,
+          "adr": 0.75,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1084.0325942306972,
-          "loss_eff_corrupted": 1084.0325942306972,
+          "loss_mean_corrupted": 2080.499178281712,
+          "loss_eff_corrupted": 2080.499178281712,
           "loss_quantiles": {
-            "median": 846.6600682852841,
-            "p90": 4358.177125590151,
-            "p99": 6682.415337737235,
-            "mean": 1084.0325942306974
+            "median": 1632.9913394592113,
+            "p90": 7287.42695672377,
+            "p99": 13081.255110887396,
+            "mean": 2080.4991782817115
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.7272727272727273,
+          "adr": 0.75,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1084.0325942306972,
-          "loss_eff_corrupted": 1084.0325942306972,
+          "loss_mean_corrupted": 2080.499178281712,
+          "loss_eff_corrupted": 2080.499178281712,
           "loss_quantiles": {
-            "median": 846.6600682852841,
-            "p90": 4358.177125590151,
-            "p99": 6682.415337737235,
-            "mean": 1084.0325942306974
+            "median": 1632.9913394592113,
+            "p90": 7287.42695672377,
+            "p99": 13081.255110887396,
+            "mean": 2080.4991782817115
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
-          "adr": 0.7272727272727273,
+          "adr": 0.75,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1084.0325942306972,
-          "loss_eff_corrupted": 1084.0325942306972,
+          "loss_mean_corrupted": 2080.499178281712,
+          "loss_eff_corrupted": 2080.499178281712,
           "loss_quantiles": {
-            "median": 846.6600682852841,
-            "p90": 4358.177125590151,
-            "p99": 6682.415337737235,
-            "mean": 1084.0325942306974
+            "median": 1632.9913394592113,
+            "p90": 7287.42695672377,
+            "p99": 13081.255110887396,
+            "mean": 2080.4991782817115
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
-          "adr": 0.7272727272727273,
+          "adr": 0.75,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 1084.0325942306972,
-          "loss_eff_corrupted": 1084.0325942306972,
+          "loss_mean_corrupted": 2080.499178281712,
+          "loss_eff_corrupted": 2080.499178281712,
           "loss_quantiles": {
-            "median": 846.6600682852841,
-            "p90": 4358.177125590151,
-            "p99": 6682.415337737235,
-            "mean": 1084.0325942306974
+            "median": 1632.9913394592113,
+            "p90": 7287.42695672377,
+            "p99": 13081.255110887396,
+            "mean": 2080.4991782817115
           },
           "recovery_ratio": 0.0,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -2364,75 +2364,75 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.36363636363636365,
+          "adr": 0.375,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 343.6878991429653,
-          "loss_eff_corrupted": 343.6878991429653,
+          "loss_mean_corrupted": 1565.367188649526,
+          "loss_eff_corrupted": 1565.367188649526,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 1480.85518102294,
-            "p99": 3132.658411844597,
-            "mean": 343.6878991429653
+            "p90": 6312.025205135233,
+            "p99": 13081.255110887396,
+            "mean": 1565.3671886495265
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     },
     "stale_master_data": {
       "0.02": {
         "A": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 39.61419484745729,
-          "loss_eff_corrupted": 39.61419484745729,
+          "loss_mean_corrupted": -36.01085840745964,
+          "loss_eff_corrupted": -36.01085840745964,
           "loss_quantiles": {
-            "median": -56.34815757022989,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 39.61419484745729
+            "median": -159.21190721620587,
+            "p90": 87.1901904012866,
+            "p99": 87.1901904012866,
+            "mean": -36.01085840745964
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 39.61419484745729,
-          "loss_eff_corrupted": 39.61419484745729,
+          "loss_mean_corrupted": -36.01085840745964,
+          "loss_eff_corrupted": -36.01085840745964,
           "loss_quantiles": {
-            "median": -56.34815757022989,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 39.61419484745729
+            "median": -159.21190721620587,
+            "p90": 87.1901904012866,
+            "p99": 87.1901904012866,
+            "mean": -36.01085840745964
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 39.61419484745729,
-          "loss_eff_corrupted": 39.61419484745729,
+          "loss_mean_corrupted": -36.01085840745964,
+          "loss_eff_corrupted": -36.01085840745964,
           "loss_quantiles": {
-            "median": -56.34815757022989,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 39.61419484745729
+            "median": -159.21190721620587,
+            "p90": 87.1901904012866,
+            "p99": 87.1901904012866,
+            "mean": -36.01085840745964
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
           "adr": 0.0,
@@ -2447,8 +2447,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "recovery_ratio": null,
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -2464,73 +2464,73 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 86.79318883917858,
-          "loss_eff_corrupted": 86.79318883917858,
+          "loss_mean_corrupted": -79.60595360810294,
+          "loss_eff_corrupted": -79.60595360810294,
           "loss_quantiles": {
-            "median": 0.0,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 86.79318883917858
+            "median": -159.21190721620587,
+            "p90": 0.0,
+            "p99": 0.0,
+            "mean": -79.60595360810294
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 39.61419484745729,
-          "loss_eff_corrupted": 39.61419484745729,
+          "loss_mean_corrupted": 134.05781504295373,
+          "loss_eff_corrupted": 134.05781504295373,
           "loss_quantiles": {
-            "median": -56.34815757022989,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 39.61419484745729
+            "median": -106.9431714151433,
+            "p90": 917.9765240826455,
+            "p99": 917.9765240826455,
+            "mean": 134.05781504295373
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 39.61419484745729,
-          "loss_eff_corrupted": 39.61419484745729,
+          "loss_mean_corrupted": 134.05781504295373,
+          "loss_eff_corrupted": 134.05781504295373,
           "loss_quantiles": {
-            "median": -56.34815757022989,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 39.61419484745729
+            "median": -106.9431714151433,
+            "p90": 917.9765240826455,
+            "p99": 917.9765240826455,
+            "mean": 134.05781504295373
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 39.61419484745729,
-          "loss_eff_corrupted": 39.61419484745729,
+          "loss_mean_corrupted": 134.05781504295373,
+          "loss_eff_corrupted": 134.05781504295373,
           "loss_quantiles": {
-            "median": -56.34815757022989,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 39.61419484745729
+            "median": -106.9431714151433,
+            "p90": 917.9765240826455,
+            "p99": 917.9765240826455,
+            "mean": 134.05781504295373
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
           "adr": 0.0,
@@ -2546,7 +2546,7 @@
             "mean": 0.0
           },
           "recovery_ratio": 1.0,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -2562,73 +2562,73 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 86.79318883917858,
-          "loss_eff_corrupted": 86.79318883917858,
+          "loss_mean_corrupted": -1.7763360883964197,
+          "loss_eff_corrupted": -1.7763360883964197,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 616.188215674978,
-            "p99": 616.188215674978,
-            "mean": 86.79318883917858
+            "p90": 99.83782706155762,
+            "p99": 99.83782706155762,
+            "mean": -1.7763360883964197
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -3.6524799654668887,
-          "loss_eff_corrupted": -3.6524799654668887,
+          "loss_mean_corrupted": 146.8935722257324,
+          "loss_eff_corrupted": 146.8935722257324,
           "loss_quantiles": {
-            "median": -28.269729950166948,
-            "p90": 323.02456389359395,
-            "p99": 616.188215674978,
-            "mean": -3.6524799654668887
+            "median": 111.79964203384225,
+            "p90": 1005.4345501726275,
+            "p99": 1178.970127458062,
+            "mean": 146.8935722257324
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -3.6524799654668887,
-          "loss_eff_corrupted": -3.6524799654668887,
+          "loss_mean_corrupted": 146.8935722257324,
+          "loss_eff_corrupted": 146.8935722257324,
           "loss_quantiles": {
-            "median": -28.269729950166948,
-            "p90": 323.02456389359395,
-            "p99": 616.188215674978,
-            "mean": -3.6524799654668887
+            "median": 111.79964203384225,
+            "p90": 1005.4345501726275,
+            "p99": 1178.970127458062,
+            "mean": 146.8935722257324
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
-          "adr": 0.45454545454545453,
+          "adr": 0.46153846153846156,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -3.6524799654668887,
-          "loss_eff_corrupted": -3.6524799654668887,
+          "loss_mean_corrupted": 146.8935722257324,
+          "loss_eff_corrupted": 146.8935722257324,
           "loss_quantiles": {
-            "median": -28.269729950166948,
-            "p90": 323.02456389359395,
-            "p99": 616.188215674978,
-            "mean": -3.6524799654668887
+            "median": 111.79964203384225,
+            "p90": 1005.4345501726275,
+            "p99": 1178.970127458062,
+            "mean": 146.8935722257324
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
           "adr": 0.0,
@@ -2643,8 +2643,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": null,
-          "n_corrupted": 11
+          "recovery_ratio": 1.0,
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -2660,73 +2660,73 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.2727272727272727,
+          "adr": 0.15384615384615385,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 24.175293714540285,
-          "loss_eff_corrupted": 24.175293714540285,
+          "loss_mean_corrupted": 83.74604181872844,
+          "loss_eff_corrupted": 83.74604181872844,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 98.04103597975791,
-            "p99": 616.188215674978,
-            "mean": 24.175293714540285
+            "p90": 570.9040948590846,
+            "p99": 1005.4345501726275,
+            "mean": 83.74604181872844
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4583333333333333,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -62.01563197625356,
-          "loss_eff_corrupted": -62.01563197625356,
+          "loss_mean_corrupted": 139.82884868064698,
+          "loss_eff_corrupted": 139.82884868064698,
           "loss_quantiles": {
-            "median": -28.269729950166948,
-            "p90": 323.02456389359395,
-            "p99": 616.188215674978,
-            "mean": -62.01563197625356
+            "median": -16.00078432081864,
+            "p90": 959.3368576836583,
+            "p99": 1677.1546719725193,
+            "mean": 139.82884868064698
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4583333333333333,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -62.01563197625356,
-          "loss_eff_corrupted": -62.01563197625356,
+          "loss_mean_corrupted": 139.82884868064698,
+          "loss_eff_corrupted": 139.82884868064698,
           "loss_quantiles": {
-            "median": -28.269729950166948,
-            "p90": 323.02456389359395,
-            "p99": 616.188215674978,
-            "mean": -62.01563197625356
+            "median": -16.00078432081864,
+            "p90": 959.3368576836583,
+            "p99": 1677.1546719725193,
+            "mean": 139.82884868064698
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
-          "adr": 0.45454545454545453,
+          "adr": 0.4583333333333333,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -62.01563197625356,
-          "loss_eff_corrupted": -62.01563197625356,
+          "loss_mean_corrupted": 139.82884868064698,
+          "loss_eff_corrupted": 139.82884868064698,
           "loss_quantiles": {
-            "median": -28.269729950166948,
-            "p90": 323.02456389359395,
-            "p99": 616.188215674978,
-            "mean": -62.01563197625356
+            "median": -16.00078432081864,
+            "p90": 959.3368576836583,
+            "p99": 1677.1546719725193,
+            "mean": 139.82884868064698
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
           "adr": 0.0,
@@ -2741,8 +2741,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": null,
-          "n_corrupted": 22
+          "recovery_ratio": 1.0,
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -2758,65 +2758,65 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.18181818181818182,
+          "adr": 0.2916666666666667,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -2.5902824585581254,
-          "loss_eff_corrupted": -2.5902824585581254,
+          "loss_mean_corrupted": 153.2564351555474,
+          "loss_eff_corrupted": 153.2564351555474,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 98.04103597975791,
-            "p99": 616.188215674978,
-            "mean": -2.5902824585581254
+            "p90": 768.2413175641414,
+            "p99": 1677.1546719725193,
+            "mean": 153.2564351555474
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     },
     "superseded_golden_record": {
       "0.02": {
         "A": {
-          "adr": 0.4,
+          "adr": 1.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -292.102017274697,
-          "loss_eff_corrupted": -292.102017274697,
+          "loss_mean_corrupted": 477.2217964739393,
+          "loss_eff_corrupted": 477.2217964739393,
           "loss_quantiles": {
-            "median": -550.0584159908994,
-            "p90": 392.6584684295267,
-            "p99": 392.6584684295267,
-            "mean": -292.102017274697
+            "median": 247.48493615468578,
+            "p90": 706.9586567931929,
+            "p99": 706.9586567931929,
+            "mean": 477.2217964739393
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "B": {
-          "adr": 0.4,
+          "adr": 1.0,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -292.102017274697,
-          "loss_eff_corrupted": -292.102017274697,
+          "loss_mean_corrupted": 477.2217964739393,
+          "loss_eff_corrupted": 477.2217964739393,
           "loss_quantiles": {
-            "median": -550.0584159908994,
-            "p90": 392.6584684295267,
-            "p99": 392.6584684295267,
-            "mean": -292.102017274697
+            "median": 247.48493615468578,
+            "p90": 706.9586567931929,
+            "p99": 706.9586567931929,
+            "mean": 477.2217964739393
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.98,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -2826,7 +2826,7 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "D": {
           "adr": 0.0,
@@ -2841,8 +2841,8 @@
             "p99": 0.0,
             "mean": 0.0
           },
-          "recovery_ratio": null,
-          "n_corrupted": 5
+          "recovery_ratio": 1.0,
+          "n_corrupted": 2
         },
         "E": {
           "adr": 0.0,
@@ -2858,63 +2858,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -182.09033407651714,
-          "loss_eff_corrupted": -182.09033407651714,
+          "loss_mean_corrupted": 123.74246807734289,
+          "loss_eff_corrupted": 123.74246807734289,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 392.6584684295267,
-            "p99": 392.6584684295267,
-            "mean": -182.09033407651714
+            "p90": 247.48493615468578,
+            "p99": 247.48493615468578,
+            "mean": 123.74246807734289
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 2
         }
       },
       "0.05": {
         "A": {
-          "adr": 0.4,
+          "adr": 0.75,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -292.102017274697,
-          "loss_eff_corrupted": -292.102017274697,
+          "loss_mean_corrupted": -299.4838838466844,
+          "loss_eff_corrupted": -299.4838838466844,
           "loss_quantiles": {
-            "median": -550.0584159908994,
-            "p90": 392.6584684295267,
-            "p99": 392.6584684295267,
-            "mean": -292.102017274697
+            "median": 234.0146489028648,
+            "p90": 590.5105734268873,
+            "p99": 590.5105734268873,
+            "mean": -299.4838838466844
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "B": {
-          "adr": 0.4,
+          "adr": 0.75,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -292.102017274697,
-          "loss_eff_corrupted": -292.102017274697,
+          "loss_mean_corrupted": -299.4838838466844,
+          "loss_eff_corrupted": -299.4838838466844,
           "loss_quantiles": {
-            "median": -550.0584159908994,
-            "p90": 392.6584684295267,
-            "p99": 392.6584684295267,
-            "mean": -292.102017274697
+            "median": 234.0146489028648,
+            "p90": 590.5105734268873,
+            "p99": 590.5105734268873,
+            "mean": -299.4838838466844
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.95,
+          "completion_rate": 0.96,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -2924,7 +2924,7 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "D": {
           "adr": 0.0,
@@ -2940,7 +2940,7 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "E": {
           "adr": 0.0,
@@ -2956,63 +2956,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         },
         "F": {
-          "adr": 0.4,
+          "adr": 0.5,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -182.09033407651714,
-          "loss_eff_corrupted": -182.09033407651714,
+          "loss_mean_corrupted": 194.79512005935658,
+          "loss_eff_corrupted": 194.79512005935658,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 392.6584684295267,
-            "p99": 392.6584684295267,
-            "mean": -182.09033407651714
+            "p90": 545.1658313345615,
+            "p99": 545.1658313345615,
+            "mean": 194.79512005935658
           },
           "recovery_ratio": null,
-          "n_corrupted": 5
+          "n_corrupted": 4
         }
       },
       "0.10": {
         "A": {
-          "adr": 0.5454545454545454,
+          "adr": 0.5384615384615384,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -155.10446173874135,
-          "loss_eff_corrupted": -155.10446173874135,
+          "loss_mean_corrupted": -218.30878375020433,
+          "loss_eff_corrupted": -218.30878375020433,
           "loss_quantiles": {
-            "median": 145.16703230320127,
-            "p90": 410.550019966523,
-            "p99": 908.5481444368816,
-            "mean": -155.10446173874135
+            "median": 239.22382222657325,
+            "p90": 994.6344782687993,
+            "p99": 1074.0442793293078,
+            "mean": -218.30878375020433
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "B": {
-          "adr": 0.5454545454545454,
+          "adr": 0.5384615384615384,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -155.10446173874135,
-          "loss_eff_corrupted": -155.10446173874135,
+          "loss_mean_corrupted": -218.30878375020433,
+          "loss_eff_corrupted": -218.30878375020433,
           "loss_quantiles": {
-            "median": 145.16703230320127,
-            "p90": 410.550019966523,
-            "p99": 908.5481444368816,
-            "mean": -155.10446173874135
+            "median": 239.22382222657325,
+            "p90": 994.6344782687993,
+            "p99": 1074.0442793293078,
+            "mean": -218.30878375020433
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.89,
+          "completion_rate": 0.87,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -3022,7 +3022,7 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "D": {
           "adr": 0.0,
@@ -3038,7 +3038,7 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "E": {
           "adr": 0.0,
@@ -3054,63 +3054,63 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         },
         "F": {
-          "adr": 0.36363636363636365,
+          "adr": 0.3076923076923077,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -32.24860164662377,
-          "loss_eff_corrupted": -32.24860164662377,
+          "loss_mean_corrupted": 60.20909088249741,
+          "loss_eff_corrupted": 60.20909088249741,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 392.6584684295267,
-            "p99": 410.550019966523,
-            "mean": -32.24860164662377
+            "p90": 994.6344782687993,
+            "p99": 1074.0442793293078,
+            "mean": 60.20909088249741
           },
           "recovery_ratio": null,
-          "n_corrupted": 11
+          "n_corrupted": 13
         }
       },
       "0.20": {
         "A": {
-          "adr": 0.6363636363636364,
+          "adr": 0.625,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -12.484278636030508,
-          "loss_eff_corrupted": -12.484278636030508,
+          "loss_mean_corrupted": -204.66625934768567,
+          "loss_eff_corrupted": -204.66625934768567,
           "loss_quantiles": {
-            "median": 237.13276927924926,
-            "p90": 798.5926464134827,
-            "p99": 908.5481444368816,
-            "mean": -12.484278636030508
+            "median": 358.2011414828721,
+            "p90": 1004.7814060973833,
+            "p99": 1669.2575777743914,
+            "mean": -204.66625934768567
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "B": {
-          "adr": 0.6363636363636364,
+          "adr": 0.625,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": -12.484278636030508,
-          "loss_eff_corrupted": -12.484278636030508,
+          "loss_mean_corrupted": -204.66625934768567,
+          "loss_eff_corrupted": -204.66625934768567,
           "loss_quantiles": {
-            "median": 237.13276927924926,
-            "p90": 798.5926464134827,
-            "p99": 908.5481444368816,
-            "mean": -12.484278636030508
+            "median": 358.2011414828721,
+            "p90": 1004.7814060973833,
+            "p99": 1669.2575777743914,
+            "mean": -204.66625934768567
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "C": {
           "adr": 0.0,
           "detection_rate": 1.0,
           "false_block_rate": 0.0,
-          "completion_rate": 0.78,
+          "completion_rate": 0.76,
           "loss_mean_corrupted": 0.0,
           "loss_eff_corrupted": 0.0,
           "loss_quantiles": {
@@ -3120,7 +3120,7 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "D": {
           "adr": 0.0,
@@ -3136,7 +3136,7 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "E": {
           "adr": 0.0,
@@ -3152,23 +3152,23 @@
             "mean": 0.0
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         },
         "F": {
-          "adr": 0.3181818181818182,
+          "adr": 0.25,
           "detection_rate": 0.0,
           "false_block_rate": 0.0,
           "completion_rate": 1.0,
-          "loss_mean_corrupted": 36.21994393412003,
-          "loss_eff_corrupted": 36.21994393412003,
+          "loss_mean_corrupted": -323.77304691668564,
+          "loss_eff_corrupted": -323.77304691668564,
           "loss_quantiles": {
             "median": 0.0,
-            "p90": 410.550019966523,
-            "p99": 593.8975994231805,
-            "mean": 36.21994393412003
+            "p90": 776.501468764558,
+            "p99": 1669.2575777743914,
+            "mean": -323.77304691668564
           },
           "recovery_ratio": null,
-          "n_corrupted": 22
+          "n_corrupted": 24
         }
       }
     }
