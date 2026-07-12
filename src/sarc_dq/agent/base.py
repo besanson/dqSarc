@@ -24,6 +24,14 @@ from sarc_dq.substrate import Episode
 OUTCOME_OK = "ok"
 OUTCOME_REFUSAL = "refusal"
 OUTCOME_ERROR = "error"
+# A transport/API failure (rate limit, credit/spend cap, network) — as opposed to a
+# parse-fail or malformed-payload error (OUTCOME_ERROR) or a model refusal
+# (OUTCOME_REFUSAL). This one is RETRYABLE and infrastructural: the runner counts it
+# toward the error budget so a live outage (e.g. a spend cap) ABORTS the run and
+# resumes, rather than silently recording zero-loss "completed" cells. A capped run
+# that swallows these as OUTCOME_ERROR would masquerade as complete (see the h4-recovery
+# post-mortem, reports/VERIFICATION-2026-07-10-stage3.md).
+OUTCOME_API_ERROR = "api_error"
 
 
 @dataclass(frozen=True)

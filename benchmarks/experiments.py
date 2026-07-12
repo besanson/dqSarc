@@ -35,6 +35,14 @@ from sarc_dq.taxonomy import registered
 # v1 an oracle acting on clean data scored ADR 0.73).
 LOSS_MODEL = "paired-counterfactual-v2"
 
+# Runner instrumentation version (operational, NOT part of the scientific config_hash).
+# Bumped when the harness changes how it records/guards a run in a way that makes older
+# summaries unsafe to resume. "api-error-aware-v1" adds per-cell n_api_errors and the
+# error-budget/resume handling for transport failures (spend-cap/rate-limit/network); a
+# summary lacking this tag predates that safety and is discarded so it re-runs fresh
+# rather than inheriting silently-truncated cells (h4-recovery cap post-mortem).
+INSTRUMENTATION_VERSION = "api-error-aware-v1"
+
 # Rate-axis design (prereg addendum 2026-07-09). H1/H2 fix the corrupted count per cell
 # (rate becomes a stratification label) so ADR/detection rest on an equal n; the others
 # keep true rates because rate drives the false-block economics they measure.
@@ -110,8 +118,10 @@ def _run_condition_live(
 ) -> tuple[dict[str, Any], int]:
     """Run one (class, rate, arm) condition. Episodes run concurrently — the calls
     are network-bound, so a bounded thread pool cuts wall-clock time by ~``concurrency``.
-    Returns (per-arm metrics, n_errors). An episode that raises (e.g. a billing/auth
-    API error) is counted as an error, not a completed action."""
+    Returns (per-arm metrics, n_errors) where n_errors counts BOTH episodes that raised
+    (e.g. a billing/auth error surfaced by the worker) and transport/API failures the
+    agent caught (rate limit, spend cap, network — ``o.api_error``). Both feed the run's
+    error budget so a live outage aborts+resumes rather than committing silent zeros."""
     import random
     from concurrent.futures import ThreadPoolExecutor
 
@@ -144,7 +154,7 @@ def _run_condition_live(
             return corrupt, None, exc
 
     material = detected = completed = spend_it = spend_ot = 0
-    n_corr = false_block = n_clean = errors = 0
+    n_corr = false_block = n_clean = errors = api_errors = 0
     usd = 0.0
     # Loss is the PAIRED (noise-cancelled) loss (o.loss_paired): this order's cost minus
     # the same agent's order on the true price. The raw o.loss (vs the theoretical
@@ -162,6 +172,12 @@ def _run_condition_live(
             if err is not None:
                 errors += 1
                 continue
+            # A transport/API failure (rate limit, spend cap, network) is a RETRYABLE
+            # infrastructure error, not a data outcome. Count it separately so the run
+            # aborts+resumes on a live outage instead of committing this episode as a
+            # silent zero-loss cell (the h4-recovery cap failure, stage-3 post-mortem).
+            if o.api_error:
+                api_errors += 1
             usd += o.usd
             spend_it += o.input_tokens
             spend_ot += o.output_tokens
@@ -198,6 +214,10 @@ def _run_condition_live(
         "n_corrupted": n_corr,
         "n_clean": n_clean,
         "n_errors": errors,
+        # Transport/API failures (rate limit, spend cap, network) in this cell. A cell
+        # with any api_error is NOT treated as done on resume (it re-runs), and these
+        # count toward the run's error budget so a live outage aborts+resumes.
+        "n_api_errors": api_errors,
         # Silence (H1): AUC of doubt markers separating corrupted from clean, and the
         # fraction of corrupted episodes the agent explicitly flagged. AUC 0.5 == silent;
         # None when a cell has no clean (or no corrupt) episodes to discriminate against.
@@ -213,7 +233,7 @@ def _run_condition_live(
         "usd": round(usd, 6),
         "input_tokens": spend_it,
         "output_tokens": spend_ot,
-    }, errors
+    }, errors + api_errors
 
 
 def pooled_stats(matrix: dict[str, Any]) -> dict[str, Any]:
@@ -329,21 +349,37 @@ def _run_live_matrix(
     # policy_instructed run and must be recomputed fresh, not resumed.
     prompt_matches = prior_cfg.get("prompt_variant", "naive") == prompt_variant
     sampling_matches = prior_cfg.get("fixed_n", None) == fixed_n
+    # A summary produced before the api-error-aware instrumentation lacks per-cell
+    # n_api_errors, so its silently-truncated cells (a cap outage recorded as zero-loss
+    # "completed" cells) cannot be told apart from real zeros. Discard it and re-run
+    # fresh rather than inherit those cells (h4-recovery stage-3 post-mortem).
+    instr_matches = prior_cfg.get("instrumentation") == INSTRUMENTATION_VERSION
     if (
         resume_from is not None
         and axis_matches
         and loss_matches
         and prompt_matches
         and sampling_matches
+        and instr_matches
     ):
         prior_matrix = resume_from.get("matrix")
         if isinstance(prior_matrix, dict):
             matrix = prior_matrix
         total_usd = float(resume_from.get("total_usd", 0.0) or 0.0)
+        # A cell that recorded ANY transport/API failure (n_api_errors > 0) is NOT done:
+        # it was cut off by a cap/outage and its numbers are garbage (zero-loss episodes
+        # the agent never actually decided). Drop it so it recomputes fresh on this run —
+        # this is what lets a re-fire after a cap reset reuse the classes that completed
+        # and re-run only the truncated ones. Subtract its (near-zero) prior spend so the
+        # recomputed spend is not double-counted.
         for cn, rates in matrix.items():
-            for rk, per_lbl in rates.items():
-                for lbl in per_lbl:
-                    done.add((cn, rk, lbl))
+            for rk, per_lbl in list(rates.items()):
+                for lbl, cell in list(per_lbl.items()):
+                    if isinstance(cell, dict) and cell.get("n_api_errors", 0):
+                        total_usd -= float(cell.get("usd", 0.0) or 0.0)
+                        del per_lbl[lbl]
+                    else:
+                        done.add((cn, rk, lbl))
 
     deadline = time.monotonic() + max_minutes * 60 if max_minutes is not None else None
     stopped: dict[str, Any] | None = None
@@ -384,6 +420,7 @@ def _run_live_matrix(
             "config": {
                 **sci,
                 "config_hash": config_hash,
+                "instrumentation": INSTRUMENTATION_VERSION,
                 "concurrency": concurrency,
                 "max_minutes": max_minutes,
             },

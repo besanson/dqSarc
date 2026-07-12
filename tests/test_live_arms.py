@@ -85,6 +85,57 @@ def test_refusal_is_not_a_defect() -> None:
     assert o.outcome_class == "refusal" and not o.completed and not o.material
 
 
+class _ApiErrorAgent:
+    """Mimics the real client under a spend cap / rate limit: decide() swallows the
+    transport error into OUTCOME_API_ERROR (as anthropic_agent does) rather than
+    raising. The outcome must carry api_error so the runner can count it."""
+
+    model = "fake:capped"
+
+    def decide(self, episode, price_record, *, advisory=False, prompt_variant="naive"):
+        from sarc_dq.agent.base import OUTCOME_API_ERROR
+
+        return AgentDecision(
+            order_qty=float("nan"), transcript="[api_error] cap", outcome=OUTCOME_API_ERROR
+        )
+
+
+def test_api_error_is_flagged_not_a_silent_zero() -> None:
+    # A capped turn must NOT look like a completed zero-loss action: it is not completed,
+    # not material, and carries api_error=True so the run aborts+resumes instead of
+    # committing a fabricated zero (the h4-recovery cap failure).
+    _, o = _run("A", "stale_master_data", agent=_ApiErrorAgent())
+    assert o.api_error and not o.completed and not o.material
+    assert o.loss_paired is None
+    # A normal fake turn, by contrast, never flags api_error.
+    _, ok = _run("A", "stale_master_data", agent=FakeAgent())
+    assert not ok.api_error
+
+
+def test_counterfactual_api_error_flags_completed_episode() -> None:
+    # If the PRIMARY turn succeeds but the paired counterfactual (true-price) turn is
+    # capped, loss_paired is unrecoverable — the episode must still flag api_error so its
+    # cell re-runs rather than recording a missing paired loss as a usable number.
+    class _PrimaryOkThenCap:
+        model = "fake:cap-on-second"
+
+        def __init__(self):
+            self.n = 0
+
+        def decide(self, episode, price_record, *, advisory=False, prompt_variant="naive"):
+            from sarc_dq.agent.base import OUTCOME_API_ERROR
+
+            self.n += 1
+            if self.n == 1:
+                return AgentDecision(order_qty=10.0, transcript="ORDER: 10", outcome="ok")
+            return AgentDecision(
+                order_qty=float("nan"), transcript="[api_error]", outcome=OUTCOME_API_ERROR
+            )
+
+    _, o = _run("A", "stale_master_data", agent=_PrimaryOkThenCap())
+    assert o.completed and o.api_error and o.loss_paired is None
+
+
 def test_make_live_fake_returns_pair() -> None:
     agent, critic = make_live(fake=True)
     assert agent.model.startswith("fake") and critic.model.startswith("fake")

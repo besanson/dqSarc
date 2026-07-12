@@ -14,6 +14,7 @@ import re
 from typing import Any
 
 from sarc_dq.agent.base import (
+    OUTCOME_API_ERROR,
     OUTCOME_ERROR,
     OUTCOME_OK,
     OUTCOME_REFUSAL,
@@ -101,11 +102,14 @@ class AnthropicAgent:
         try:
             resp: Any = self._client.messages.create(**kwargs)
         except Exception as exc:  # pragma: no cover - network/live only
+            # Transport/API failure (rate limit, spend cap, network). Marked as its own
+            # RETRYABLE outcome so the runner counts it toward the error budget and the
+            # run aborts+resumes instead of committing silent zero-loss cells.
             return AgentDecision(
                 order_qty=float("nan"),
-                transcript=f"[error] {exc}",
-                outcome=OUTCOME_ERROR,
-                raw={"error": str(exc)},
+                transcript=f"[api_error] {exc}",
+                outcome=OUTCOME_API_ERROR,
+                raw={"api_error": str(exc)},
             )
 
         in_tok = int(getattr(resp.usage, "input_tokens", 0))

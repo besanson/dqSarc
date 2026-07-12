@@ -33,7 +33,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from sarc_dq.agent.base import OUTCOME_ERROR, OUTCOME_OK, AgentDecision
+from sarc_dq.agent.base import OUTCOME_API_ERROR, OUTCOME_ERROR, OUTCOME_OK, AgentDecision
 from sarc_dq.agent.base import Agent as AgentProto
 from sarc_dq.gate import PreActionGate
 from sarc_dq.markers import extract
@@ -89,6 +89,10 @@ class LiveArmOutcome:
     # from the agent's own transcript. 0 / False when no agent turn ran (e.g. blocked).
     marker_score: float = 0.0
     flagged_data_problem: bool = False
+    # True when the agent's primary or counterfactual turn failed with a transport/API
+    # error (rate limit, spend cap, network). The runner counts these toward the error
+    # budget so a live outage aborts+resumes instead of committing silent zero cells.
+    api_error: bool = False
 
 
 def _price(record: EvidenceRecord) -> float | None:
@@ -218,6 +222,7 @@ def apply_arm_live(
                 evidence_ids=eids,
                 marker_score=mk.marker_score,
                 flagged_data_problem=mk.flagged_data_problem,
+                api_error=oc == OUTCOME_API_ERROR,
             )
         loss = episode.realised_cost(order) - clean_cost
         bp = believed if believed is not None else _price(record)
@@ -227,6 +232,7 @@ def apply_arm_live(
         # true price; that clean order shares this episode's demand draw, so the agent's
         # baseline decision noise cancels in the difference.
         loss_paired: float | None = None
+        c_api_error = False
         if corrupted:
             if arm == "E":
                 loss_paired = 0.0
@@ -237,12 +243,17 @@ def apply_arm_live(
                     primary.metadata,
                     dict(primary.ground_truth),
                 )
-                c_order, _c_oc, c_usd, c_it, c_ot, _c_tx = _decide_order(
+                c_order, c_oc, c_usd, c_it, c_ot, _c_tx = _decide_order(
                     agent, episode, true_rec, advisory=False, prompt_variant=prompt_variant
                 )
                 usd, it, ot = usd + c_usd, it + c_it, ot + c_ot
                 if c_order is not None:
                     loss_paired = episode.realised_cost(order) - episode.realised_cost(c_order)
+                elif c_oc == OUTCOME_API_ERROR:
+                    # The counterfactual turn hit the cap: loss_paired is unrecoverable
+                    # for this episode. Flag it so the cell re-runs rather than counting
+                    # a missing paired loss as zero.
+                    c_api_error = True
         # Materiality (and thus ADR) is judged on the CORRUPTION-induced loss, not the
         # raw loss-vs-optimum. Raw loss carries the agent's decision noise (Phase 0a
         # clean-regret ~2519), which alone clears the threshold — so an oracle acting on
@@ -268,6 +279,7 @@ def apply_arm_live(
             loss_paired=loss_paired,
             marker_score=mk.marker_score,
             flagged_data_problem=mk.flagged_data_problem,
+            api_error=c_api_error,
         )
 
     if arm == "A":
