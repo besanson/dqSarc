@@ -242,3 +242,38 @@ Until the instrumented re-runs land, the H1 verdict is stated as: **P1
 (loss-conversion) is supported under `policy_instructed`; the silence claim (P2/P3)
 rests on Phase 0c and is reported as PENDING an instrumented re-run.** This wording
 is used in FINDINGS and must be used in the paper (W1 "Deviations and clarifications").
+
+## 8. Corrected h4-recovery re-run truncated by an API spend cap — INVALID
+
+The stage-3 (corrected) `h4-recovery` re-run (`results/h4-recovery-live` @ `701c38e`,
+run 29113332323, config_hash `0d606d9b7730cc95` — matching the addendum) committed a
+summary that reported `cells_done=96/96`, `stopped_early=None`, and a portfolio
+recovery ratio of **6.14**. It is **INVALID**: only **2 of 8** corruption classes
+actually called the model. The Anthropic **spend cap** was hit ~\$23 into the run,
+during `duplicate_vendor`'s 12th cell; every class after it in registration order
+(`missing_field`, `plausible_outlier`, `schema_drift`, `silent_unit_change`,
+`stale_master_data`, `superseded`) got **zero API calls** (0 tokens, \$0). Their
+corrupted episodes recorded `completed=False`, so `eff_losses` stored `0.0` for each,
+collapsing arms A/D/E to 0 and making the recovery ratio meaningless. Proof it is the
+cap and not a code defect: the run's commit (`fa3b6af`) has `src/` byte-identical to
+the fixed tree, every class builds a valid agent view offline, and the `--fake`
+pipeline completes 8/8 with the expected losses (silent_unit_change loss ≈ 2080, ADR
+0.75). Full post-mortem: `reports/VERIFICATION-2026-07-10-stage3.md`.
+
+**Root cause in the harness (fixed).** The agent client swallowed the cap exception
+into `OUTCOME_ERROR` (usd=0) and the runner did not count it, so `error_budget` never
+tripped and a total outage masqueraded as a complete run — a fabrication-by-omission
+hole. Fixed (runner robustness only; **no** predicate/prompt/loss/threshold change, so
+the scientific `config_hash` is unchanged): a distinct `OUTCOME_API_ERROR` for
+transport/cap/network failures, counted per cell (`n_api_errors`) toward the error
+budget so a live outage **aborts+resumes**; resume re-runs any cap-truncated cell; and
+an operational `instrumentation = api-error-aware-v1` tag makes every pre-fix summary
+(including this INVALID one) re-run fresh instead of being resumed.
+
+| results branch | SHA | spend | grounds |
+|---|---|---|---|
+| `results/h4-recovery-live` | `701c38e` | \$23.07 | corrected config, but API spend cap truncated it to 2/8 classes |
+
+The stage-4/5 firing (h3-frontier, h1-ladder) is **halted** until the spend cap is
+raised; the re-runs then execute on the hardened harness, which can no longer commit a
+silently-truncated summary.
