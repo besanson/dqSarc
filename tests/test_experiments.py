@@ -105,6 +105,98 @@ def test_live_api_error_burst_aborts_and_saves_partial(tmp_path) -> None:
     assert r["stopped_early"] is not None and r["stopped_early"]["reason"] == "api_errors"
 
 
+def test_swallowed_api_error_still_aborts_the_run() -> None:
+    # The real client swallows a spend-cap/rate-limit failure into OUTCOME_API_ERROR
+    # (it does NOT raise). The runner must still count it toward the error budget and
+    # abort — otherwise a capped run commits silent zero-loss cells (h4-recovery).
+    from benchmarks.experiments import _run_live_matrix
+
+    class _CappedAgent:
+        model = "fake:capped"
+
+        def decide(self, *a, **k):
+            from sarc_dq.agent.base import OUTCOME_API_ERROR, AgentDecision
+
+            return AgentDecision(
+                order_qty=float("nan"), transcript="[api_error]", outcome=OUTCOME_API_ERROR
+            )
+
+    class _OkCritic:
+        model = "fake:critic"
+
+        def review(self, evidence):
+            from sarc_dq.live_arms import CriticVerdict
+
+            return CriticVerdict(False)
+
+    import sarc_dq.live_arms as la
+
+    orig = la.make_live
+    la.make_live = lambda fake=False: (_CappedAgent(), _OkCritic())  # type: ignore[assignment]
+    try:
+        r = _run_live_matrix(arms=("A",), n_episodes=4, fake=False, error_budget=4)
+    finally:
+        la.make_live = orig
+    assert r["stopped_early"] is not None and r["stopped_early"]["reason"] == "api_errors"
+
+
+def test_resume_reruns_cells_that_hit_the_cap(tmp_path) -> None:
+    # A cell recorded with n_api_errors>0 was cut off by a cap: its numbers are garbage
+    # and it must re-run on resume (not be treated as done). A clean cell in the same
+    # summary is kept. This is what lets a re-fire after a cap reset reuse the classes
+    # that completed and only re-run the truncated ones.
+    import json
+
+    out = tmp_path / "h4.json"
+    r0 = run("h4-recovery", n_episodes=6, arm_mode="live", fake=True, out_path=str(out))
+    data = json.loads(out.read_text())
+    # Corrupt one class's cells to look cap-truncated (n_api_errors>0, zeroed usd),
+    # leaving the rest clean.
+    victim = "silent_unit_change"
+    for per_lbl in data["matrix"][victim].values():
+        for cell in per_lbl.values():
+            cell["n_api_errors"] = cell.get("n_corrupted", 0) + cell.get("n_clean", 0)
+            cell["usd"] = 0.0
+            cell["completion_rate"] = 0.0
+    out.write_text(json.dumps(data), encoding="utf-8")
+    r1 = run("h4-recovery", n_episodes=6, arm_mode="live", fake=True, out_path=str(out))
+    # The victim's cells recomputed (fake agent completes them) -> no api errors remain;
+    # the clean classes were resumed unchanged.
+    for per_lbl in r1["matrix"][victim].values():
+        for cell in per_lbl.values():
+            assert cell["n_api_errors"] == 0 and cell["completion_rate"] > 0.0
+    assert r1["matrix"]["cross_source_contradiction"] == r0["matrix"]["cross_source_contradiction"]
+
+
+def test_resume_discards_pre_instrumentation_summary(tmp_path) -> None:
+    # A summary from before the api-error-aware instrumentation lacks per-cell
+    # n_api_errors, so its silently-truncated cells cannot be told from real zeros.
+    # It must be discarded (re-run fresh), not resumed — even if every other guard
+    # field matches. This is what forces the invalid capped h4 summary to re-run.
+    import json
+
+    out = tmp_path / "h4.json"
+    out.write_text(
+        json.dumps(
+            {
+                "config": {
+                    "axis": ["A", "D", "E"],
+                    "loss_model": "paired-counterfactual-v2",
+                    "prompt_variant": "policy_instructed",
+                    "fixed_n": None,
+                    # NOTE: no "instrumentation" key -> pre-fix summary
+                },
+                "matrix": {"stale_master_data": {"0.20": {"A": {"loss_eff_corrupted": 0.0}}}},
+                "total_usd": 77.0,
+            }
+        ),
+        encoding="utf-8",
+    )
+    r = run("h4-recovery", n_episodes=4, arm_mode="live", fake=True, out_path=str(out))
+    assert r["total_usd"] < 77.0  # discarded, recomputed fresh
+    assert r["config"]["instrumentation"] == "api-error-aware-v1"
+
+
 def test_live_real_path_is_import_gated() -> None:
     # Without the optional anthropic SDK, the real (non-fake) live path refuses to
     # silently no-op — it raises rather than pretending to have run.
