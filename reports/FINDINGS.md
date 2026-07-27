@@ -277,3 +277,32 @@ an operational `instrumentation = api-error-aware-v1` tag makes every pre-fix su
 The stage-4/5 firing (h3-frontier, h1-ladder) is **halted** until the spend cap is
 raised; the re-runs then execute on the hardened harness, which can no longer commit a
 silently-truncated summary.
+
+## 9. H4 (downstream recovery) re-run on the hardened harness — P1 NOT supported
+
+The corrected `h4-recovery` re-run (`results/h4-recovery-live` @ `a9a4b38`, run
+30282599910, config_hash `0d606d9b7730cc95`, `instrumentation=api-error-aware-v1`) is
+**VALID**: 96/96 cells, `n_api_errors=0` in every cell, all 8 classes call the model,
+\$99.12 — the cap-truncation failure mode is gone (the hardening worked). Full checks:
+`reports/VERIFICATION-2026-07-13-stage3-rerun.md`.
+
+The registered headline **P1 (recovery ratio ≥ 0.80, portfolio) is NOT supported**:
+portfolio-pooled `loss_A = 283.9`, `loss_D = 295.6`, `loss_E = 0` → recovery **−0.04**
+(the gate recovers ~none of the *portfolio* loss). The decomposition is the honest result
+and mirrors the H2 channel-boundary reframe:
+
+- **Gate fully recovers what it covers.** `stale_master_data` (freshness): `loss_A` 134 →
+  `loss_D` −0.5 [−4, 2] — the DQ gate zeroes the loss the payload-only critic cannot.
+- **The dominant loss is a pre-registered coverage gap.** `silent_unit_change` (unit
+  rescaling, clean metadata) is the **only** class with a clearly non-zero ungated loss
+  (`loss_A` 2420 [1392, 3666]) and it is exactly the defect the gate has no predicate for
+  (unit-consistency = v1.1 future work, addendum D); D ≈ A. Its magnitude dominates the
+  magnitude-weighted portfolio pool → recovery ≈ 0. **Structural, not statistical** — more
+  episodes cannot move it.
+- **n=100 (rate axis) is underpowered per class.** Every other class's `loss_A` CI spans 0,
+  so there is no established loss to recover.
+
+Paper wording: H4 as registered is **not supported**; the reported result is that the gate
+recovers the loss it covers (freshness) and is transparent about its named coverage gaps
+(unit-scaling, outliers), which carry the largest raw magnitude. No threshold or endpoint
+was altered.
