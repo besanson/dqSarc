@@ -50,7 +50,8 @@ def _load(exp: str) -> dict[str, Any] | None:
     p = DATA / exp / "reference_summary.json"
     if not p.exists():
         return None
-    return json.loads(p.read_text())
+    data: Any = json.loads(p.read_text())
+    return data if isinstance(data, dict) else None
 
 
 def build_manifest() -> dict[str, Any]:
