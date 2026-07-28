@@ -1,15 +1,34 @@
-# FINDINGS — instrumentation correction and the price-inelasticity result
+# FINDINGS — Experimental Corrections, Valid Reruns, and Final Interpretation
 
-**Date:** 2026-07-09 · **Status:** post-run analysis; grounds the paper's framing.
-**Scope:** why the loss-based hypotheses (H1-converts-to-loss, H3, H4) carry no
-signal for the agent under test, and why the study's contribution is the
-**detection asymmetry** (H2), not loss-recovery.
+> **Current status.** This document preserves the **chronological audit trail** of the
+> campaign. Early sections (§1–§7) describe invalidated or superseded interpretations —
+> including the withdrawn price-inelasticity reading, which came from the `naive` prompt and
+> is **not** the study's contribution. The authoritative **final** results are the valid
+> hardened-harness reruns in **§8–§11** and are summarized in
+> [`../EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md). **If any historical statement here
+> conflicts with the final status, `EXPERIMENT_STATUS.md` is authoritative.**
 
-This record exists so the correction is auditable and nothing is re-interpreted
-after the fact. Every number below is read from a committed `results/<exp>-live`
-branch or a frozen Phase 0 artifact.
+## Final results (authoritative — see §8–§11 and `EXPERIMENT_STATUS.md`)
+
+- **H1 full** — SUPPORTED for loss conversion (metadata-borne ADR ≈ 60%).
+- **H1 model-tier ladder** — SUPPORTED; silence (marker AUC ≈ 0.5, flags 0%) and
+  metadata-borne conversion (ADR ≈ 60→62%) stay flat across haiku→sonnet→opus→fable.
+- **H2** — registered conjunction NOT supported; reframed as an empirically observed
+  channel boundary (per-class detection is the evidence; gate dominates the payload-only
+  critic on freshness/schema).
+- **H3** — registered Pareto-dominance NOT supported; gate dominates the realistic
+  payload-only critic C on covered signals (F(v) is a partial oracle).
+- **H4** — portfolio recovery target NOT supported; covered freshness loss is recovered,
+  while the uncovered `silent_unit_change` loss dominates the portfolio.
+- Invalid first-wave and cap-truncated runs are **retained for audit** and **not ingested**.
+
+**Preserved history follows. Do not delete it** — retaining failed instrumentation and
+superseded interpretations is a deliberate strength of this record.
 
 ---
+
+## 1. The instrumentation bug we found and fixed
+*(historical; superseded by §8–§11)*
 
 ## 1. The instrumentation bug we found and fixed
 
@@ -331,7 +350,7 @@ the same zero false-block; per class it zeroes the freshness loss C cannot see
 (`stale`: 134 → −1.3). Same metadata-channel advantage as H2/H4; the portfolio residual stays
 dominated by the pre-registered `silent_unit_change` coverage gap. No threshold/endpoint altered.
 
-## 11. H1 capability ladder on the hardened harness — SUPPORTED (the headline)
+## 11. H1 model-tier ladder on the hardened harness — SUPPORTED (the headline)
 
 The corrected `h1-ladder` re-run (`results/h1-ladder-live` @ `6a1ee4d`, run 30332532378,
 config_hash `63ea99e0e8ea046d`, `instrumentation=api-error-aware-v1`) is **VALID**: 128/128,

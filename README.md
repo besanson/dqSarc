@@ -29,8 +29,9 @@ Pre-Action Gate with *metadata access* does.
 > tested, and green under CI; every arm and injector has a deterministic $0 mock path.
 >
 > **Headline result:** silence and metadata-borne loss-conversion are **flat across a
-> four-model capability ladder** (haiku→sonnet→opus→fable) — capability does not buy
-> skepticism. H2 is reframed as an empirical channel boundary; H3/H4's registered
+> four-model tier ladder** (haiku→sonnet→opus→fable, ≈15× in inference price) — moving to
+> higher-priced, nominally more capable tiers does not buy skepticism. H2 is reframed as an
+> empirically observed channel boundary; H3/H4's registered
 > headline predictions are reported, honestly, as not-supported-as-written, with the
 > gate winning on the metadata channel it covers. See
 > [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md) and `reports/FINDINGS.md`.

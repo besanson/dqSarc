@@ -102,7 +102,7 @@ def build() -> list[str]:
         macro("PZcJudgeAuc", _num(c.get("judge_auc"), 3), "phase0c"),
         macro("PZcFlags", _pct(c.get("flagged_fraction")), "phase0c"),
         "",
-        "% --- Experiments H1-H4 (pending until fired) ---",
+        "% --- Valid live experiments H1-H4 ---",
     ]
 
     # --- Per-experiment macros from the ingested reference summaries. Each Res<Cap> is a
@@ -174,7 +174,7 @@ def build() -> list[str]:
         macro("HfourRecovery", _num(hfour.get("portfolio_recovery"), 2), "h4-recovery"),
         macro("HfourStaleLossA", _num(hfour.get("stale_loss_a"), 0), "h4-recovery"),
         macro("HfourStaleLossD", _num(hfour.get("stale_loss_d"), 1), "h4-recovery"),
-        # Not run.
+        "% --- Optional supplementary experiments pending ---",
         macro("ResAblations", abl_head, "ablations"),
         macro("ResTier", tier_head, "tier2-validation"),
     ]
