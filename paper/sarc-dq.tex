@@ -30,11 +30,15 @@
 
 \theoremstyle{plain}
 \newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
 \theoremstyle{definition}
 \newtheorem{assumption}{Assumption}
 
 % Every result value comes from here (generated from reference_summary.json).
 \input{generated/results.tex}
+% Post-hoc analytical layer macros (deterministic $0 recomputation; make analysis).
+% Every value flows from analysis/out/*.json; nothing hand-typed (Appendix~\ref{app:analysis}).
+\input{generated/analysis.tex}
 \newcommand{\PhaseZeroScoredNote}{three live runs, \$\PhaseZeroSpend}
 
 \title{\textbf{SARC-DQ: Runtime Data-Quality Gating for Agentic AI}\\
@@ -308,6 +312,21 @@ conversion is elasticity-weighted, which
 the pilot estimates empirically (elasticity $\PZcElasticity$ for the competent
 agent). We do not claim a tight closed form; the bound's value is qualitative.
 
+\begin{corollary}[Closed-form conversion is model-independent]\label{cor:conv}
+On the newsvendor substrate the conversion factor $\rho$ admits an explicit oracle form: for
+a corrupted episode the agent that acts on the newsvendor optimum for the \emph{shown} price
+$\hat c$ incurs a paired loss $\ell = C(q^\star(\hat c)) - C(q^\star(c))$ against the same
+realised demand, and the episode is material iff $\ell \ge \tau_m\,C(q^\star(c))$. The
+per-cell mean of this indicator is a closed-form upper estimate of $\rho$ that \emph{contains
+no model term}: the shown price $\hat c$ is fixed by the injected corruption, not by the
+agent, so model tier cannot enter---metadata availability, not capability, is what is held
+fixed. Appendix~\ref{app:analysis} shows this oracle conversion tracks the measured agent ADR
+to a mean absolute error of $\ConvMAE$ (Pearson $r=\ConvR$; measured CI covers the prediction
+in $\ConvCICoverage$ cells), which is the analytical form of M2.
+\end{corollary}
+\noindent The corollary is stated as an estimate of the same upper bound, not a tighter
+equality; the residual cell is reported honestly in the appendix rather than fitted away.
+
 \section{The Phase 0 pilot}\label{sec:pilot}
 We ran a three-run live pilot on a priced single-period (newsvendor) replenishment
 task, where the cost-minimising order depends on the unit price; a stale price
@@ -456,6 +475,22 @@ classes whose empirical detection crosses their preregistered channel label---th
 observed boundary is not the assigned one.}
 \label{tab:h2}
 \end{table}
+
+\subsection{The channel boundary is empirical rather than taxonomic}\label{sec:channel}
+The payload/metadata split is often treated as a fixed property of a defect \emph{class}. Our
+data shows it is instead a property of \emph{what a given mechanism is shown}. Two registered
+labels cross their own boundary, and both directions matter. \texttt{schema\_drift} is
+registered payload-visible, yet the realistic payload-only critic misses it (\HtwoDetSchemaC{})
+while the deterministic schema predicate catches it (\HtwoDetSchemaG{}): a ``payload-visible''
+defect is invisible to a reader that does not implement the right check.
+\texttt{superseded\_golden\_record} is registered metadata-borne, yet the critic \emph{does}
+see it (\HtwoDetSupersededC{})---not through metadata, but because the current-golden companion
+record creates a payload-level contradiction the critic can read. Detectability is therefore
+determined by the triple (representation shown, companion evidence available, predicates
+implemented), not by the class name. This reframing is what lets the same architecture port to
+a new domain without re-deriving a taxonomy (Appendix~\ref{app:analysis}): one moves the
+enforcement point to where the signal actually is, then implements the predicate that reads it.
+The boundary is drawn by the mechanism, not by the label.
 
 \paragraph{H3 (Gating dominance) --- \ResHthree{} as written.}
 The registered Pareto-dominance claim (D dominates B, C, F$(v)$) fails for two honest
@@ -682,5 +717,153 @@ system. \emph{SIGMOD} 2019.
 \bibitem{konda2016} P. Konda et al. Magellan: toward building entity matching
 management systems. \emph{PVLDB} 9(12), 2016.
 \end{thebibliography}
+
+\appendix
+\section{Analytical companion (deterministic, \$0)}\label{app:analysis}
+This appendix strengthens the empirical claims with analytical explanations and robustness
+analyses that add \emph{no} new experiment. Every value and figure here is a deterministic,
+zero-cost recomputation from the frozen substrate, the frozen injectors, and the committed
+result summaries---produced by \texttt{make analysis} (package \texttt{analysis/}, outputs in
+\texttt{analysis/out/}, macros in \texttt{generated/analysis.tex}). No threshold, verdict, or
+generated experiment value is altered; where an analytical prediction misses a measurement we
+report the discrepancy rather than fit it away.
+
+\subsection{The conversion law and its calibration (M2)}
+Corollary~\ref{cor:conv} gives a closed-form, model-independent estimate of the conversion
+factor $\rho$. Fig.~\ref{fig:conv} calibrates it against the measured agent ADR over the
+priced metadata-borne cells (h1-full, arm A): mean absolute error $\ConvMAE$, Pearson
+$r=\ConvR$, and the measured 95\% Wald interval covers the oracle prediction in
+$\ConvCICoverage$ cells. Because the shown price is fixed by the injected corruption and not by
+the agent, model tier is absent from the law by construction---the analytical form of the flat
+ladder (M2). The single cell whose interval excludes the prediction is retained in
+\texttt{analysis/out/conversion\_law.json}, not discarded.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.52\linewidth]{figures/analysis/conversion_calibration.pdf}
+\caption{Predicted oracle conversion vs.\ measured agent ADR. Proximity to the diagonal is
+the calibration; the agent tracks the closed-form, model-free prediction.}
+\label{fig:conv}
+\end{figure}
+
+\subsection{H4 as a coverage-accounting identity}
+Portfolio recovery decomposes exactly as
+$\text{recovery}=(L_A-L_D)/(L_A-L_E)$ with $L_x=\sum_c w_c\,\ell_{x,c}$, class weight
+$w_c=n_c/N$, and $L_E=0$. Recomputed from the committed h4-recovery losses this identity
+reproduces the reported portfolio recovery ($\CovRecovery$) to a residual of $\CovResidual$.
+The decomposition (Fig.~\ref{fig:cov}) explains \emph{why} the headline is low without any
+appeal to statistics: the single uncovered class $\CovDominant$ carries $\CovDominantSharePct$\%
+of the recoverable denominator, so a gate that (by design) has no predicate for it cannot move
+the portfolio number---exactly the pre-registered coverage gap.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.72\linewidth]{figures/analysis/coverage_accounting.pdf}
+\caption{Weighted denominator (recoverable \$) by class; blue = gate-covered, red = uncovered
+gap. One uncovered, high-magnitude class dominates the recoverable pool.}
+\label{fig:cov}
+\end{figure}
+
+\subsection{Formal coverage matrix}
+Table~\ref{tab:coverage} states, per class, where the discriminating signal lives, whether each
+mechanism can observe it, the implemented v1 predicate, and the remaining limitation---the
+concise map of what the architecture does and does not cover.
+
+\begin{table}[t]\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+class & signal & critic & gate & predicate & remaining limitation \\
+\midrule
+\texttt{stale\_master\_data}        & metadata & no  & yes & freshness    & needs a fresh clock \\
+\texttt{superseded\_golden\_record} & meta/payload & yes & yes & golden-unique & needs version/companion \\
+\texttt{schema\_drift}              & payload  & no  & yes & schema       & needs the typed check \\
+\texttt{missing\_mandatory\_field}  & payload  & yes & yes & complete     & --- \\
+\texttt{cross\_source\_contradiction} & payload & yes & yes & consistency & needs both sources keyed \\
+\texttt{duplicate\_vendor\_conflicting\_terms} & payload & yes & no & (consistency) & alt-keyed rows not compared \\
+\texttt{silent\_unit\_change}       & none printed & no & no & --- & v1.1 unit-consistency gap \\
+\texttt{plausible\_outlier}         & lineage only & no & no & --- & v1.1 outlier gap \\
+\bottomrule
+\end{tabular}
+\caption{Coverage matrix (frozen gate design). ``critic''/``gate'' record whether the
+payload-only critic / metadata-aware gate can observe the defect; the last two classes are the
+declared, unpatched gaps.}
+\label{tab:coverage}
+\end{table}
+
+\subsection{Statistical reporting: quantifying ladder flatness}
+The H1 ``flat to slightly rising'' claim is quantified from the committed h1-ladder pooled
+counts over the metadata-borne classes: the top-minus-bottom endpoint difference is
+$\LadderEndpointDiff$ with a two-proportion 95\% Wald interval
+$[\LadderEndpointCILo,\LadderEndpointCIHi]$ that includes zero, and the ordinary-least-squares
+trend is $\LadderTrendPerTier$ ADR per tier step. Flatness is thus a measured quantity with an
+interval, not an adjective.
+
+\subsection{Robustness: leave-one-class-out, ablations, and threshold sensitivity}
+Removing the dominant uncovered class $\LooTopClass$ from the portfolio moves recovery from
+$\LooFull$ to $\LooTopRecovery$ (Fig.~\ref{fig:loo})---a structural demonstration that this one
+class, not statistical noise, sets the headline. Predicate ablations
+(\texttt{analysis/out/robustness.json}) confirm that no v1 predicate subset recovers the
+portfolio, because none covers that class. Threshold sensitivity (Fig.~\ref{fig:thresh}) sweeps
+the materiality threshold on the oracle conversion---a faithful proxy, given the $\ConvMAE$
+calibration above---from a mean ADR of $\ThreshLoAdr$ down to $\ThreshHiAdr$; the registered
+$\tau_m=\ThreshReg$ (ADR $\ThreshRegAdr$) is one point on a smooth curve, not a cliff edge, so
+the verdicts do not hinge on the threshold choice.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.70\linewidth]{figures/analysis/leave_one_out.pdf}\\[4pt]
+\includegraphics[width=0.46\linewidth]{figures/analysis/threshold_sensitivity.pdf}
+\caption{Top: portfolio recovery with each class removed (dashed = full portfolio). Bottom:
+oracle ADR vs.\ the materiality threshold; the registered $\tau_m$ is marked.}
+\label{fig:loo}\label{fig:thresh}
+\end{figure}
+
+\subsection{Stress: dependence on metadata quality}
+The gate reads metadata, so its detection is only as good as the metadata it is handed.
+Fig.~\ref{fig:stress} re-runs the real gate on the covered classes under deterministic
+metadata-degradation operators. Pooled detection falls from $\StressIntact$ (intact) to
+$\StressAllDegraded$ (all metadata degraded); the most fragile class is $\StressFragile$, whose
+freshness signal collapses when the clock is erased. This is an honest boundary: placement helps
+to the extent the metadata channel is intact.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.72\linewidth]{figures/analysis/stress_degradation.pdf}
+\caption{Gate detection on covered classes under metadata degradation. Green survives; red
+collapses. Detection is a function of metadata quality, not a universal guarantee.}
+\label{fig:stress}
+\end{figure}
+
+\subsection{Falsification: it is targeting, not frequency}
+A natural null is ``the gate just intervenes more.'' We falsify it (Fig.~\ref{fig:fals}) by
+comparing, at the \emph{same} intervention budget, the real gate against corruption-blind
+controls over the full population. The gate recovers $\FalsGate$ of the positive-loss pool
+versus $\FalsRandom$ for a frequency-matched random policy, $\FalsShuffled$ for permuted flags,
+and $\FalsAnti$ for an adversarially mis-targeted policy (gate advantage $\FalsGap$). Recovery
+tracks alignment with the corruption signal, not how often one intervenes.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.48\linewidth]{figures/analysis/falsification.pdf}
+\caption{Recovered positive-loss fraction at equal intervention budget. The metadata gate (blue)
+beats every corruption-blind control; the benefit is targeting, not frequency.}
+\label{fig:fals}
+\end{figure}
+
+\subsection{A second decision process: architectural portability}
+To show the architecture ports---not that it wins universally---we instantiate a structurally
+different decision: a B2C personalised-promotion eligibility task (a binary offer, priced and
+paired, not a newsvendor order). The same payload/metadata split and the \emph{same} predicate
+family (\texttt{freshness}, \texttt{golden\_record\_unique}, \texttt{complete}) apply. Six
+metadata-borne promo corruptions (expired campaign, superseded segmentation, stale score,
+outdated rules, missing consent, obsolete recommendation) yield a portfolio ADR of $\SecondADR$,
+and the reused gate recovers $\SecondRecovery$ of the induced loss (Fig.~\ref{fig:second}). The
+ADR profile is domain-specific---eligibility-borne defects (expired campaign $\SecondExpiredADR$,
+missing consent $\SecondConsentADR$) dominate here, unlike \texttt{silent\_unit\_change} in
+procurement---which is the point: the mechanism transfers even though the loss surface does not.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.74\linewidth]{figures/analysis/second_domain.pdf}
+\caption{Second domain (B2C promotion eligibility): per-class ungated ADR (red) and gate
+recovery (blue) using the identical predicate family. The architecture ports; performance is
+domain-specific.}
+\label{fig:second}
+\end{figure}
 
 \end{document}

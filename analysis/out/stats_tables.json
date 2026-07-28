@@ -1,0 +1,57 @@
+{
+  "note": "H1 ladder flatness on metadata-borne classes (committed h1-ladder pooled counts)",
+  "metadata_borne_classes": [
+    "stale_master_data",
+    "superseded_golden_record",
+    "silent_unit_change",
+    "plausible_outlier"
+  ],
+  "tiers": [
+    {
+      "tier": "claude-haiku-4-5",
+      "n": 400,
+      "adr": 0.605,
+      "ci95": [
+        0.5571,
+        0.6529
+      ]
+    },
+    {
+      "tier": "claude-sonnet-5",
+      "n": 400,
+      "adr": 0.615,
+      "ci95": [
+        0.5673,
+        0.6627
+      ]
+    },
+    {
+      "tier": "claude-opus-4-8",
+      "n": 400,
+      "adr": 0.6175,
+      "ci95": [
+        0.5699,
+        0.6651
+      ]
+    },
+    {
+      "tier": "claude-fable-5",
+      "n": 400,
+      "adr": 0.6175,
+      "ci95": [
+        0.5699,
+        0.6651
+      ]
+    }
+  ],
+  "endpoint_difference": {
+    "top_minus_bottom": 0.0125,
+    "ci95": [
+      -0.0551,
+      0.0801
+    ],
+    "ci_includes_zero": true
+  },
+  "ols_trend_per_tier": 0.004,
+  "interpretation": "the endpoint difference is small and its 95% CI includes zero; the per-tier trend is near zero. Model tier does not materially move the metadata-borne defect rate: the flatness the paper reports is quantified, not asserted."
+}

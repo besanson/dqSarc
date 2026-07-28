@@ -1,0 +1,98 @@
+{
+  "note": "H4 portfolio recovery decomposed by class weight x baseline loss x coverage",
+  "rows": [
+    {
+      "class": "silent_unit_change",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": 2419.64,
+      "loss_d": 2420.71,
+      "predicate": null,
+      "covered": false,
+      "num_contribution": -0.134,
+      "den_contribution": 302.455
+    },
+    {
+      "class": "superseded_golden_record",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": -185.56,
+      "loss_d": 2.7,
+      "predicate": "freshness",
+      "covered": true,
+      "num_contribution": -23.532,
+      "den_contribution": -23.195
+    },
+    {
+      "class": "stale_master_data",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": 133.6,
+      "loss_d": -0.47,
+      "predicate": "freshness",
+      "covered": true,
+      "num_contribution": 16.759,
+      "den_contribution": 16.7
+    },
+    {
+      "class": "plausible_outlier",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": -100.72,
+      "loss_d": -99.36,
+      "predicate": null,
+      "covered": false,
+      "num_contribution": -0.17,
+      "den_contribution": -12.59
+    },
+    {
+      "class": "duplicate_vendor_conflicting_terms",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": 39.09,
+      "loss_d": 41.05,
+      "predicate": "consistency",
+      "covered": true,
+      "num_contribution": -0.245,
+      "den_contribution": 4.886
+    },
+    {
+      "class": "cross_source_contradiction",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": -34.75,
+      "loss_d": 0.0,
+      "predicate": "consistency",
+      "covered": true,
+      "num_contribution": -4.344,
+      "den_contribution": -4.344
+    },
+    {
+      "class": "missing_mandatory_field",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": 0.0,
+      "loss_d": 0.0,
+      "predicate": "completeness",
+      "covered": true,
+      "num_contribution": 0.0,
+      "den_contribution": 0.0
+    },
+    {
+      "class": "schema_drift",
+      "n": 43,
+      "weight": 0.125,
+      "loss_a": 0.0,
+      "loss_d": 0.0,
+      "predicate": "schema",
+      "covered": true,
+      "num_contribution": 0.0,
+      "den_contribution": 0.0
+    }
+  ],
+  "recovery_from_identity": -0.0411,
+  "recovery_direct_pooled": -0.0411,
+  "residual": 0.0,
+  "dominant_class": "silent_unit_change",
+  "dominant_den_share": 0.8305
+}

@@ -1,0 +1,81 @@
+{
+  "note": "real PreActionGate detection on covered classes under metadata degradation",
+  "modes": [
+    "intact",
+    "stale_clock",
+    "version_erased",
+    "provenance_stripped",
+    "all_degraded"
+  ],
+  "rows": [
+    {
+      "class": "stale_master_data",
+      "predicate": "freshness",
+      "intact": 1.0,
+      "stale_clock": 0.0,
+      "version_erased": 1.0,
+      "provenance_stripped": 1.0,
+      "all_degraded": 0.0,
+      "fragility": 1.0
+    },
+    {
+      "class": "superseded_golden_record",
+      "predicate": "freshness",
+      "intact": 1.0,
+      "stale_clock": 1.0,
+      "version_erased": 1.0,
+      "provenance_stripped": 1.0,
+      "all_degraded": 1.0,
+      "fragility": 0.0
+    },
+    {
+      "class": "schema_drift",
+      "predicate": "schema",
+      "intact": 1.0,
+      "stale_clock": 1.0,
+      "version_erased": 1.0,
+      "provenance_stripped": 1.0,
+      "all_degraded": 1.0,
+      "fragility": 0.0
+    },
+    {
+      "class": "missing_mandatory_field",
+      "predicate": "completeness",
+      "intact": 1.0,
+      "stale_clock": 1.0,
+      "version_erased": 1.0,
+      "provenance_stripped": 1.0,
+      "all_degraded": 1.0,
+      "fragility": 0.0
+    },
+    {
+      "class": "cross_source_contradiction",
+      "predicate": "consistency",
+      "intact": 1.0,
+      "stale_clock": 1.0,
+      "version_erased": 1.0,
+      "provenance_stripped": 1.0,
+      "all_degraded": 1.0,
+      "fragility": 0.0
+    },
+    {
+      "class": "duplicate_vendor_conflicting_terms",
+      "predicate": "consistency",
+      "intact": 0.0,
+      "stale_clock": 0.0,
+      "version_erased": 0.0,
+      "provenance_stripped": 0.0,
+      "all_degraded": 0.0,
+      "fragility": 0.0
+    }
+  ],
+  "pooled_detection_by_mode": {
+    "intact": 0.8333,
+    "stale_clock": 0.6667,
+    "version_erased": 0.8333,
+    "provenance_stripped": 0.8333,
+    "all_degraded": 0.6667
+  },
+  "most_fragile_class": "stale_master_data",
+  "interpretation": "detection is a function of metadata quality: collapsing the freshness clock or erasing versions removes the very signal the gate reads. Placement helps only to the extent the metadata channel is intact: an honest boundary, not a universal win."
+}

@@ -1,0 +1,74 @@
+{
+  "loo": {
+    "full_recovery": -0.0411,
+    "leave_one_out": [
+      {
+        "excluded": "silent_unit_change",
+        "recovery": 0.6219
+      },
+      {
+        "excluded": "superseded_golden_record",
+        "recovery": 0.0386
+      },
+      {
+        "excluded": "cross_source_contradiction",
+        "recovery": -0.0254
+      },
+      {
+        "excluded": "plausible_outlier",
+        "recovery": -0.0388
+      },
+      {
+        "excluded": "duplicate_vendor_conflicting_terms",
+        "recovery": -0.0409
+      },
+      {
+        "excluded": "missing_mandatory_field",
+        "recovery": -0.0411
+      },
+      {
+        "excluded": "schema_drift",
+        "recovery": -0.0411
+      },
+      {
+        "excluded": "stale_master_data",
+        "recovery": -0.1064
+      }
+    ]
+  },
+  "predicate_ablations": {
+    "full_no_gate_baseline": 0.0,
+    "freshness_only": -0.0239,
+    "schema_only": 0.0,
+    "completeness_only": 0.0,
+    "consistency_only": -0.0162,
+    "lineage_only": 0.0,
+    "combined_v1": -0.04
+  },
+  "threshold_sensitivity": {
+    "registered_tau_m": 0.005,
+    "note": "oracle ADR vs tau_m; registered tau_m=0.005 is one point on the curve",
+    "curve": [
+      {
+        "tau_m": 0.001,
+        "mean_oracle_adr": 0.6225
+      },
+      {
+        "tau_m": 0.005,
+        "mean_oracle_adr": 0.6175
+      },
+      {
+        "tau_m": 0.01,
+        "mean_oracle_adr": 0.59
+      },
+      {
+        "tau_m": 0.02,
+        "mean_oracle_adr": 0.545
+      },
+      {
+        "tau_m": 0.05,
+        "mean_oracle_adr": 0.3325
+      }
+    ]
+  }
+}
