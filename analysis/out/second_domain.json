@@ -1,0 +1,62 @@
+{
+  "note": "B2C promotion-eligibility domain; same payload/metadata split + predicate family",
+  "domain": "personalised_promotion_eligibility",
+  "reused_predicates": [
+    "freshness",
+    "golden_record_unique",
+    "complete"
+  ],
+  "rows": [
+    {
+      "class": "expired_campaign",
+      "predicate": "freshness",
+      "n_corrupted": 160,
+      "adr": 0.9313,
+      "mean_loss": 28.544,
+      "gate_recovered_fraction": 1.0
+    },
+    {
+      "class": "superseded_segmentation",
+      "predicate": "golden_record_unique",
+      "n_corrupted": 160,
+      "adr": 0.0063,
+      "mean_loss": 0.003,
+      "gate_recovered_fraction": 1.0
+    },
+    {
+      "class": "stale_score",
+      "predicate": "freshness",
+      "n_corrupted": 160,
+      "adr": 0.0063,
+      "mean_loss": 0.003,
+      "gate_recovered_fraction": 1.0
+    },
+    {
+      "class": "outdated_rules",
+      "predicate": "golden_record_unique",
+      "n_corrupted": 160,
+      "adr": 0.0063,
+      "mean_loss": 0.003,
+      "gate_recovered_fraction": 1.0
+    },
+    {
+      "class": "missing_consent",
+      "predicate": "complete",
+      "n_corrupted": 160,
+      "adr": 0.9313,
+      "mean_loss": 28.544,
+      "gate_recovered_fraction": 1.0
+    },
+    {
+      "class": "obsolete_recommendation",
+      "predicate": "freshness",
+      "n_corrupted": 160,
+      "adr": 0.0063,
+      "mean_loss": 0.003,
+      "gate_recovered_fraction": 1.0
+    }
+  ],
+  "portfolio_adr": 0.3146,
+  "portfolio_gate_recovery": 1.0,
+  "interpretation": "the identical predicate family detects metadata-borne promo defects and the gate recovers the induced loss --- the architecture ports to a structurally different decision. This demonstrates portability, not that the gate is universally optimal."
+}

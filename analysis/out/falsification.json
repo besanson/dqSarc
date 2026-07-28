@@ -1,0 +1,14 @@
+{
+  "note": "falsification: recovered positive-loss fraction by intervention policy",
+  "n_corrupted_episodes": 3200,
+  "gate_intervention_count": 500,
+  "total_positive_loss": 475279.64,
+  "recovered_fraction": {
+    "gate_real": 0.2715,
+    "random_match": 0.1636,
+    "shuffled_flags": 0.1336,
+    "anti_correlated": 0.1173
+  },
+  "gate_minus_random": 0.1079,
+  "interpretation": "intervening as often at random recovers far less than the metadata gate; the benefit comes from firing on the corrupted episodes, not from firing more. The null 'gates just intervene more' is falsified."
+}

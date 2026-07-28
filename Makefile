@@ -64,6 +64,12 @@ paper:
 status:
 	python scripts/experiment_status.py
 
+# Post-hoc analytical layer: deterministic $0 recomputation from committed data
+# (conversion law, coverage accounting, robustness, stress, controls, second domain, figures).
+# Needs the `figures` extra for the plots. No API, no reruns.
+analysis:
+	python -m analysis.run_all
+
 # Fail if manuscript/macros/status records drift (valid exp -> pending, invalid ingested,
 # incomplete provenance, stale README/generated phrases). Deterministic; no API calls.
 check-claims:

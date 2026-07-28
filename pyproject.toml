@@ -34,6 +34,9 @@ live = ["anthropic>=0.40"]
 # DQ Pre-Action Gate: loads the YAML predicate spec. The Phase 0 zero-dependency
 # core never imports the gate, so this stays optional.
 gate = ["pyyaml>=6"]
+# Post-hoc analytical layer + publication figures (deterministic, $0). Not needed for
+# the core, the experiments, or the paper's macro pipeline.
+figures = ["matplotlib>=3.7", "numpy>=1.24"]
 # `sarc-governance` and `green-sarc` are not yet on PyPI and PyPI forbids direct
 # VCS URLs in published metadata, so these extras are kept as stable names only;
 # install the dependencies manually until they are released:
