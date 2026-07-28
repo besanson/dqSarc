@@ -42,11 +42,8 @@ def build() -> str:
         flags=re.DOTALL,
     )
 
-    # 3. Neutralise \verifyc (render nothing) rather than delete each call site.
-    tex = tex.replace(
-        r"\newcommand{\verifyc}{\textsuperscript{$\langle$VERIFY$\rangle$}}",
-        r"\newcommand{\verifyc}{}",
-    )
+    # 3. (Citations verified 2026-07: the \verifyc marker and all its call sites were
+    #    removed from the source, so nothing to neutralise here.)
 
     # 4. Remove the red DRAFT banner line from \date{...}.
     tex = re.sub(
@@ -71,7 +68,7 @@ def main() -> int:
     checks = {
         "watermark shipout hook removed": "\\AddToShipoutPictureFG{\\DraftMark}" not in text,
         "red DRAFT banner removed": "Claims not yet signed off" not in text,
-        "verifyc renders nothing": "\\newcommand{\\verifyc}{}" in text,
+        "no verify markers remain": "\\verifyc" not in text,
         "no rendered [pending:] in body": "[pending:" not in text.replace(
             "[pending:~#1]", ""  # the \pending definition itself is fine
         ),
