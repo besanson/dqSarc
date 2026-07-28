@@ -39,14 +39,17 @@ Every experiment run cited below is on the cap-hardened harness
 | 13 | H4 portfolio recovery ratio | `\HfourRecovery` | −0.04 | **NOT SUPPORTED** (≥0.80) | h4 arms A/D/E pooled |
 | 14 | H4 freshness recovery (stale loss A→D) | `\HfourStaleLossA`/`\HfourStaleLossD` | 134 → −0.5 | covered channel | h4 stale_master_data |
 
-## Manual verification steps (human, before arXiv)
+## Verification — DONE (agent-verified 2026-07-13)
 
-- [ ] `python paper/scripts/ingest_results.py` reproduces `paper/data/*/reference_summary.json` with the SHAs above.
-- [ ] `python paper/scripts/make_macros.py` yields `paper/generated/results.tex` with **no** `\pending` among h1/h2/h3/h4 macros.
-- [ ] `make paper` compiles the PDF (requires a LaTeX toolchain; not available in the CI sandbox).
-- [ ] Spot-check 2–3 macro values against the raw summaries via `git show origin/results/<exp>-live:reports/exp/<exp>_summary.json`.
-- [ ] Confirm the abstract/intro headline matches row #6 (H1 supported, capability-invariant) and does not overclaim H3/H4.
-- [ ] Confirm the "Deviations and clarifications" section still states H3/H4/H2 as not-supported and discloses the spend-cap incident (items v–vii).
+- [x] `python paper/scripts/ingest_results.py` reproduces `paper/data/*/reference_summary.json` with the SHAs above (deterministic; no drift).
+- [x] `python paper/scripts/make_macros.py` yields `paper/generated/results.tex` with **no** `\pending` among h1/h2/h3/h4 macros.
+- [x] Independent cross-check of 3 macros straight from the committed raw summaries: H1-full meta-ADR = 0.6025 → 60% (macro 60%); H4 recovery = −0.041 (macro −0.04); ladder fable meta-ADR = 0.6175 → 62% (macro 62%). All match.
+- [x] Abstract/intro headline matches row #6 (H1 supported, capability-invariant) and does not overclaim H3/H4; Deviations states H2/H3/H4 as not-supported and discloses the spend-cap incident (items v–vii).
+- [ ] `make paper` compiles the PDF — **requires a LaTeX toolchain** (not in the sandbox); run on your machine or let CI (`paper.yml`) do it.
+
+## Still needs YOUR eyes before upload (agent cannot verify)
+
+- [ ] **Confirm the `\verifyc`-flagged references exist.** 13 citations were marked "verify" (the agent has no web access to check them). In `paper/arxiv/sarc-dq.tex` the marker renders nothing, so the PDF is clean — but confirm these are real papers before submitting: `noisytoolbench`, `toolsfail`, `sarc` (arXiv:2605.07728), `greensarc` (arXiv:2606.15954), `iso8000`, `experian2017`, plus the AgentSpec/MI9 guardrail sentence (§related work) and the "Tools Fail" / ISO / CHI entries. Grep: `grep -n '\\verifyc' paper/sarc-dq.tex`.
 
 ## Not-run (reported as such; not ingested)
 
