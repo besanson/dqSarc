@@ -117,6 +117,10 @@ def build() -> list[str]:
     hfour = _load(DATA / "h4-recovery" / "reference_summary.json") or {}
     abl = _load(DATA / "ablations" / "reference_summary.json")
     tier = _load(DATA / "tier2-validation" / "reference_summary.json")
+    haiku_adr = _pct(rung(lad, "claude-haiku-4-5", "metadata_borne_adr"))
+    fable_adr = _pct(rung(lad, "claude-fable-5", "metadata_borne_adr"))
+    abl_head = _num(abl["headline"]) if isinstance(abl, dict) else None
+    tier_head = _num(tier["headline"]) if isinstance(tier, dict) else None
 
     lines += [
         # H1 full — silence + loss-conversion under the competent decider.
@@ -128,8 +132,8 @@ def build() -> list[str]:
         macro("HoneLadderAdrHi", _pct(lad.get("adr_max")), "h1-ladder"),
         macro("HoneLadderFlag", _pct(lad.get("flag_fraction_max")), "h1-ladder"),
         macro("HoneLadderAuc", _num(lad.get("marker_auc_max"), 2), "h1-ladder"),
-        macro("HoneLadderAdrHaiku", _pct(rung(lad, "claude-haiku-4-5", "metadata_borne_adr")), "h1-ladder"),
-        macro("HoneLadderAdrFable", _pct(rung(lad, "claude-fable-5", "metadata_borne_adr")), "h1-ladder"),
+        macro("HoneLadderAdrHaiku", haiku_adr, "h1l"),
+        macro("HoneLadderAdrFable", fable_adr, "h1l"),
         # H2 detection asymmetry — reframed as a channel boundary.
         macro("ResHtwo", "REFRAMED" if htwo else None, "h2-detection"),
         macro("HtwoCriticMeta", _pct(htwo.get("critic_detection_metadata")), "h2-detection"),
@@ -147,8 +151,8 @@ def build() -> list[str]:
         macro("HfourStaleLossA", _num(hfour.get("stale_loss_a"), 0), "h4-recovery"),
         macro("HfourStaleLossD", _num(hfour.get("stale_loss_d"), 1), "h4-recovery"),
         # Not run.
-        macro("ResAblations", _num(abl.get("headline")) if isinstance(abl, dict) else None, "ablations"),
-        macro("ResTier", _num(tier.get("headline")) if isinstance(tier, dict) else None, "tier2-validation"),
+        macro("ResAblations", abl_head, "ablations"),
+        macro("ResTier", tier_head, "tier2-validation"),
     ]
     return lines
 

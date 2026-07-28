@@ -148,7 +148,7 @@ def ingest_h1_ladder(m: dict[str, Any], models: list[str]) -> dict[str, Any]:
         "adr_max": max(adrs),
         "flag_fraction_max": round(max(rungs[mod]["flag_fraction"] for mod in models), 4),
         "marker_auc_max": round(
-            max(rungs[mod]["marker_auc"] for mod in models if rungs[mod]["marker_auc"] is not None),
+            max(rungs[m]["marker_auc"] for m in models if rungs[m]["marker_auc"] is not None),
             3,
         ),
         "verdict": "SUPPORTED — silence + loss-conversion flat across capability",
