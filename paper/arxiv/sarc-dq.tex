@@ -184,7 +184,8 @@ bottom one.}
 
 \paragraph{Competence buys conversion, not detection: the incompetence shield.}
 One might hope a smarter agent would notice the bad price. We observe that it does
-not---the discriminating signal is not in its context at any capability level. Worse,
+not---the discriminating signal is absent from the payload context at every tested model
+tier. Worse,
 making the agent \emph{better at its task} makes it \emph{more} vulnerable: an agent
 that faithfully tracks the price it is given (high decision elasticity) inherits the
 corruption, while an agent that ignores the price (low elasticity) is accidentally
@@ -195,9 +196,9 @@ action---not bought with model scale.
 \paragraph{Three claims.} Everything below serves three messages, in order of
 importance. \textbf{(M1)}~Metadata-borne defects are \emph{structurally} invisible to a
 payload-only agent (we argue this from the architecture and show it in the channel
-measurements). \textbf{(M2)}~Increasing model capability does not fix M1---silence and
-loss-conversion are flat across a four-model ladder (we observe this, \S\ref{sec:results};
-the paper's headline). \textbf{(M3)}~The correct remedy is architectural: runtime
+measurements). \textbf{(M2)}~Moving to higher tested model tiers does not fix M1---silence
+and loss-conversion are flat across the four-model tier ladder (we observe this,
+\S\ref{sec:results}; the paper's headline). \textbf{(M3)}~The correct remedy is architectural: runtime
 metadata enforcement at the point of action (we argue this and give a gate that beats a
 realistic payload-only critic on its covered channel). The benchmark, formal invariants,
 economics, and governance mapping are \emph{support} for these three, not competing

@@ -30,8 +30,6 @@ superseded interpretations is a deliberate strength of this record.
 ## 1. The instrumentation bug we found and fixed
 *(historical; superseded by §8–§11)*
 
-## 1. The instrumentation bug we found and fixed
-
 The live experiments originally measured loss and materiality against the
 *theoretical optimum*:
 
