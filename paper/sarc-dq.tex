@@ -68,7 +68,10 @@ to slightly rising, while behavioral doubt markers stay at chance (AUC
 $\le\HoneLadderAuc$) and explicit data-quality flags remain absent ($\HoneLadderFlag$). A
 metadata-aware Pre-Action Gate outperforms a realistic payload-only critic on the freshness
 and schema signals it covers; uncovered unit-consistency and plausible-outlier defects
-remain unresolved, and portfolio-level recovery is not achieved. \textbf{Impact.} These
+remain unresolved, and portfolio-level recovery is not achieved. A model-free analytical
+oracle derived from the task's decision geometry tracks the measured agent ADR with MAE
+\ConvMAE{} and Pearson $r=\ConvR$, the measured interval covering the prediction in
+\ConvCICoverage{} cells, giving the flat ladder an analytical form. \textbf{Impact.} These
 results identify evidence integrity as a distinct systems axis from model capability, and
 show that mitigation effectiveness depends on enforcement placement and predicate coverage.
 \end{abstract}
@@ -662,6 +665,16 @@ quality of the \emph{evidence} on which autonomous decisions are based. As agent
 answering to acting, runtime evidence governance may become as fundamental to enterprise AI
 as memory protection became to operating systems---a cheap, architectural guarantee that a
 fast, powerful process cannot act on state it was never allowed to trust.
+
+\paragraph{The flat ladder is not only empirical.} A model-free analytical oracle derived
+from the task's decision geometry predicts the conversion of a metadata-borne defect into a
+loss \emph{without any model-tier term}---the corrupted price it acts on is fixed by the
+injected defect, not by the agent---and this prediction tracks the measured ADR to MAE
+\ConvMAE{} (Pearson $r=\ConvR$; the measured interval covers the prediction in
+\ConvCICoverage{} cells, Appendix~\ref{app:analysis}). So the ladder's flatness is explained,
+not merely observed: capability is absent from the mechanism that sets conversion, while
+enforcement placement is the factor that changes it. We claim this only for the tested
+architecture and decision setting, not as universal model independence.
 
 \begin{thebibliography}{99}
 \bibitem{agentnoisebench} AgentNoiseBench. arXiv:2602.11348 (ICML 2026).
