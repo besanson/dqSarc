@@ -4,6 +4,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[margin=1in]{geometry}
+% Let TeX stretch a little rather than push long unbreakable tokens (file paths,
+% config strings in \texttt) past the right margin -> avoids Overfull \hbox.
+\emergencystretch=3em
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{booktabs}
 \usepackage{graphicx} % \rotatebox for the DRAFT watermark
@@ -262,6 +265,7 @@ Agent \texttt{claude-sonnet-5}, judge \texttt{claude-haiku-4-5}; total spend
 \$\PhaseZeroSpend.
 
 \begin{table}[t]\centering
+{\small\setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{lcccccc}
 \toprule
 run & prompt & scored & verdict & agent-ADR & oracle-ADR & elasticity \\
@@ -270,7 +274,7 @@ run & prompt & scored & verdict & agent-ADR & oracle-ADR & elasticity \\
 0b & policy & \PZbScored/100 & \emph{rejected} & --- & --- & \PZbElasticity \\
 0c & policy & \PZcScored/\PZcEpisodes & \textbf{SUPPORTED} & \PZcAdr & \PZcOracleAdr & \PZcElasticity \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \caption{Phase 0 pilot (real live numbers, generated from the results branches).
 Behavioral marker/judge AUC on 0c: \PZcMarkerAuc/\PZcJudgeAuc; explicit data-flags
 \PZcFlags. \emph{0b is diagnostic only}: its elasticity (\PZbElasticity,
