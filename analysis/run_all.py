@@ -19,17 +19,19 @@ from analysis import (
     second_domain,
     stats_tables,
     stress,
+    transcript,
 )
 from analysis.common import ROOT
 
 STAGES = [
     ("conversion law (#1)", conversion_law.main),
     ("H4 coverage accounting (#2)", coverage_accounting.main),
-    ("statistical reporting: ladder flatness (#4)", stats_tables.main),
+    ("statistical reporting: H1/H2/H3/H4 intervals (#4)", stats_tables.main),
     ("robustness: LOO / ablations / threshold (#4,#5,#6)", robustness.main),
     ("metadata-degradation stress (#7)", stress.main),
     ("falsification controls (#8)", falsification.main),
     ("second domain: B2C promotion (#10)", second_domain.main),
+    ("verbatim transcript excerpt + provenance", transcript.main),
     ("publication figures (#11)", figures.main),
     ("paper macros -> generated/analysis.tex", make_analysis_macros.main),
 ]

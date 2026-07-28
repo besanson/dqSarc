@@ -1,57 +1,365 @@
 {
-  "note": "H1 ladder flatness on metadata-borne classes (committed h1-ladder pooled counts)",
-  "metadata_borne_classes": [
-    "stale_master_data",
-    "superseded_golden_record",
-    "silent_unit_change",
-    "plausible_outlier"
-  ],
-  "tiers": [
-    {
-      "tier": "claude-haiku-4-5",
-      "n": 400,
-      "adr": 0.605,
-      "ci95": [
-        0.5571,
-        0.6529
-      ]
-    },
-    {
-      "tier": "claude-sonnet-5",
-      "n": 400,
-      "adr": 0.615,
-      "ci95": [
-        0.5673,
-        0.6627
-      ]
-    },
-    {
-      "tier": "claude-opus-4-8",
-      "n": 400,
-      "adr": 0.6175,
-      "ci95": [
-        0.5699,
-        0.6651
-      ]
-    },
-    {
-      "tier": "claude-fable-5",
-      "n": 400,
-      "adr": 0.6175,
-      "ci95": [
-        0.5699,
-        0.6651
-      ]
-    }
-  ],
-  "endpoint_difference": {
-    "top_minus_bottom": 0.0125,
-    "ci95": [
-      -0.0551,
-      0.0801
+  "h1_ladder": {
+    "note": "H1 ladder flatness on metadata-borne classes (committed h1-ladder pooled counts)",
+    "metadata_borne_classes": [
+      "stale_master_data",
+      "superseded_golden_record",
+      "silent_unit_change",
+      "plausible_outlier"
     ],
-    "ci_includes_zero": true
+    "tiers": [
+      {
+        "tier": "claude-haiku-4-5",
+        "n": 400,
+        "adr": 0.605,
+        "ci95": [
+          0.5571,
+          0.6529
+        ]
+      },
+      {
+        "tier": "claude-sonnet-5",
+        "n": 400,
+        "adr": 0.615,
+        "ci95": [
+          0.5673,
+          0.6627
+        ]
+      },
+      {
+        "tier": "claude-opus-4-8",
+        "n": 400,
+        "adr": 0.6175,
+        "ci95": [
+          0.5699,
+          0.6651
+        ]
+      },
+      {
+        "tier": "claude-fable-5",
+        "n": 400,
+        "adr": 0.6175,
+        "ci95": [
+          0.5699,
+          0.6651
+        ]
+      }
+    ],
+    "endpoint_difference": {
+      "top_minus_bottom": 0.0125,
+      "ci95": [
+        -0.0551,
+        0.0801
+      ],
+      "ci_includes_zero": true
+    },
+    "ols_trend_per_tier": 0.004,
+    "interpretation": "the endpoint difference is small and its 95% CI includes zero; the per-tier trend is near zero. Model tier does not materially move the metadata-borne defect rate: the flatness the paper reports is quantified, not asserted."
   },
-  "ols_trend_per_tier": 0.004,
-  "interpretation": "the endpoint difference is small and its 95% CI includes zero; the per-tier trend is near zero. Model tier does not materially move the metadata-borne defect rate: the flatness the paper reports is quantified, not asserted."
+  "h2_detection": {
+    "note": "H2 per-class detection Wilson 95% CIs; detected count recovered exactly per cell",
+    "n_per_class": 100,
+    "rows": [
+      {
+        "class": "cross_source_contradiction",
+        "key": "Cross",
+        "critic": {
+          "detected": 100,
+          "n": 100,
+          "rate": 1.0,
+          "ci95": [
+            0.963,
+            1.0
+          ],
+          "pct": 100,
+          "ci95_pct": [
+            96,
+            100
+          ]
+        },
+        "gate": {
+          "detected": 100,
+          "n": 100,
+          "rate": 1.0,
+          "ci95": [
+            0.963,
+            1.0
+          ],
+          "pct": 100,
+          "ci95_pct": [
+            96,
+            100
+          ]
+        }
+      },
+      {
+        "class": "duplicate_vendor_conflicting_terms",
+        "key": "Dup",
+        "critic": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        },
+        "gate": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        }
+      },
+      {
+        "class": "missing_mandatory_field",
+        "key": "Missing",
+        "critic": {
+          "detected": 72,
+          "n": 100,
+          "rate": 0.72,
+          "ci95": [
+            0.6251,
+            0.7986
+          ],
+          "pct": 72,
+          "ci95_pct": [
+            63,
+            80
+          ]
+        },
+        "gate": {
+          "detected": 100,
+          "n": 100,
+          "rate": 1.0,
+          "ci95": [
+            0.963,
+            1.0
+          ],
+          "pct": 100,
+          "ci95_pct": [
+            96,
+            100
+          ]
+        }
+      },
+      {
+        "class": "plausible_outlier",
+        "key": "Outlier",
+        "critic": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        },
+        "gate": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        }
+      },
+      {
+        "class": "schema_drift",
+        "key": "Schema",
+        "critic": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        },
+        "gate": {
+          "detected": 100,
+          "n": 100,
+          "rate": 1.0,
+          "ci95": [
+            0.963,
+            1.0
+          ],
+          "pct": 100,
+          "ci95_pct": [
+            96,
+            100
+          ]
+        }
+      },
+      {
+        "class": "silent_unit_change",
+        "key": "Unit",
+        "critic": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        },
+        "gate": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        }
+      },
+      {
+        "class": "stale_master_data",
+        "key": "Stale",
+        "critic": {
+          "detected": 0,
+          "n": 100,
+          "rate": 0.0,
+          "ci95": [
+            0.0,
+            0.037
+          ],
+          "pct": 0,
+          "ci95_pct": [
+            0,
+            4
+          ]
+        },
+        "gate": {
+          "detected": 100,
+          "n": 100,
+          "rate": 1.0,
+          "ci95": [
+            0.963,
+            1.0
+          ],
+          "pct": 100,
+          "ci95_pct": [
+            96,
+            100
+          ]
+        }
+      },
+      {
+        "class": "superseded_golden_record",
+        "key": "Superseded",
+        "critic": {
+          "detected": 100,
+          "n": 100,
+          "rate": 1.0,
+          "ci95": [
+            0.963,
+            1.0
+          ],
+          "pct": 100,
+          "ci95_pct": [
+            96,
+            100
+          ]
+        },
+        "gate": {
+          "detected": 100,
+          "n": 100,
+          "rate": 1.0,
+          "ci95": [
+            0.963,
+            1.0
+          ],
+          "pct": 100,
+          "ci95_pct": [
+            96,
+            100
+          ]
+        }
+      }
+    ]
+  },
+  "h3h4_residual": {
+    "note": "H3/H4 residual-loss bootstrap 95% CIs (percentile, signed, unclipped)",
+    "resampling_unit": "pooled per-corrupted-episode paired loss",
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": 20260728,
+    "quantities": {
+      "h3_gate_residual": {
+        "point": 293.95,
+        "n_episodes": 344,
+        "ci95": [
+          104.1,
+          498.0
+        ],
+        "ci_crosses_zero": false
+      },
+      "h3_critic_residual": {
+        "point": 311.41,
+        "n_episodes": 344,
+        "ci95": [
+          120.3,
+          516.31
+        ],
+        "ci_crosses_zero": false
+      },
+      "h4_stale_loss_a": {
+        "point": 133.6,
+        "n_episodes": 43,
+        "ci95": [
+          -31.95,
+          305.21
+        ],
+        "ci_crosses_zero": true
+      },
+      "h4_stale_loss_d": {
+        "point": -0.47,
+        "n_episodes": 43,
+        "ci95": [
+          -3.68,
+          1.89
+        ],
+        "ci_crosses_zero": true
+      }
+    }
+  }
 }
