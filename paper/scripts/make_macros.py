@@ -110,6 +110,28 @@ def build() -> list[str]:
     def rung(s: dict[str, Any], model: str, key: str) -> Any:
         return (s.get("rungs", {}) or {}).get(model, {}).get(key)
 
+    # H2 per-class detection: one macro per (class, arm), e.g. \HtwoDetStaleC / \HtwoDetStaleG.
+    # Short, stable macro keys per corruption class (the primary H2 table reads these).
+    h2_keys = {
+        "cross_source_contradiction": "Cross",
+        "duplicate_vendor_conflicting_terms": "Dup",
+        "missing_mandatory_field": "Missing",
+        "plausible_outlier": "Outlier",
+        "schema_drift": "Schema",
+        "silent_unit_change": "Unit",
+        "stale_master_data": "Stale",
+        "superseded_golden_record": "Superseded",
+    }
+
+    def h2_per_class_macros(h2: dict[str, Any]) -> list[str]:
+        pc = h2.get("per_class_detection", {}) if isinstance(h2, dict) else {}
+        out: list[str] = []
+        for cls, key in h2_keys.items():
+            cell = pc.get(cls, {})
+            out.append(macro(f"HtwoDet{key}C", _pct(cell.get("critic")), f"h2-{cls}-c"))
+            out.append(macro(f"HtwoDet{key}G", _pct(cell.get("gate")), f"h2-{cls}-g"))
+        return out
+
     hone = _load(DATA / "h1-full" / "reference_summary.json") or {}
     lad = _load(DATA / "h1-ladder" / "reference_summary.json") or {}
     htwo = _load(DATA / "h2-detection" / "reference_summary.json") or {}
@@ -134,10 +156,12 @@ def build() -> list[str]:
         macro("HoneLadderAuc", _num(lad.get("marker_auc_max"), 2), "h1-ladder"),
         macro("HoneLadderAdrHaiku", haiku_adr, "h1l"),
         macro("HoneLadderAdrFable", fable_adr, "h1l"),
-        # H2 detection asymmetry — reframed as a channel boundary.
+        # H2 detection asymmetry — reframed as an empirical channel boundary.
         macro("ResHtwo", "REFRAMED" if htwo else None, "h2-detection"),
         macro("HtwoCriticMeta", _pct(htwo.get("critic_detection_metadata")), "h2-detection"),
         macro("HtwoGateMeta", _pct(htwo.get("gate_detection_metadata")), "h2-detection"),
+        # Per-class detection (primary H2 evidence): critic C vs gate D, generated per class.
+        *h2_per_class_macros(htwo),
         # H3 gating dominance — not supported as written; gate beats the realistic critic.
         macro("ResHthree", "NOT SUPPORTED" if hthree else None, "h3-frontier"),
         macro("HthreeGateDet", _pct(hthree.get("gate_detection")), "h3-frontier"),

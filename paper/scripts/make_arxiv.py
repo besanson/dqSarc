@@ -45,9 +45,9 @@ def build() -> str:
     # 3. (Citations verified 2026-07: the \verifyc marker and all its call sites were
     #    removed from the source, so nothing to neutralise here.)
 
-    # 4. Remove the red DRAFT banner line from \date{...}.
+    # 4. Remove the red editorial DRAFT banner from \date{...} (any red \textbf{DRAFT...}).
     tex = re.sub(
-        r"\n\s*\\textcolor\{red\}\{\\textbf\{DRAFT\. Claims not yet signed off\..*?\}\}",
+        r"\n\s*\\textcolor\{red\}\{\\textbf\{DRAFT.*?\}\}",
         "",
         tex,
         flags=re.DOTALL,
@@ -67,10 +67,12 @@ def main() -> int:
     # "% ... watermark" comment are legitimately present and harmless).
     checks = {
         "watermark shipout hook removed": "\\AddToShipoutPictureFG{\\DraftMark}" not in text,
-        "red DRAFT banner removed": "Claims not yet signed off" not in text,
+        "red DRAFT banner removed": "\\textcolor{red}{\\textbf{DRAFT" not in text,
         "no verify markers remain": "\\verifyc" not in text,
-        "no rendered [pending:] in body": "[pending:" not in text.replace(
-            "[pending:~#1]", ""  # the \pending definition itself is fine
+        "no rendered [pending:] in body": "[pending:"
+        not in text.replace(
+            "[pending:~#1]",
+            "",  # the \pending definition itself is fine
         ),
         "macros inlined (no \\input)": "\\input{generated/results.tex}" not in text,
         "document complete": "\\end{document}" in text,

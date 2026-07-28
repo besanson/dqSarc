@@ -55,7 +55,8 @@ def _git_show(branch: str, path: str) -> dict[str, Any]:
         text=True,
         check=True,
     )
-    return json.loads(out.stdout)
+    parsed: dict[str, Any] = json.loads(out.stdout)
+    return parsed
 
 
 def _sha(branch: str) -> str:
@@ -119,7 +120,7 @@ def ingest_h1_full(m: dict[str, Any]) -> dict[str, Any]:
 
 
 def ingest_h1_ladder(m: dict[str, Any], models: list[str]) -> dict[str, Any]:
-    rungs = {}
+    rungs: dict[str, dict[str, float | None]] = {}
     for mod in models:
         meta = _adr_pooled(m, mod, META)
         # flag fraction + marker AUC pooled across cells for this model rung
@@ -140,23 +141,26 @@ def ingest_h1_ladder(m: dict[str, Any], models: list[str]) -> dict[str, Any]:
             "flag_fraction": round(flags / ncorr, 4) if ncorr else 0.0,
             "marker_auc": round(statistics.mean(aucs), 3) if aucs else None,
         }
-    adrs = [rungs[mod]["metadata_borne_adr"] for mod in models]
+    adrs: list[float] = [float(rungs[mod]["metadata_borne_adr"] or 0.0) for mod in models]
+    flag_vals = [float(rungs[mod]["flag_fraction"] or 0.0) for mod in models]
+    aucs_present = [float(v) for mod in models if (v := rungs[mod]["marker_auc"]) is not None]
     return {
         "headline": rungs[models[-1]]["metadata_borne_adr"],  # frontier (fable) meta ADR
         "rungs": rungs,
         "adr_min": min(adrs),
         "adr_max": max(adrs),
-        "flag_fraction_max": round(max(rungs[mod]["flag_fraction"] for mod in models), 4),
-        "marker_auc_max": round(
-            max(rungs[m]["marker_auc"] for m in models if rungs[m]["marker_auc"] is not None),
-            3,
-        ),
+        "flag_fraction_max": round(max(flag_vals), 4),
+        "marker_auc_max": round(max(aucs_present), 3) if aucs_present else None,
         "verdict": "SUPPORTED — silence + loss-conversion flat across capability",
     }
 
 
 def ingest_h2(m: dict[str, Any]) -> dict[str, Any]:
-    # Detection asymmetry: payload critic C vs gate D, pooled detection on metadata classes.
+    # Detection by arm, pooled over rate cells. Primary evidence is PER-CLASS: the
+    # preregistered channel labels (META / PAYLOAD_VISIBLE) are behaviourally incomplete
+    # (schema_drift and superseded cross the assigned boundary), so per-class detection is
+    # the honest H2 evidence; the pooled metadata number is a secondary summary under the
+    # preregistered labels.
     def det(arm: str, classes: set[str]) -> float:
         tot = n = 0.0
         for cls, rates in m.items():
@@ -171,12 +175,25 @@ def ingest_h2(m: dict[str, Any]) -> dict[str, Any]:
                 n += nc
         return round(tot / n, 4) if n else 0.0
 
+    def det_class(arm: str, cls: str) -> float:
+        return det(arm, {cls})
+
+    # Per-class critic (C) vs gate (D) detection for every class (reported as a table).
+    per_class = {cls: {"critic": det_class("C", cls), "gate": det_class("D", cls)} for cls in m}
     c_meta, d_meta = det("C", META), det("D", META)
     return {
         "headline": round(d_meta - c_meta, 4),
+        "registered_channel_summary": {
+            "critic_metadata": c_meta,
+            "gate_metadata": d_meta,
+        },
+        "per_class_detection": per_class,
         "critic_detection_metadata": c_meta,
         "gate_detection_metadata": d_meta,
-        "verdict": "REFRAMED — gate dominates on the metadata channel (channel boundary)",
+        "verdict": (
+            "REFRAMED — registered channel split not supported; detection follows the "
+            "signal exposed to each mechanism and the predicates implemented"
+        ),
     }
 
 
