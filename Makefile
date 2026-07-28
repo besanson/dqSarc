@@ -60,5 +60,13 @@ paper:
 	python paper/scripts/make_macros.py
 	$(MAKE) -C paper
 
+# Self-contained, submission-ready arXiv source (macros inlined; DRAFT watermark,
+# banner, and verify markers stripped). Run only when claims are signed off.
+arxiv:
+	python paper/scripts/ingest_results.py
+	python paper/scripts/make_macros.py
+	python paper/scripts/make_arxiv.py
+	@echo "arXiv source: paper/arxiv/sarc-dq.tex (single file; compile with pdflatex x2)"
+
 clean:
 	rm -rf artifacts dist build .pytest_cache .mypy_cache .ruff_cache *.egg-info
