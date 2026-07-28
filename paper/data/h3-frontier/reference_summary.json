@@ -1,0 +1,21 @@
+{
+  "experiment": "h3-frontier",
+  "provenance": {
+    "branch": "results/h3-frontier-live",
+    "sha": "9bfff1f",
+    "run_id": "30296664147",
+    "config_hash": "32c0c09dd052f859",
+    "instrumentation": "api-error-aware-v1",
+    "prompt_variant": "policy_instructed",
+    "sampling": "rate",
+    "spend_usd": 115.16,
+    "cells": "96/96"
+  },
+  "headline": 0.625,
+  "gate_residual_loss": 293.95,
+  "critic_residual_loss": 311.41,
+  "gate_detection": 0.625,
+  "critic_detection": 0.314,
+  "gate_false_block": 0.0,
+  "verdict": "P1 NOT supported as written; gate dominates the realistic critic C"
+}

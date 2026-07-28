@@ -1,0 +1,18 @@
+{
+  "experiment": "h2-detection",
+  "provenance": {
+    "branch": "results/h2-detection-live",
+    "sha": "aac7518",
+    "run_id": "29101951327",
+    "config_hash": "b52ba463e0e1b9b4",
+    "instrumentation": null,
+    "prompt_variant": "policy_instructed",
+    "sampling": "fixed_n",
+    "spend_usd": 122.93,
+    "cells": "96/96"
+  },
+  "headline": 0.25,
+  "critic_detection_metadata": 0.25,
+  "gate_detection_metadata": 0.5,
+  "verdict": "REFRAMED \u2014 gate dominates on the metadata channel (channel boundary)"
+}

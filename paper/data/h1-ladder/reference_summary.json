@@ -1,0 +1,42 @@
+{
+  "experiment": "h1-ladder",
+  "provenance": {
+    "branch": "results/h1-ladder-live",
+    "sha": "6a1ee4d",
+    "run_id": "30332532378",
+    "config_hash": "63ea99e0e8ea046d",
+    "instrumentation": "api-error-aware-v1",
+    "prompt_variant": "policy_instructed",
+    "sampling": "fixed_n",
+    "spend_usd": 182.62,
+    "cells": "128/128"
+  },
+  "headline": 0.6175,
+  "rungs": {
+    "claude-haiku-4-5": {
+      "metadata_borne_adr": 0.605,
+      "flag_fraction": 0.0,
+      "marker_auc": 0.5
+    },
+    "claude-sonnet-5": {
+      "metadata_borne_adr": 0.615,
+      "flag_fraction": 0.0,
+      "marker_auc": 0.474
+    },
+    "claude-opus-4-8": {
+      "metadata_borne_adr": 0.6175,
+      "flag_fraction": 0.0,
+      "marker_auc": 0.472
+    },
+    "claude-fable-5": {
+      "metadata_borne_adr": 0.6175,
+      "flag_fraction": 0.0,
+      "marker_auc": 0.5
+    }
+  },
+  "adr_min": 0.605,
+  "adr_max": 0.6175,
+  "flag_fraction_max": 0.0,
+  "marker_auc_max": 0.5,
+  "verdict": "SUPPORTED \u2014 silence + loss-conversion flat across capability"
+}

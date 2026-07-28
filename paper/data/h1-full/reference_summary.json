@@ -1,0 +1,17 @@
+{
+  "experiment": "h1-full",
+  "provenance": {
+    "branch": "results/h1-full-live",
+    "sha": "fac16e5",
+    "run_id": "29095598109",
+    "config_hash": "835a81b3602bb435",
+    "instrumentation": null,
+    "prompt_variant": "policy_instructed",
+    "sampling": "fixed_n",
+    "spend_usd": 34.88,
+    "cells": "32/32"
+  },
+  "headline": 0.6025,
+  "metadata_borne_adr": 0.6025,
+  "verdict": "SUPPORTED (P1)"
+}
