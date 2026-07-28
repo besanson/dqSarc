@@ -19,7 +19,6 @@ from analysis import (
     second_domain,
     stats_tables,
     stress,
-    transcript,
 )
 from analysis.common import ROOT
 
@@ -31,7 +30,6 @@ STAGES = [
     ("metadata-degradation stress (#7)", stress.main),
     ("falsification controls (#8)", falsification.main),
     ("second domain: B2C promotion (#10)", second_domain.main),
-    ("verbatim transcript excerpt + provenance", transcript.main),
     ("publication figures (#11)", figures.main),
     ("paper macros -> generated/analysis.tex", make_analysis_macros.main),
 ]
