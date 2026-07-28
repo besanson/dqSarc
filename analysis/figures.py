@@ -32,9 +32,16 @@ plt.rcParams.update(
         "axes.grid": True,
         "grid.alpha": 0.25,
         "savefig.bbox": "tight",
+        # Deterministic vector output: drop the per-run creation timestamp and pin the
+        # SVG hash salt so `make analysis` is byte-identical on repeat runs.
+        "pdf.fonttype": 42,
+        "svg.hashsalt": "sarc-dq",
     }
 )
 _BLUE, _RED, _GREY = "#2b6cb0", "#c53030", "#718096"
+# metadata=None date -> matplotlib omits the CreationDate/ModDate (otherwise non-deterministic).
+_PDF_META = {"CreationDate": None}
+_PNG_META = {"Software": None}
 
 
 def _load(name: str) -> dict[str, Any]:
@@ -44,8 +51,8 @@ def _load(name: str) -> dict[str, Any]:
 
 def _save(fig: plt.Figure, stem: str) -> None:
     FIGDIR.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIGDIR / f"{stem}.pdf")
-    fig.savefig(FIGDIR / f"{stem}.png")
+    fig.savefig(FIGDIR / f"{stem}.pdf", metadata=_PDF_META)
+    fig.savefig(FIGDIR / f"{stem}.png", metadata=_PNG_META)
     plt.close(fig)
 
 

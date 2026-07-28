@@ -43,11 +43,38 @@ def build_macros() -> dict[str, str]:
     m: dict[str, str] = {}
 
     # #4 ladder flatness (statistical)
-    ep = stat["endpoint_difference"]
+    h1 = stat["h1_ladder"]
+    ep = h1["endpoint_difference"]
     m["LadderEndpointDiff"] = _num(ep["top_minus_bottom"], 4)
     m["LadderEndpointCILo"] = _num(ep["ci95"][0], 4)
     m["LadderEndpointCIHi"] = _num(ep["ci95"][1], 4)
-    m["LadderTrendPerTier"] = _num(stat["ols_trend_per_tier"], 4)
+    m["LadderTrendPerTier"] = _num(h1["ols_trend_per_tier"], 4)
+
+    # Stage 2A: H2 per-class Wilson 95% CIs (integer percent, matching the point-estimate macros)
+    h2 = stat["h2_detection"]
+    m["HtwoDetN"] = str(h2["n_per_class"])
+    for r in h2["rows"]:
+        key = r["key"]
+        cl, ch = r["critic"]["ci95_pct"]
+        gl, gh = r["gate"]["ci95_pct"]
+        m[f"HtwoCI{key}CLo"] = str(cl)
+        m[f"HtwoCI{key}CHi"] = str(ch)
+        m[f"HtwoCI{key}GLo"] = str(gl)
+        m[f"HtwoCI{key}GHi"] = str(gh)
+
+    # Stage 2A: H3/H4 residual-loss bootstrap 95% CIs (point estimates already in results.tex)
+    q = stat["h3h4_residual"]
+    m["BootReplicates"] = str(q["bootstrap_replicates"])
+    m["BootSeed"] = str(q["bootstrap_seed"])
+    for name, key in (
+        ("h3_gate_residual", "HthreeGateResid"),
+        ("h3_critic_residual", "HthreeCriticResid"),
+        ("h4_stale_loss_a", "HfourStaleLossA"),
+        ("h4_stale_loss_d", "HfourStaleLossD"),
+    ):
+        lo, hi = q["quantities"][name]["ci95"]
+        m[f"{key}Lo"] = _num(lo, 1)
+        m[f"{key}Hi"] = _num(hi, 1)
 
     # #1 conversion law
     m["ConvNCells"] = str(conv["n_cells"])

@@ -40,6 +40,8 @@
 % Every value flows from analysis/out/*.json; nothing hand-typed (Appendix~\ref{app:analysis}).
 \input{generated/analysis.tex}
 \newcommand{\PhaseZeroScoredNote}{three live runs, \$\PhaseZeroSpend}
+% Compact confidence-interval renderer (all three values come from generated macros).
+\newcommand{\ci}[2]{~{\scriptsize[#1,\,#2]}}
 
 \title{\textbf{SARC-DQ: Runtime Data-Quality Gating for Agentic AI}\\
   \large Silent evidence defects, the incompetence shield, and downstream-only remediation}
@@ -68,7 +70,10 @@ to slightly rising, while behavioral doubt markers stay at chance (AUC
 $\le\HoneLadderAuc$) and explicit data-quality flags remain absent ($\HoneLadderFlag$). A
 metadata-aware Pre-Action Gate outperforms a realistic payload-only critic on the freshness
 and schema signals it covers; uncovered unit-consistency and plausible-outlier defects
-remain unresolved, and portfolio-level recovery is not achieved. \textbf{Impact.} These
+remain unresolved, and portfolio-level recovery is not achieved. A model-free analytical
+oracle derived from the task's decision geometry tracks the measured agent ADR with MAE
+\ConvMAE{} and Pearson $r=\ConvR$, the measured interval covering the prediction in
+\ConvCICoverage{} cells, giving the flat ladder an analytical form. \textbf{Impact.} These
 results identify evidence integrity as a distinct systems axis from model capability, and
 show that mitigation effectiveness depends on enforcement placement and predicate coverage.
 \end{abstract}
@@ -419,6 +424,10 @@ Under the competent, metadata-blind decider, a corrupted price is silently conve
 material order defect on \HoneFullMetaAdr{} of metadata-borne episodes, while the agent's
 transcripts carry no discriminating doubt signal. The loss-conversion channel is real and
 the decider is silent about it, as predicted (agent-ADR $\ge 20\%$; behavioral AUC $\le 0.60$).
+Figure~\ref{fig:transcript} shows one verbatim committed transcript of exactly this pattern:
+the agent computes its order straight from the stale price and commits, with no expressed doubt.
+
+\input{generated/transcript.tex}
 
 \paragraph{H1 model-tier ladder --- \ResHoneLadder{} (headline).}
 Across four product tiers---haiku-4-5\,$\to$\,sonnet-5\,$\to$\,opus-4-8\,$\to$\,fable-5,
@@ -454,25 +463,26 @@ predicates it implements. The pooled metadata figures (critic \HtwoCriticMeta{},
 those labels' incompleteness.
 
 \begin{table}[t]\centering\small
-\setlength{\tabcolsep}{6pt}
-\begin{tabular}{@{}lccl@{}}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l l l l@{}}
 \toprule
 corruption class & critic C & gate D & registered channel \\
 \midrule
-\texttt{stale\_master\_data}        & \HtwoDetStaleC      & \HtwoDetStaleG      & metadata-borne \\
-\texttt{schema\_drift}              & \HtwoDetSchemaC     & \HtwoDetSchemaG     & payload-visible$^\dagger$ \\
-\texttt{missing\_mandatory\_field}  & \HtwoDetMissingC    & \HtwoDetMissingG    & payload-visible \\
-\texttt{superseded\_golden\_record} & \HtwoDetSupersededC & \HtwoDetSupersededG & metadata-borne$^\dagger$ \\
-\texttt{cross\_source\_contradiction} & \HtwoDetCrossC    & \HtwoDetCrossG      & payload-visible \\
-\texttt{duplicate\_vendor\_conflicting\_terms} & \HtwoDetDupC & \HtwoDetDupG      & payload-visible \\
-\texttt{silent\_unit\_change}       & \HtwoDetUnitC       & \HtwoDetUnitG       & metadata-borne (gap) \\
-\texttt{plausible\_outlier}         & \HtwoDetOutlierC    & \HtwoDetOutlierG    & metadata-borne (gap) \\
+\texttt{stale\_master\_data}        & \HtwoDetStaleC\ci{\HtwoCIStaleCLo}{\HtwoCIStaleCHi}           & \HtwoDetStaleG\ci{\HtwoCIStaleGLo}{\HtwoCIStaleGHi}           & metadata-borne \\
+\texttt{schema\_drift}              & \HtwoDetSchemaC\ci{\HtwoCISchemaCLo}{\HtwoCISchemaCHi}        & \HtwoDetSchemaG\ci{\HtwoCISchemaGLo}{\HtwoCISchemaGHi}        & payload-visible$^\dagger$ \\
+\texttt{missing\_mandatory\_field}  & \HtwoDetMissingC\ci{\HtwoCIMissingCLo}{\HtwoCIMissingCHi}     & \HtwoDetMissingG\ci{\HtwoCIMissingGLo}{\HtwoCIMissingGHi}     & payload-visible \\
+\texttt{superseded\_golden\_record} & \HtwoDetSupersededC\ci{\HtwoCISupersededCLo}{\HtwoCISupersededCHi} & \HtwoDetSupersededG\ci{\HtwoCISupersededGLo}{\HtwoCISupersededGHi} & metadata-borne$^\dagger$ \\
+\texttt{cross\_source\_contradiction} & \HtwoDetCrossC\ci{\HtwoCICrossCLo}{\HtwoCICrossCHi}         & \HtwoDetCrossG\ci{\HtwoCICrossGLo}{\HtwoCICrossGHi}           & payload-visible \\
+\texttt{duplicate\_vendor\_conflicting\_terms} & \HtwoDetDupC\ci{\HtwoCIDupCLo}{\HtwoCIDupCHi}     & \HtwoDetDupG\ci{\HtwoCIDupGLo}{\HtwoCIDupGHi}                 & payload-visible \\
+\texttt{silent\_unit\_change}       & \HtwoDetUnitC\ci{\HtwoCIUnitCLo}{\HtwoCIUnitCHi}              & \HtwoDetUnitG\ci{\HtwoCIUnitGLo}{\HtwoCIUnitGHi}              & metadata-borne (gap) \\
+\texttt{plausible\_outlier}         & \HtwoDetOutlierC\ci{\HtwoCIOutlierCLo}{\HtwoCIOutlierCHi}     & \HtwoDetOutlierG\ci{\HtwoCIOutlierGLo}{\HtwoCIOutlierGHi}     & metadata-borne (gap) \\
 \bottomrule
 \end{tabular}
 \caption{H2 per-class detection: payload-only critic (C) vs.\ metadata-aware gate (D),
-pooled over rate cells (generated from the committed summary). $^\dagger$~marks the two
-classes whose empirical detection crosses their preregistered channel label---the
-observed boundary is not the assigned one.}
+pooled over rate cells (generated from the committed summary). Each cell shows the point
+detection rate with its Wilson 95\% interval in percentage points ($n=\HtwoDetN$ corrupted
+episodes per class). $^\dagger$~marks the two classes whose empirical detection crosses their
+preregistered channel label---the observed boundary is not the assigned one.}
 \label{tab:h2}
 \end{table}
 
@@ -498,7 +508,9 @@ reasons: the false-block axis is degenerate (every arm false-blocks at \HthreeFa
 so no frontier is traced), and---as anticipated by the arm definition
 (\S\ref{sec:gigo})---F$(v)$ benefits from benchmark ground truth and should not be
 interpreted as a realistic detection system. Against the realistic payload-only critic C,
-the gate D \emph{does} dominate: residual loss \HthreeGateResid{} vs.\ \HthreeCriticResid{}
+the gate D \emph{does} dominate: residual loss \HthreeGateResid{}
+\ci{\HthreeGateResidLo}{\HthreeGateResidHi} vs.\ \HthreeCriticResid{}
+\ci{\HthreeCriticResidLo}{\HthreeCriticResidHi} (bootstrap 95\% CIs, \S\ref{app:analysis})
 and detection \HthreeGateDet{} vs.\ \HthreeCriticDet{} ($2\times$) at equal zero false-block
 --- the same metadata-channel advantage as H2. We retain F$(v)$ (rather than drop it) so
 this optimistic upper bound stays visible.
@@ -507,7 +519,9 @@ this optimistic upper bound stays visible.
 The registered target (portfolio recovery $\ge 0.80$) is not met: portfolio recovery is
 \HfourRecovery{}. The decomposition is the honest result. Where the gate has a predicate
 (freshness), it fully recovers: \texttt{stale\_master\_data} loss falls from
-\HfourStaleLossA{} (ungated) to \HfourStaleLossD{} (gated; the slightly-negative gated value
+\HfourStaleLossA{} \ci{\HfourStaleLossALo}{\HfourStaleLossAHi} (ungated) to \HfourStaleLossD{}
+\ci{\HfourStaleLossDLo}{\HfourStaleLossDHi} (gated; bootstrap 95\% CIs, \S\ref{app:analysis};
+the slightly-negative gated value
 is within noise of zero per the signed-loss convention of \S\ref{sec:gigo}, not recovery
 beyond 100\%). The portfolio number is dominated
 by \texttt{silent\_unit\_change} --- the one class carrying a clearly non-zero ungated loss
@@ -663,6 +677,16 @@ answering to acting, runtime evidence governance may become as fundamental to en
 as memory protection became to operating systems---a cheap, architectural guarantee that a
 fast, powerful process cannot act on state it was never allowed to trust.
 
+\paragraph{The flat ladder is not only empirical.} A model-free analytical oracle derived
+from the task's decision geometry predicts the conversion of a metadata-borne defect into a
+loss \emph{without any model-tier term}---the corrupted price it acts on is fixed by the
+injected defect, not by the agent---and this prediction tracks the measured ADR to MAE
+\ConvMAE{} (Pearson $r=\ConvR$; the measured interval covers the prediction in
+\ConvCICoverage{} cells, Appendix~\ref{app:analysis}). So the ladder's flatness is explained,
+not merely observed: capability is absent from the mechanism that sets conversion, while
+enforcement placement is the factor that changes it. We claim this only for the tested
+architecture and decision setting, not as universal model independence.
+
 \begin{thebibliography}{99}
 \bibitem{agentnoisebench} AgentNoiseBench. arXiv:2602.11348 (ICML 2026).
 \bibitem{noisytoolbench} W. Wang, J. Shi, Z. Ling, Y.-K. Chan, C. Wang, C. Lee,
@@ -789,13 +813,26 @@ declared, unpatched gaps.}
 \label{tab:coverage}
 \end{table}
 
-\subsection{Statistical reporting: quantifying ladder flatness}
-The H1 ``flat to slightly rising'' claim is quantified from the committed h1-ladder pooled
-counts over the metadata-borne classes: the top-minus-bottom endpoint difference is
-$\LadderEndpointDiff$ with a two-proportion 95\% Wald interval
+\subsection{Statistical reporting: row-level uncertainty}
+\emph{Ladder flatness (H1).} The ``flat to slightly rising'' claim is quantified from the
+committed h1-ladder pooled counts over the metadata-borne classes: the top-minus-bottom
+endpoint difference is $\LadderEndpointDiff$ with a two-proportion 95\% Wald interval
 $[\LadderEndpointCILo,\LadderEndpointCIHi]$ that includes zero, and the ordinary-least-squares
 trend is $\LadderTrendPerTier$ ADR per tier step. Flatness is thus a measured quantity with an
 interval, not an adjective.
+
+\emph{H2 detection intervals.} Table~\ref{tab:h2} reports a Wilson 95\% interval for every
+per-class detection rate, for both the critic (C) and the gate (D). The detected count is
+recovered exactly per rate cell (each stored rate is an integer multiple of $1/25$), never by
+multiplying a rounded pooled rate, and pooled to $n=\HtwoDetN$ corrupted episodes per class.
+
+\emph{H3/H4 residual-loss intervals.} The residual-loss quantities in \S\ref{sec:results} carry
+nonparametric bootstrap 95\% intervals: $\BootReplicates$ percentile resamples (fixed seed
+$\BootSeed$) over the committed per-corrupted-episode paired losses, the resampling unit. The
+signed paired-loss convention is preserved (losses are never clipped), the point estimate is
+left at the committed pool mean, and an interval that crosses zero---such as the gated
+\texttt{stale\_master\_data} loss---is reported as consistent with zero, not as recovery beyond
+the measured value.
 
 \subsection{Robustness: leave-one-class-out, ablations, and threshold sensitivity}
 Removing the dominant uncovered class $\LooTopClass$ from the portfolio moves recovery from

@@ -1,0 +1,10 @@
+# arXiv upload manifest (mandatory compilation files).
+# MANIFEST.txt itself is an AUDIT file and need not be uploaded.
+figures/analysis/conversion_calibration.pdf
+figures/analysis/coverage_accounting.pdf
+figures/analysis/falsification.pdf
+figures/analysis/leave_one_out.pdf
+figures/analysis/second_domain.pdf
+figures/analysis/stress_degradation.pdf
+figures/analysis/threshold_sensitivity.pdf
+sarc-dq.tex

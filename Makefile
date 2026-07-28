@@ -1,7 +1,8 @@
 LINT_PATHS = src tests benchmarks
 
 .PHONY: install test lint format-check format typecheck quality smoke reproduce verify \
-        gigo-reproduce gigo-verify calibrate calibrate-check paper status check-claims arxiv clean
+        gigo-reproduce gigo-verify calibrate calibrate-check paper status check-claims arxiv \
+        analysis clean
 
 install:
 	pip install -e ".[dev]"

@@ -11,6 +11,26 @@ Pre-Action Gate with *metadata access* does.
 ![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Typed](https://img.shields.io/badge/mypy-strict-blue)
+![DOI: pending](https://img.shields.io/badge/DOI-pending-lightgrey)
+
+<!-- DOI badge is a placeholder: no DOI is registered yet. Do not treat "pending" as a
+     real identifier or link. It will be replaced once the archive DOI is minted. -->
+
+## Paper in one paragraph
+
+Agentic systems *act*, so a defect in the evidence they retrieve becomes a wrong action with
+a currency cost. The most dangerous enterprise defects are **metadata-borne** — a stale price,
+a superseded record — perfectly well-formed in the payload and betrayed only by freshness,
+lineage, or provenance, so they never enter the agent's context and no amount of model
+capability catches them (**silent conversion** into loss). We measure this on a priced
+replenishment task across a **four-model tier ladder** (haiku→sonnet→opus→fable, ≈15× in
+inference price) and find the metadata-borne defect rate flat-to-slightly-rising — capability
+does not buy skepticism. A model-free **analytical oracle** derived from the task's decision
+geometry predicts that conversion *without any model-tier term* and tracks the measured rate
+closely, giving the flat ladder an analytical form. The remedy is architectural: a cheap,
+metadata-aware **Pre-Action Gate** at the point of action, remediating downstream-only. Its
+benefit is **coverage-dependent** — it fully recovers the defect classes it has a predicate for
+and reports the uncovered gaps rather than patching them.
 
 > ### Status — read this first
 >
@@ -62,13 +82,34 @@ make quality                # ruff + format + mypy --strict + pytest  (all green
 make smoke                  # Phase 0 smoke test → reports/SMOKE_TEST.md  ($0, offline mock)
 ```
 
-To run the **real** experiment (live Claude), see
-[`reports/GATE0_BRIEF.md`](reports/GATE0_BRIEF.md):
+### Reproduce the paper (zero-cost, no API)
+
+The paper and its analytical companion rebuild deterministically from committed data — no
+API key, no live model run, no paid access:
+
+```bash
+pip install -e ".[figures]"   # analysis + plotting deps (matplotlib, numpy)
+make analysis                 # $0 deterministic recompute → analysis/out, figures, macros
+make check-claims             # claim-consistency + interval/transcript integrity gate
+make paper                    # compile the working paper (needs a local LaTeX toolchain)
+make arxiv                    # self-contained arXiv source under paper/arxiv/
+```
+
+`make analysis` reads only committed result summaries and the frozen substrate/injectors and
+is byte-for-byte reproducible on repeat runs; every paper-facing number flows from a generated
+macro. See [`analysis/README.md`](analysis/README.md).
+
+### Requires credentials / paid access (NOT needed for the above)
+
+Only *new* live experiments need an API key; nothing in the reproduction path does:
 
 ```bash
 pip install -e ".[dev,live]" && export ANTHROPIC_API_KEY=sk-...
 python -m benchmarks.phase0_smoke --arm live --episodes 100
 ```
+
+To run the **real** experiment (live Claude), see
+[`reports/GATE0_BRIEF.md`](reports/GATE0_BRIEF.md).
 
 ## Headline — Phase 0 pilot (real live numbers, run 0c)
 
