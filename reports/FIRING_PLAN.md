@@ -1,5 +1,12 @@
 # FIRING PLAN (autonomous) — supersedes FIRING_CHECKLIST.md
 
+> **HISTORICAL — the campaign is complete.** All stages were fired, verified, and
+> ingested; the current state of every experiment (branch, SHA, validity, verdict) is
+> in [`../EXPERIMENT_STATUS.md`](../EXPERIMENT_STATUS.md), the single source of truth.
+> This document is retained for the record of *how* the firing was planned and executed;
+> it is not an open to-do list.
+
+
 Replaces the human firing checklist. Firing is **autonomous, one stage per session**:
 each stage verifies the prior stage, checks the spend ledger, fires one workflow by
 pushing a tag, and ends. A stage never fires on an unmerged corrections PR, and never

@@ -1,5 +1,10 @@
 # PROGRESS — sarc-dq campaign tracker
 
+> **HISTORICAL build log.** For the *current* state of every experiment (branch, SHA,
+> validity, verdict, ingestion) see [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md), the
+> single source of truth. The H1–H4 campaign is complete; any `[pending]`/"to fire"
+> language below is a record of an earlier stage, not an open task.
+
 **Active campaign: MASTER BRIEF FINAL (`CLAUDE_CODE_MASTER_BRIEF_FINAL.md`)** — takes
 sarc-dq from CI-green-with-[pending] to arXiv-ready v1.0. Parts 0–2 this session →
 human merges + fires workflows → "Part 3" in a fresh session after results land.
