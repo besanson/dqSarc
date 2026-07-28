@@ -30,7 +30,7 @@ ARXIV = PAPER / "arxiv"
 OUT = ARXIV / "sarc-dq.tex"
 MANIFEST = ARXIV / "MANIFEST.txt"
 # Generated files inlined in place of their \input, in the order they appear.
-GENERATED = ("results.tex", "analysis.tex", "transcript.tex")
+GENERATED = ("results.tex", "analysis.tex")
 
 
 def build_tex() -> str:

@@ -10,7 +10,6 @@ and run in CI). Exits non-zero with a list of violations.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 import sys
@@ -22,8 +21,6 @@ DATA = ROOT / "paper" / "data"
 STATUS = ROOT / "reports" / "experiment_status.json"
 GENERATED = ROOT / "paper" / "generated" / "results.tex"
 ANALYSIS = ROOT / "paper" / "generated" / "analysis.tex"
-TRANSCRIPT_TEX = ROOT / "paper" / "generated" / "transcript.tex"
-TRANSCRIPT_PROV = ROOT / "analysis" / "out" / "transcript_provenance.json"
 README = ROOT / "README.md"
 
 # Short H2 macro keys per class (mirror make_macros.py / stats_tables.py); the interval
@@ -135,65 +132,6 @@ def check_intervals() -> list[str]:
     return errs
 
 
-# Documented LaTeX escape map, re-derived here (stdlib-only, no analysis import) so the check
-# is an INDEPENDENT verification that the paper's excerpt matches the committed source. Must
-# stay in sync with analysis/transcript.py ESCAPES.
-_TX_ESCAPES = [
-    ("\\", "\\textbackslash{}"),
-    ("&", "\\&"),
-    ("%", "\\%"),
-    ("$", "\\$"),
-    ("#", "\\#"),
-    ("_", "\\_"),
-    ("{", "\\{"),
-    ("}", "\\}"),
-    ("~", "\\textasciitilde{}"),
-    ("^", "\\textasciicircum{}"),
-    ("−", "$-$"),
-    ("≈", "$\\approx$"),
-    ("×", "$\\times$"),
-]
-
-
-def _tx_escape(text: str) -> str:
-    for src, dst in _TX_ESCAPES:
-        text = text.replace(src, dst)
-    return text
-
-
-def _tx_body(excerpt: str) -> str:
-    lines = excerpt.split("\n")
-    out = []
-    for i, ln in enumerate(lines):
-        esc = _tx_escape(ln) if ln else "~"
-        out.append(esc + ("\\\\" if i < len(lines) - 1 else ""))
-    return "\n".join(out)
-
-
-def check_transcript() -> list[str]:
-    """Stage 2B: the paper's transcript excerpt is traceable, hash-verified, and byte-for-byte
-    the committed source under the documented escapes."""
-    errs: list[str] = []
-    if not TRANSCRIPT_PROV.exists() or not TRANSCRIPT_TEX.exists():
-        return ["transcript provenance/tex missing (run `make analysis`)"]
-    prov = _load(TRANSCRIPT_PROV)
-    excerpt = prov.get("excerpt", "")
-    # Hash integrity: stored digest matches the excerpt bytes.
-    digest = hashlib.sha256(excerpt.encode("utf-8")).hexdigest()
-    if digest != prov.get("excerpt_sha256"):
-        errs.append("transcript excerpt SHA-256 does not match stored provenance hash")
-    tex = TRANSCRIPT_TEX.read_text(encoding="utf-8")
-    # Byte-for-byte: the independently escaped excerpt body must appear verbatim in the .tex.
-    if _tx_body(excerpt) not in tex:
-        errs.append("paper transcript body does not match escaped committed excerpt")
-    # Traceability: run id (LaTeX-escaped) and episode seed appear in the generated caption.
-    if _tx_escape(str(prov.get("run_id", ""))) not in tex:
-        errs.append("transcript.tex missing provenance run_id")
-    if str(prov.get("episode_seed", "")) not in tex:
-        errs.append("transcript.tex missing provenance episode_seed")
-    return errs
-
-
 def check() -> list[str]:
     errs: list[str] = []
     manifest = _load(STATUS)
@@ -246,9 +184,6 @@ def check() -> list[str]:
 
     # 7. Stage 2A: statistical interval macros are complete, non-pending, and ordered.
     errs += check_intervals()
-
-    # 8. Stage 2B: the transcript excerpt is hash-verified and matches the committed source.
-    errs += check_transcript()
 
     return errs
 
