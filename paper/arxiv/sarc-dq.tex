@@ -50,7 +50,7 @@
 \newcommand{\PZcJudgeAuc}{0.500}
 \newcommand{\PZcFlags}{0\%}
 
-% --- Experiments H1-H4 (pending until fired) ---
+% --- Valid live experiments H1-H4 ---
 \newcommand{\ResHoneFull}{SUPPORTED}
 \newcommand{\HoneFullMetaAdr}{60\%}
 \newcommand{\ResHoneLadder}{SUPPORTED}
@@ -63,6 +63,22 @@
 \newcommand{\ResHtwo}{REFRAMED}
 \newcommand{\HtwoCriticMeta}{25\%}
 \newcommand{\HtwoGateMeta}{50\%}
+\newcommand{\HtwoDetCrossC}{100\%}
+\newcommand{\HtwoDetCrossG}{100\%}
+\newcommand{\HtwoDetDupC}{0\%}
+\newcommand{\HtwoDetDupG}{0\%}
+\newcommand{\HtwoDetMissingC}{72\%}
+\newcommand{\HtwoDetMissingG}{100\%}
+\newcommand{\HtwoDetOutlierC}{0\%}
+\newcommand{\HtwoDetOutlierG}{0\%}
+\newcommand{\HtwoDetSchemaC}{0\%}
+\newcommand{\HtwoDetSchemaG}{100\%}
+\newcommand{\HtwoDetUnitC}{0\%}
+\newcommand{\HtwoDetUnitG}{0\%}
+\newcommand{\HtwoDetStaleC}{0\%}
+\newcommand{\HtwoDetStaleG}{100\%}
+\newcommand{\HtwoDetSupersededC}{100\%}
+\newcommand{\HtwoDetSupersededG}{100\%}
 \newcommand{\ResHthree}{NOT SUPPORTED}
 \newcommand{\HthreeGateDet}{62\%}
 \newcommand{\HthreeCriticDet}{31\%}
@@ -73,6 +89,7 @@
 \newcommand{\HfourRecovery}{-0.04}
 \newcommand{\HfourStaleLossA}{134}
 \newcommand{\HfourStaleLossD}{-0.5}
+% --- Optional supplementary experiments pending ---
 \newcommand{\ResAblations}{\pending{ablations}}
 \newcommand{\ResTier}{\pending{tier2-validation}}
 \newcommand{\PhaseZeroScoredNote}{three live runs, \$\PhaseZeroSpend}
@@ -96,15 +113,16 @@ placed \emph{at the point of action} enforces evidence quality where a stronger 
 cannot, remediating \emph{downstream-only} (quarantine-and-substitute in a governed buffer;
 zero writes to source). \textbf{Evidence.} On a priced replenishment task we measure the
 \emph{silent conversion} of a metadata-borne defect into a loss against a same-seed clean
-counterfactual, across a four-model capability ladder and eight defect classes.
-\textbf{Result.} Loss-conversion is real and does not fall with capability: across
-haiku$\to$sonnet$\to$opus$\to$fable (a $\approx15\times$ price range) the metadata-borne
-action-defect rate is flat-to-rising while the agent expresses no doubt at any tier
-(behavioral AUC $\le\HoneLadderAuc$, explicit flags $\HoneLadderFlag$). The gate dominates
-a realistic payload-only critic on exactly the channel it is designed for; where its
-predicates do not cover a defect, we report the gap rather than patch it.
-\textbf{Impact.} Constraining the \emph{evidence} an autonomous system acts on is a
-distinct and necessary safety axis from constraining the \emph{model}.
+counterfactual, across a four-model tier ladder and eight defect classes.
+\textbf{Result.} Across four model tiers spanning approximately $15\times$ in inference
+price (haiku$\to$sonnet$\to$opus$\to$fable), metadata-borne action-defect rates remain flat
+to slightly rising, while behavioral doubt markers stay at chance (AUC
+$\le\HoneLadderAuc$) and explicit data-quality flags remain absent ($\HoneLadderFlag$). A
+metadata-aware Pre-Action Gate outperforms a realistic payload-only critic on the freshness
+and schema signals it covers; uncovered unit-consistency and plausible-outlier defects
+remain unresolved, and portfolio-level recovery is not achieved. \textbf{Impact.} These
+results identify evidence integrity as a distinct systems axis from model capability, and
+show that mitigation effectiveness depends on enforcement placement and predicate coverage.
 \end{abstract}
 
 \section{Introduction}
@@ -311,32 +329,37 @@ records is total and state-preserving. \qed
 \end{proof}
 
 \begin{proposition}[Evidence-error-to-ADR bound]\label{prop:bound}
-Let $\varepsilon$ be the fraction of actions whose evidence carries a material
-defect, $\rho\in[0,1]$ the conversion probability (that a material defect induces a
-material action deviation), $d$ the gate's detection rate on the defect's channel,
-and $s$ the substitution success probability. Assuming the defect is independent of
-the demand realisation and that detection/recovery act only on detected defects,
+Let $\varepsilon$ be the probability that an action's evidence carries a material
+defect, and let $\rho\in[0,1]$ \emph{upper-bound} the conditional probability that such a
+defect induces a material action deviation. Let $d$ be the gate's detection probability on
+the defect's channel and $s$ the probability that a detected defect is successfully
+substituted. Under the stated independence (defect independent of the demand realisation)
+and non-interference (detection/recovery act only on detected defects) assumptions,
 \[
 \mathrm{ADR}_{\text{no gate}} \le \varepsilon\rho, \qquad
 \mathrm{ADR}_{\text{gate}} \le \varepsilon\rho\,(1-ds).
 \]
 \end{proposition}
 \begin{proof}[Proof sketch]
-Without a gate, a material action deviation requires both a material defect
-(prob.\ $\varepsilon$) and conversion (prob.\ $\rho$); independence gives the product
-as an upper bound (it is exact when detection is $0$ and conversion is homogeneous).
-A gate removes a defect from the loss path when it both detects ($d$) and
-successfully substitutes ($s$); the surviving fraction is $1-ds$, scaling the bound.
+A material action deviation requires both a material defect (prob.\ $\varepsilon$) and
+conversion (prob.\ at most $\rho$, since $\rho$ upper-bounds the conditional); independence
+gives the product $\varepsilon\rho$ as an upper bound. A gate removes a defect from the
+loss path when it both detects ($d$) and successfully substitutes ($s$); the surviving
+fraction is $1-ds$, scaling the bound. Both statements are upper bounds by construction of
+$\rho$; we do not assert equality.
 \end{proof}
 \noindent\emph{Reading of the decomposition.} Model capability does not appear in
-either bound. A more capable agent can only \emph{raise} $\rho$ (it tracks the price it
-is given more faithfully---the incompetence shield in reverse); it cannot supply the
-detection term $d$ on a channel it never sees. Only \emph{placement}---the gate's
-$d$ and $s$---multiplies the ceiling by $1-ds$. This is the analytical form of M2 and
-M3: scale moves $\rho$ the wrong way, enforcement moves the factor that matters.
+either bound. In the observed task, greater decision elasticity can \emph{raise} $\rho$
+because the agent tracks the corrupted evidence more faithfully (the incompetence shield in
+reverse); model capability does not, however, create a nonzero metadata-channel detection
+term $d$ when that metadata is absent from context. Only \emph{placement}---the gate's $d$
+and $s$---multiplies the ceiling by $1-ds$. This is the analytical form of M2 and M3:
+in this setting scale moves $\rho$ the wrong way, while enforcement moves the factor that
+matters.
 
 \noindent\emph{Honesty note.} These are \emph{upper bounds}, not equalities: $\rho$
-is not constant across episodes---it is the elasticity-weighted conversion, which
+is defined as an upper bound and is not constant across episodes---the effective
+conversion is elasticity-weighted, which
 the pilot estimates empirically (elasticity $\PZcElasticity$ for the competent
 agent). We do not claim a tight closed form; the bound's value is qualitative.
 
@@ -396,6 +419,28 @@ latency; staleness-bound coverage. Seeds and workload-level splits are frozen;
 per-cell tolerances. The checked-in reference is the deterministic \emph{mock}
 matrix (a pipeline reference); live numbers land via the Part-4 experiment kits.
 
+\paragraph{Arm information access (defined before results).} What each arm may \emph{see}
+determines what it can detect, so we fix it here. \textbf{C} (payload-only critic) sees
+record payloads with no freshness/lineage/provenance. \textbf{D} (Pre-Action Gate) evaluates
+metadata predicates and, on \texttt{quarantine-and-substitute}, draws a governed-buffer
+value. \textbf{E} (oracle) acts on the true value---an upper bound, not deployable.
+\textbf{F$(v)$} is an \emph{idealized upstream-cleaning comparator}: for a fraction $v$ of
+corrupted episodes it restores the known clean benchmark value, so it has privileged
+ground-truth access in the synthetic benchmark and represents an optimistic,
+upper-bound-style cleaning mechanism rather than a deployable detector. The defensible
+operational comparison for the gate is therefore against the realistic payload-only critic
+C, not against E or F$(v)$.
+
+\paragraph{Signed paired loss (defined before results).} Loss is a same-seed
+\emph{difference}: the realised cost of the agent's order on the corrupted view minus its
+order on the true-price view, sharing one demand draw. Because the shared demand realisation
+still enters both realised costs, a corrupted or substituted path can occasionally yield a
+marginally \emph{lower} realised cost than the clean-view path, so individual paired losses
+can be slightly negative. We retain signed values (no clipping; clipping was not
+preregistered) and interpret values near zero by their bootstrap interval: a small negative
+mean, or any interval crossing zero, is \emph{no established effect}, never evidence of
+systematic improvement or of recovery beyond 100\%.
+
 \section{Results (H1--H4)}\label{sec:results}
 All predictions were pre-registered (\texttt{reports/prereg/}) and frozen before any
 run; every number below is a macro generated from a committed \texttt{results/<exp>-live}
@@ -411,9 +456,10 @@ material order defect on \HoneFullMetaAdr{} of metadata-borne episodes, while th
 transcripts carry no discriminating doubt signal. The loss-conversion channel is real and
 the decider is silent about it, as predicted (agent-ADR $\ge 20\%$; behavioral AUC $\le 0.60$).
 
-\paragraph{H1 capability ladder --- \ResHoneLadder{} (headline).}
-Across haiku-4-5\,$\to$\,sonnet-5\,$\to$\,opus-4-8\,$\to$\,fable-5 ($\approx 15\times$ in
-price), the metadata-borne ADR is flat-to-rising (\HoneLadderAdrHaiku{} at haiku,
+\paragraph{H1 model-tier ladder --- \ResHoneLadder{} (headline).}
+Across four product tiers---haiku-4-5\,$\to$\,sonnet-5\,$\to$\,opus-4-8\,$\to$\,fable-5,
+increasingly expensive and nominally more capable, spanning $\approx 15\times$ in inference
+price---the metadata-borne ADR is flat-to-rising (\HoneLadderAdrHaiku{} at haiku,
 \HoneLadderAdrFable{} at fable) while \emph{both} silence signals stay pinned at the null:
 behavioral marker AUC $\le \HoneLadderAuc{}$ and explicit-flag fraction \HoneLadderFlag{} at
 every rung. \textbf{Capability does not buy skepticism}: a frontier decider seeing only the
@@ -422,28 +468,68 @@ core of the placement thesis. (The LLM-judge AUC, the second behavioral quantity
 deferred; the claim rests on the marker AUC and flag fraction.)
 
 \paragraph{H2 (Detection asymmetry) --- \ResHtwo{}.}
-The strict conjunction (C\,$\approx$\,D on payload-visible \emph{and} C\,$\ll$\,D on
-metadata-borne) does not hold as a single verdict, but the mechanism it predicted does: on
-metadata-borne defects the payload-only critic detects \HtwoCriticMeta{} where the
-metadata-aware gate detects \HtwoGateMeta{}. The finding is an empirical \emph{channel
-boundary} --- the gate dominates precisely on the freshness/provenance channel the critic
-cannot see --- with two named coverage gaps (\texttt{silent\_unit\_change},
-\texttt{plausible\_outlier}) reported as results, not patched.
+The registered clean channel split (C\,$\approx$\,D on payload-visible \emph{and}
+C\,$\ll$\,D on metadata-borne) was \emph{not} supported. The honest evidence is per class
+(Table~\ref{tab:h2}): detection follows the signal actually exposed to each mechanism and
+the predicates actually implemented, not the assigned taxonomy label. The gate strictly
+dominates the payload-only critic on freshness (\texttt{stale\_master\_data}: critic
+\HtwoDetStaleC{}, gate \HtwoDetStaleG{}) and schema-conformance (\texttt{schema\_drift}:
+\HtwoDetSchemaC{}\,$\to$\,\HtwoDetSchemaG{}; \texttt{missing\_mandatory\_field}:
+\HtwoDetMissingC{}\,$\to$\,\HtwoDetMissingG{}) --- signals the critic does not observe. Two
+labels cross the assigned boundary: \texttt{schema\_drift}, registered as payload-visible,
+is missed by the critic and caught by the deterministic schema predicate; and
+\texttt{superseded\_golden\_record}, registered as metadata-borne, is \emph{visible} to the
+critic (\HtwoDetSupersededC{}) because the companion record creates a payload-level
+contradiction. Both mechanisms fail on the two uncovered defects
+(\texttt{silent\_unit\_change}, \texttt{plausible\_outlier}: 0\%/0\%), reported as coverage
+gaps, not patched. The experiment therefore converts the payload/metadata distinction from
+an assigned taxonomy into an \emph{empirically observed detection boundary}: detectability
+depends on which representation and companion evidence a mechanism receives, and on the
+predicates it implements. The pooled metadata figures (critic \HtwoCriticMeta{}, gate
+\HtwoGateMeta{}) are a secondary summary \emph{under the preregistered labels}, and inherit
+those labels' incompleteness.
+
+\begin{table}[t]\centering\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}lccl@{}}
+\toprule
+corruption class & critic C & gate D & registered channel \\
+\midrule
+\texttt{stale\_master\_data}        & \HtwoDetStaleC      & \HtwoDetStaleG      & metadata-borne \\
+\texttt{schema\_drift}              & \HtwoDetSchemaC     & \HtwoDetSchemaG     & payload-visible$^\dagger$ \\
+\texttt{missing\_mandatory\_field}  & \HtwoDetMissingC    & \HtwoDetMissingG    & payload-visible \\
+\texttt{superseded\_golden\_record} & \HtwoDetSupersededC & \HtwoDetSupersededG & metadata-borne$^\dagger$ \\
+\texttt{cross\_source\_contradiction} & \HtwoDetCrossC    & \HtwoDetCrossG      & payload-visible \\
+\texttt{duplicate\_vendor\_conflicting\_terms} & \HtwoDetDupC & \HtwoDetDupG      & payload-visible \\
+\texttt{silent\_unit\_change}       & \HtwoDetUnitC       & \HtwoDetUnitG       & metadata-borne (gap) \\
+\texttt{plausible\_outlier}         & \HtwoDetOutlierC    & \HtwoDetOutlierG    & metadata-borne (gap) \\
+\bottomrule
+\end{tabular}
+\caption{H2 per-class detection: payload-only critic (C) vs.\ metadata-aware gate (D),
+pooled over rate cells (generated from the committed summary). $^\dagger$~marks the two
+classes whose empirical detection crosses their preregistered channel label---the
+observed boundary is not the assigned one.}
+\label{tab:h2}
+\end{table}
 
 \paragraph{H3 (Gating dominance) --- \ResHthree{} as written.}
 The registered Pareto-dominance claim (D dominates B, C, F$(v)$) fails for two honest
 reasons: the false-block axis is degenerate (every arm false-blocks at \HthreeFalseBlock{},
-so no frontier is traced), and F$(v)$ as implemented substitutes the true price on half of
-corrupted episodes --- a partial oracle, not a realistic competitor. Against the realistic
-payload-only critic C, the gate D \emph{does} dominate: residual loss \HthreeGateResid{} vs.\
-\HthreeCriticResid{} and detection \HthreeGateDet{} vs.\ \HthreeCriticDet{} ($2\times$) at
-equal zero false-block --- the same metadata-channel advantage as H2.
+so no frontier is traced), and---as anticipated by the arm definition
+(\S\ref{sec:gigo})---F$(v)$ benefits from benchmark ground truth and should not be
+interpreted as a realistic detection system. Against the realistic payload-only critic C,
+the gate D \emph{does} dominate: residual loss \HthreeGateResid{} vs.\ \HthreeCriticResid{}
+and detection \HthreeGateDet{} vs.\ \HthreeCriticDet{} ($2\times$) at equal zero false-block
+--- the same metadata-channel advantage as H2. We retain F$(v)$ (rather than drop it) so
+this optimistic upper bound stays visible.
 
 \paragraph{H4 (Downstream sufficiency) --- \ResHfour{}.}
 The registered target (portfolio recovery $\ge 0.80$) is not met: portfolio recovery is
 \HfourRecovery{}. The decomposition is the honest result. Where the gate has a predicate
 (freshness), it fully recovers: \texttt{stale\_master\_data} loss falls from
-\HfourStaleLossA{} (ungated) to \HfourStaleLossD{} (gated). The portfolio number is dominated
+\HfourStaleLossA{} (ungated) to \HfourStaleLossD{} (gated; the slightly-negative gated value
+is within noise of zero per the signed-loss convention of \S\ref{sec:gigo}, not recovery
+beyond 100\%). The portfolio number is dominated
 by \texttt{silent\_unit\_change} --- the one class carrying a clearly non-zero ungated loss
 and exactly the defect the gate has no predicate for (a pre-registered coverage gap, unit
 consistency deferred to v1.1). Source-write and lineage predicates (P2/P3) hold by
@@ -453,7 +539,7 @@ construction. More episodes cannot move the headline: the gap is structural, not
 pre-registrations are in place for a follow-up.
 
 \medskip\noindent
-Taken together: the loss-conversion is real and capability-invariant (H1), and the gate's
+Taken together: the loss-conversion is real and flat across model tiers (H1), and the gate's
 value is concentrated on the metadata channel it is designed for --- it beats a realistic
 payload-only critic (H2, H3) and fully recovers the defects it covers (H4, freshness) --- while
 being transparent about its named coverage gaps. Every figure is generated from logged results
@@ -484,16 +570,27 @@ sweep it.
 \texttt{policy\_instructed} agent, chosen \emph{after} an initial run to remove a
 competence confound (Deviations~\S\ref{sec:deviations}, item~i); both readings are
 reported. One re-run was silently truncated by a spend cap and caught in verification
-(item~vii); every reported number is on the hardened harness with zero API errors. Seeds,
-sampler, prompt, and loss definition are pinned per experiment (\texttt{EXPERIMENT\_STATUS.md}).
-\paragraph{External validity (does it generalise?).} A single synthetic domain
-(priced replenishment); a mock GIGO matrix that is a pipeline reference, not evidence
-about real models; four Claude models on one vendor, so capability-invariance is shown
-within, not across, model families. Public base-rate evidence is absent for
-\texttt{silent\_unit\_change} and \texttt{plausible\_outlier}: their injector parameters
-are declared, flagged defaults, and Tier-2 calibration on public labeled data is
-future work (\texttt{benchmarks/gigo/CALIBRATION.md}). Surfacing which classes lack a
-public base rate is itself part of the calibration contribution.
+(item~vii); the rate-axis re-runs (H3, H4) and the ladder are on the cap-hardened harness
+with zero API errors, and H1-full and H2 (run on the corrected harness before that hardening
+was added) were verified complete---all classes ran, no truncation. Seeds, sampler, prompt,
+loss definition, and per-run instrumentation are pinned per experiment
+(\texttt{EXPERIMENT\_STATUS.md}).
+\paragraph{External validity (does it generalise?).} We establish a \emph{mechanism and a
+boundary condition, not universal effectiveness} across enterprise workflows. The evidence
+is a single decision domain (priced replenishment); corruption is \emph{injected}, not
+observed in a live production system; the task has a known clean counterfactual, which is
+rarely available in production; the gate \emph{assumes} metadata is present and correct;
+predicate coverage is incomplete by design; the ladder uses four Claude tiers from one
+vendor, so the flat-across-tiers result is shown within, not across, model families; and
+inference-price tier is not itself a scientific measure of capability. The mock GIGO matrix
+is a pipeline reference, not evidence about real models. Public base-rate evidence is absent
+for \texttt{silent\_unit\_change} and \texttt{plausible\_outlier}: their injector parameters
+are declared, flagged defaults, and Tier-2 calibration on public labeled data is future work
+(\texttt{benchmarks/gigo/CALIBRATION.md})---surfacing which classes lack a public base rate
+is itself part of the calibration contribution. The central supported result is narrow:
+absent metadata cannot be recovered by model scaling alone, and a gate with access to the
+relevant signal can act where a payload-only mechanism cannot; the magnitude of operational
+benefit remains domain-, predicate-, and metadata-quality-dependent.
 \paragraph{Statistical-conclusion validity (are the numbers robust?).} Per-class H3/H4
 estimates at $n{=}100$ (rate axis) have wide CIs; only \texttt{silent\_unit\_change}
 carries a clearly non-zero ungated loss, and we say so rather than over-read the rest.
@@ -516,7 +613,7 @@ metric measured the agent's own decision noise rather than corruption. (iii)~\em
 count (rate as a stratification label) so per-corrupted metrics rest on an equal $n$;
 H3/H4 keep true rates, which drive their false-block economics. (iv)~\emph{Silence
 sub-claim.} Transcript-based silence metrics were added and logged in the corrected runs:
-across the capability ladder the behavioral marker AUC ($\le \HoneLadderAuc$) and
+across the model-tier ladder the behavioral marker AUC ($\le \HoneLadderAuc$) and
 explicit-flag fraction (\HoneLadderFlag) both support silence at every rung; the second
 behavioral quantity, the LLM-judge AUC, remains deferred (it requires a paid judge turn per
 transcript). (v)~\emph{H2 outcome.} The strict channel conjunction is not supported: the
@@ -533,14 +630,15 @@ hardening.} One H4 re-run was silently truncated by an API spend cap --- the cli
 the transport error and the run committed as apparently-complete (96/96) with a nonsensical
 recovery ratio. It was caught in verification, invalidated, and the harness was hardened so a
 transport failure is counted and the run aborts-and-resumes rather than committing silent
-zeros; \emph{every reported run above is on the hardened harness} (all carry
-\texttt{instrumentation=api-error-aware-v1}, zero API errors). All predictions are reported as
-measured, including where they fail.
+zeros; the rate-axis re-runs (H3, H4) and the ladder then ran on this hardened harness
+(\texttt{instrumentation=api-error-aware-v1}, zero API errors), while H1-full and H2, which
+predate the hardening, were verified complete by direct inspection. All predictions are
+reported as measured, including where they fail.
 
 To state the integrity boundary plainly: \emph{No threshold, prediction, or verdict
 rule was altered at any point in this project; only instrument configuration, under a
 dated addendum.} On the silence provenance: \emph{P1 (loss-conversion) is supported under
-\texttt{policy\_instructed} and is capability-invariant across the ladder; the behavioral
+\texttt{policy\_instructed} and is flat across the model-tier ladder; the behavioral
 silence signals (P2 marker AUC, P3 flag fraction) are now measured and support silence at
 every rung, while the LLM-judge AUC remains deferred.} On the superseded first wave:
 \emph{All first-wave experiment runs are invalid and retained on their branches for audit.}
@@ -568,17 +666,22 @@ configuration, under a dated addendum.
 
 \section{Conclusion}
 We set out three claims: metadata-borne defects are structurally invisible to a
-payload-only agent (M1); scaling the model does not fix this---silence and
-loss-conversion are flat across a four-model, $\approx15\times$ capability range (M2);
-and the remedy is architectural, a metadata-aware gate at the point of action (M3). The
-gate wins on the channel it covers and, where it does not cover a defect, we report the
-gap rather than patch it. The history of AI safety has largely focused on constraining
-model \emph{behavior}. Our results suggest an equally important and largely orthogonal
-axis: constraining the quality of the \emph{evidence} on which autonomous decisions are
-based. As agents move from answering to acting, runtime evidence governance may become as
-fundamental to enterprise AI as memory protection became to operating systems---a cheap,
-architectural guarantee that a fast, powerful process cannot act on state it was never
-allowed to trust.
+payload-only agent (M1); scaling to higher model tiers does not fix this---silence and
+loss-conversion are flat across four model tiers spanning $\approx15\times$ in inference
+price (M2); and the remedy is architectural, a metadata-aware Pre-Action Gate at the point
+of action (M3). The gate wins on the channel it covers and, where it does not cover a
+defect, we report the gap rather than patch it. SARC-DQ does not eliminate upstream
+data-quality work and does not detect defects for which no predicate or trustworthy
+metadata exists; runtime gating \emph{complements} rather than replaces upstream governance,
+and its benefit is predicate- and metadata-quality-dependent. Its contribution is narrower
+and architectural: when the discriminating signal exists outside the model's payload
+context, reliability requires an enforcement mechanism that can access and act on that
+signal. The history of AI safety has largely focused on constraining model \emph{behavior}.
+Our results suggest an equally important and largely orthogonal axis: constraining the
+quality of the \emph{evidence} on which autonomous decisions are based. As agents move from
+answering to acting, runtime evidence governance may become as fundamental to enterprise AI
+as memory protection became to operating systems---a cheap, architectural guarantee that a
+fast, powerful process cannot act on state it was never allowed to trust.
 
 \begin{thebibliography}{99}
 \bibitem{agentnoisebench} AgentNoiseBench. arXiv:2602.11348 (ICML 2026).

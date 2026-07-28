@@ -514,8 +514,11 @@ sweep it.
 \texttt{policy\_instructed} agent, chosen \emph{after} an initial run to remove a
 competence confound (Deviations~\S\ref{sec:deviations}, item~i); both readings are
 reported. One re-run was silently truncated by a spend cap and caught in verification
-(item~vii); every reported number is on the hardened harness with zero API errors. Seeds,
-sampler, prompt, and loss definition are pinned per experiment (\texttt{EXPERIMENT\_STATUS.md}).
+(item~vii); the rate-axis re-runs (H3, H4) and the ladder are on the cap-hardened harness
+with zero API errors, and H1-full and H2 (run on the corrected harness before that hardening
+was added) were verified complete---all classes ran, no truncation. Seeds, sampler, prompt,
+loss definition, and per-run instrumentation are pinned per experiment
+(\texttt{EXPERIMENT\_STATUS.md}).
 \paragraph{External validity (does it generalise?).} We establish a \emph{mechanism and a
 boundary condition, not universal effectiveness} across enterprise workflows. The evidence
 is a single decision domain (priced replenishment); corruption is \emph{injected}, not
@@ -571,9 +574,10 @@ hardening.} One H4 re-run was silently truncated by an API spend cap --- the cli
 the transport error and the run committed as apparently-complete (96/96) with a nonsensical
 recovery ratio. It was caught in verification, invalidated, and the harness was hardened so a
 transport failure is counted and the run aborts-and-resumes rather than committing silent
-zeros; \emph{every reported run above is on the hardened harness} (all carry
-\texttt{instrumentation=api-error-aware-v1}, zero API errors). All predictions are reported as
-measured, including where they fail.
+zeros; the rate-axis re-runs (H3, H4) and the ladder then ran on this hardened harness
+(\texttt{instrumentation=api-error-aware-v1}, zero API errors), while H1-full and H2, which
+predate the hardening, were verified complete by direct inspection. All predictions are
+reported as measured, including where they fail.
 
 To state the integrity boundary plainly: \emph{No threshold, prediction, or verdict
 rule was altered at any point in this project; only instrument configuration, under a

@@ -51,7 +51,7 @@
       "validity": "VALID",
       "ingested": "paper/data/h2-detection/reference_summary.json",
       "paper_section": "\\S Results \u2014 H2 (Detection asymmetry)",
-      "verdict": "REFRAMED \u2014 gate dominates on the metadata channel (channel boundary)"
+      "verdict": "REFRAMED \u2014 registered channel split not supported; detection follows the signal exposed to each mechanism and the predicates implemented"
     },
     {
       "experiment": "h3-frontier",
