@@ -100,21 +100,24 @@ def render_md(m: dict[str, Any]) -> str:
         "**Do not edit by hand.** Every other document references this file for experiment",
         "state; if this and another doc disagree, this file wins.",
         "",
-        f"Campaign: {m['campaign']}. All valid runs are on the cap-hardened harness",
-        "(`instrumentation=api-error-aware-v1`, 0 API errors). Total valid spend:",
-        f"**${m['total_spend_usd_valid']:.2f}**.",
+        f"Campaign: {m['campaign']}. The rate-axis re-runs (h3-frontier, h4-recovery) and the",
+        "ladder carry the cap-hardened instrumentation (`api-error-aware-v1`); h1-full and",
+        "h2-detection ran on the corrected harness *before* that tag was added and were",
+        "verified complete (all classes ran, no truncation). Per-run `instrumentation` is in",
+        f"the table below. Total valid spend: **${m['total_spend_usd_valid']:.2f}**.",
         "",
         "## Valid experiments (current — these are the results the paper reports)",
         "",
-        "| experiment | branch @ SHA | prompt | sampler | loss | config_hash | spend "
+        "| experiment | branch @ SHA | prompt | sampler | loss | config_hash | instrum. | spend "
         "| cells | validity | ingested | verdict |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for v in m["valid_experiments"]:
+        instr = v.get("instrumentation") or "(pre-hardening)"
         lines.append(
             f"| `{v['experiment']}` | `{v['branch']}` @ `{v['commit_sha']}` "
             f"| {v['prompt_variant']} | {v['sampler']} | {v['loss_definition']} "
-            f"| `{v['config_hash']}` | ${v['spend_usd']:.2f} | {v['cells']} | "
+            f"| `{v['config_hash']}` | {instr} | ${v['spend_usd']:.2f} | {v['cells']} | "
             f"**{v['validity']}** | ✓ | {v['verdict']} |"
         )
     lines += [

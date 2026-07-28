@@ -12,7 +12,45 @@
     "cells": "96/96"
   },
   "headline": 0.25,
+  "registered_channel_summary": {
+    "critic_metadata": 0.25,
+    "gate_metadata": 0.5
+  },
+  "per_class_detection": {
+    "cross_source_contradiction": {
+      "critic": 1.0,
+      "gate": 1.0
+    },
+    "duplicate_vendor_conflicting_terms": {
+      "critic": 0.0,
+      "gate": 0.0
+    },
+    "missing_mandatory_field": {
+      "critic": 0.72,
+      "gate": 1.0
+    },
+    "plausible_outlier": {
+      "critic": 0.0,
+      "gate": 0.0
+    },
+    "schema_drift": {
+      "critic": 0.0,
+      "gate": 1.0
+    },
+    "silent_unit_change": {
+      "critic": 0.0,
+      "gate": 0.0
+    },
+    "stale_master_data": {
+      "critic": 0.0,
+      "gate": 1.0
+    },
+    "superseded_golden_record": {
+      "critic": 1.0,
+      "gate": 1.0
+    }
+  },
   "critic_detection_metadata": 0.25,
   "gate_detection_metadata": 0.5,
-  "verdict": "REFRAMED \u2014 gate dominates on the metadata channel (channel boundary)"
+  "verdict": "REFRAMED \u2014 registered channel split not supported; detection follows the signal exposed to each mechanism and the predicates implemented"
 }

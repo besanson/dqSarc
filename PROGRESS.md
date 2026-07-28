@@ -1,9 +1,26 @@
 # PROGRESS — sarc-dq campaign tracker
 
-> **HISTORICAL build log.** For the *current* state of every experiment (branch, SHA,
-> validity, verdict, ingestion) see [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md), the
-> single source of truth. The H1–H4 campaign is complete; any `[pending]`/"to fire"
-> language below is a record of an earlier stage, not an open task.
+## Current project state
+
+- **H1–H4 campaign complete.** Valid hardened-harness results ingested into the paper.
+- Invalid first-wave and cap-truncated runs **retained for audit**, not ingested.
+- Main paper values are **generated** from committed result summaries (no hand-entry).
+- CI paper build (full TeX Live) operational; `make arxiv` produces the camera-ready source.
+- **Optional** ablations and Tier-2 validation remain pending (not part of H1–H4).
+- **Remaining human actions:** final editorial review, arXiv compilation, bibliography
+  check, and upload.
+
+**Authoritative status reference.** For current experiment status, validity, branch, SHA,
+ingestion, and verdict, [`EXPERIMENT_STATUS.md`](EXPERIMENT_STATUS.md) is authoritative. If
+anything in the archived log below conflicts with it, that file wins.
+
+---
+
+## Archived Campaign Log
+
+> Everything below is the **historical build log** of how the campaign was planned and
+> executed. It is preserved for the record; `[pending]`/"to fire"/"merge and fire" language
+> here describes an earlier stage and is **not** a current instruction.
 
 **Active campaign: MASTER BRIEF FINAL (`CLAUDE_CODE_MASTER_BRIEF_FINAL.md`)** — takes
 sarc-dq from CI-green-with-[pending] to arXiv-ready v1.0. Parts 0–2 this session →

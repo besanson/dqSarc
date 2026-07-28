@@ -21,11 +21,11 @@ jobs:
       - name: Install
         run: pip install -e ".[dev]"
       - name: Lint
-        run: ruff check src tests benchmarks scripts
+        run: ruff check src tests benchmarks scripts paper/scripts
       - name: Format check
-        run: ruff format --check src tests benchmarks scripts
+        run: ruff format --check src tests benchmarks scripts paper/scripts
       - name: Type check
-        run: mypy src/sarc_dq benchmarks scripts
+        run: mypy src/sarc_dq benchmarks scripts paper/scripts
       - name: Test
         run: pytest -q
       # The Phase 0 pipeline must stay runnable end-to-end at $0 (mock arm), so a
@@ -42,3 +42,24 @@ jobs:
       # The research-calibrated taxonomy artifacts must be regenerated, not hand-edited.
       - name: Taxonomy calibration up to date
         run: make calibrate-check
+
+  claims:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # This job uses only stdlib scripts (no sarc_dq import), so no package install is
+      # needed. Regenerate the artifacts that read from committed paper/data (not the
+      # results branches, which are not in this checkout), confirm the committed copies are
+      # not stale, then check claim-consistency invariants. Deterministic; no API calls.
+      - name: Regenerate status + macros
+        run: |
+          python scripts/experiment_status.py
+          python paper/scripts/make_macros.py
+      - name: Committed derived artifacts must be up to date
+        run: git diff --exit-code EXPERIMENT_STATUS.md reports/experiment_status.json paper/generated/results.tex
+      - name: Claim consistency
+        run: python paper/scripts/check_claim_consistency.py
