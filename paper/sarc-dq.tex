@@ -12,7 +12,15 @@
 \usepackage{graphicx} % \rotatebox for the DRAFT watermark
 \usepackage{xcolor}
 \usepackage{eso-pic}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
 \usepackage[hidelinks]{hyperref}
+
+% Canonical terminology (use these exact terms throughout; see \S Introduction):
+%   metadata-borne defect   — a defect invisible in the payload, visible only in metadata
+%   silent conversion       — such a defect becoming a wrong action becoming a currency loss
+%   incompetence shield     — a less capable agent being accidentally protected by ignoring inputs
+%   Pre-Action Gate         — the runtime metadata-aware enforcement point
 
 % Robust DRAFT watermark (version-independent; no draftwatermark dependency).
 \newcommand{\DraftMark}{%
@@ -39,27 +47,25 @@
 \maketitle
 
 \begin{abstract}
-Agentic systems act. When the evidence an agent retrieves is defective in a way
-that is invisible in the record's payload---a stale price, a superseded golden
-record---the defect never enters the agent's context, and no amount of model
-capability recovers it. We frame the \emph{silent conversion chain}: a data defect
-becomes an action defect becomes a currency loss, measured against a
-certifiably-clean, same-seed counterfactual. Our thesis is that \emph{enforcement
-placement beats model intelligence}: a cheap metadata-aware gate at the point of
-action dominates a frontier-class critic that sees only the payload. We contribute
-(i) \textbf{SARC-DQ}, a data-quality predicate family and Pre-Action Gate with
-\emph{downstream-only} remediation (quarantine-and-substitute in a governed buffer;
-zero writes to source systems); (ii) \textbf{GIGO-Bench}, a frozen benchmark pricing
-how injected corruption converts into loss across six mitigation arms; and (iii) a
-pilot ($\PhaseZeroScoredNote$) on a real replenishment task. In the pilot, a
-competent agent acts on a stale price $\PZcAdr$ of the time (matching a
-metadata-blind oracle at $\PZcOracleAdr$) while expressing no doubt (behavioral AUC
-$\PZcMarkerAuc$, judge AUC $\PZcJudgeAuc$, explicit flags $\PZcFlags$). A
-naive agent is protected only by \emph{incompetence}---it ignores the price and so
-does not convert the defect. The pre-registered hypothesis tests (H1--H4) were then run
-under the competent decider: H1 holds and is capability-invariant across a four-model
-ladder, while H2--H4 are reported as measured, including where their headline predictions
-fail (\S\ref{sec:results}).
+\textbf{Problem.} Agentic systems act, so a defect in the evidence they retrieve becomes
+a wrong action with a currency cost. \textbf{Gap.} The most dangerous enterprise defects
+are \emph{metadata-borne}---a stale price, a superseded record---perfectly well-formed in
+the payload and betrayed only by freshness, lineage, or provenance. Such a defect never
+enters the agent's context, so a payload-only reader cannot detect it regardless of model
+scale. \textbf{Idea.} We argue that the fix is architectural: a cheap metadata-aware gate
+placed \emph{at the point of action} enforces evidence quality where a stronger model
+cannot, remediating \emph{downstream-only} (quarantine-and-substitute in a governed buffer;
+zero writes to source). \textbf{Evidence.} On a priced replenishment task we measure the
+\emph{silent conversion} of a metadata-borne defect into a loss against a same-seed clean
+counterfactual, across a four-model capability ladder and eight defect classes.
+\textbf{Result.} Loss-conversion is real and does not fall with capability: across
+haiku$\to$sonnet$\to$opus$\to$fable (a $\approx15\times$ price range) the metadata-borne
+action-defect rate is flat-to-rising while the agent expresses no doubt at any tier
+(behavioral AUC $\le\HoneLadderAuc$, explicit flags $\HoneLadderFlag$). The gate dominates
+a realistic payload-only critic on exactly the channel it is designed for; where its
+predicates do not cover a defect, we report the gap rather than patch it.
+\textbf{Impact.} Constraining the \emph{evidence} an autonomous system acts on is a
+distinct and necessary safety axis from constraining the \emph{model}.
 \end{abstract}
 
 \section{Introduction}
@@ -80,26 +86,91 @@ schema drift) detectable from content alone.
 \text{agent acts} \;\rightarrow\; \text{action defect} \;\rightarrow\; \text{loss}.
 \]
 Each arrow is measurable. We price the last one against a same-seed clean
-counterfactual, so ``loss'' is a currency delta, not a task-success proxy.
+counterfactual, so ``loss'' is a currency delta, not a task-success proxy
+(Fig.~\ref{fig:chain}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  >={Latex[length=2mm]},
+  box/.style={draw, rounded corners, align=center, minimum height=7mm,
+              text width=17mm, inner sep=2pt, font=\scriptsize},
+  bad/.style={box, fill=red!7},
+  good/.style={box, fill=green!8},
+  gate/.style={box, fill=blue!8, very thick, text width=20mm},
+  lbl/.style={font=\scriptsize\itshape, align=center},
+]
+% --- silent conversion (ungated): left to right ---
+\node[bad] (rec)   {stale price\\ \tiny(payload valid)};
+\node[bad, right=9mm of rec]   (agent) {agent acts\\confidently};
+\node[bad, right=9mm of agent] (order) {wrong order};
+\node[bad, right=9mm of order] (loss)  {currency loss};
+\draw[->] (rec)   -- (agent);
+\draw[->] (agent) -- (order);
+\draw[->] (order) -- (loss);
+\node[lbl, above=1mm of agent] {invisible in payload};
+\node[lbl, above=1mm of order] {no expressed doubt};
+% --- gated path (below): the intervention ---
+\node[gate, below=11mm of agent] (gate) {Pre-Action Gate\\ \tiny(metadata-aware)};
+\node[good, right=13mm of gate] (corr) {corrected order};
+\draw[->] (rec) |- (gate);
+\draw[->] (gate) -- node[lbl, above]{detect + substitute} (corr);
+\end{tikzpicture}
+\caption{The \emph{silent conversion} of a metadata-borne defect (top): the payload is
+valid, so a payload-only agent acts confidently and converts the defect into a currency
+loss. A metadata-aware Pre-Action Gate (bottom) intercepts the same record where the
+signal actually lives---the metadata---and substitutes a governed value, yielding a
+corrected action. Model scale moves along the top row; enforcement placement adds the
+bottom one.}
+\label{fig:chain}
+\end{figure}
 
 \paragraph{Competence buys conversion, not detection: the incompetence shield.}
-Our sharpest finding is a pilot result and a caution against a comforting intuition.
-One might hope a smarter agent would notice the bad price. It does not---because the
-discriminating signal is not in its context at any capability level. Worse, making
-the agent \emph{better at its task} makes it \emph{more} vulnerable: an agent that
-faithfully tracks the price it is given (high decision elasticity) inherits the
+One might hope a smarter agent would notice the bad price. We observe that it does
+not---the discriminating signal is not in its context at any capability level. Worse,
+making the agent \emph{better at its task} makes it \emph{more} vulnerable: an agent
+that faithfully tracks the price it is given (high decision elasticity) inherits the
 corruption, while an agent that ignores the price (low elasticity) is accidentally
-shielded by its own incompetence. Detection must therefore be placed where the
-signal lives---on the metadata, at the point of action---not bought with model
-scale.
+shielded by its own incompetence---the \emph{incompetence shield}. We therefore argue
+that detection must be placed where the signal lives---on the metadata, at the point of
+action---not bought with model scale.
 
-\paragraph{Contributions.} (1) The SARC-DQ predicate family on the four SARC
-enforcement sites, with downstream-only remediation and versioned-evidence-set
-semantics (\S\ref{sec:arch}). (2) Two formal results: lineage preservation under
-downstream-only remediation, and a bound linking evidence error rate to ADR with and
-without gating (\S\ref{sec:formal}). (3) The Phase 0 pilot with its methods-integrity
-narrative (\S\ref{sec:pilot}). (4) GIGO-Bench (\S\ref{sec:gigo}) and pre-registered
-H1--H4 (\S\ref{sec:results}).
+\paragraph{Three claims.} Everything below serves three messages, in order of
+importance. \textbf{(M1)}~Metadata-borne defects are \emph{structurally} invisible to a
+payload-only agent (we argue this from the architecture and show it in the channel
+measurements). \textbf{(M2)}~Increasing model capability does not fix M1---silence and
+loss-conversion are flat across a four-model ladder (we observe this, \S\ref{sec:results};
+the paper's headline). \textbf{(M3)}~The correct remedy is architectural: runtime
+metadata enforcement at the point of action (we argue this and give a gate that beats a
+realistic payload-only critic on its covered channel). The benchmark, formal invariants,
+economics, and governance mapping are \emph{support} for these three, not competing
+claims.
+
+\paragraph{Two kinds of contribution.} We separate what is scientific from what is a
+research artifact, so each can be judged on its own terms.
+\begin{table}[t]\centering\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.34\linewidth}p{0.28\linewidth}@{}}
+\toprule
+\textbf{Contribution} & \textbf{Evidence / where} & \textbf{Validation} \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Scientific}}\\
+Silent conversion of metadata-borne defects (M1) & Channel model + H2 measurement (\S\ref{sec:arch},\,\ref{sec:results}) & Pre-registered; measured \\
+Capability does not buy skepticism (M2) & Four-model ladder, H1 (\S\ref{sec:results}) & Pre-registered; measured \\
+Enforcement-placement thesis (M3) & Gate vs.\ realistic critic, H3/H4 (\S\ref{sec:results}) & Argued; partially measured \\
+Incompetence shield & Phase 0 elasticity contrast (\S\ref{sec:pilot}) & Measured (pilot) \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Research artifact}}\\
+SARC-DQ predicate family + Pre-Action Gate & \S\ref{sec:arch}; \texttt{src/sarc\_dq/} & Typed, tested, mock+live \\
+Downstream-only remediation with lineage & Architectural invariants (\S\ref{sec:formal}) & Proved (Prop.~\ref{prop:lineage}) \\
+GIGO-Bench (frozen, priced benchmark) & \S\ref{sec:gigo} & \texttt{make gigo-verify} \\
+Reproducible, provenance-linked pipeline & \S\ref{sec:repro}; \texttt{EXPERIMENT\_STATUS.md} & Generated, deterministic \\
+\bottomrule
+\end{tabular}
+\caption{Scientific claims vs.\ the research artifact. Every paper value is generated
+from a committed \texttt{results/<exp>-live} summary; nothing is hand-entered.}
+\label{tab:contrib}
+\end{table}
 
 \section{Related work}
 \paragraph{Agent robustness under noise.} AgentNoiseBench~\cite{agentnoisebench}
@@ -170,7 +241,13 @@ IDs. The gate is read-only over the evidence set and \textbf{never writes to any
 source store}. Every admitted action logs the versioned evidence set it relied on,
 giving full lineage from action back to the exact records.
 
-\section{Formal results}\label{sec:formal}
+\section{Architectural invariants}\label{sec:formal}
+We state two properties of the architecture---not theorems we advertise as a
+contribution, but the guarantees a reviewer should be able to check. The first is a
+\emph{correctness guarantee} (remediation cannot corrupt lineage); the second is an
+\emph{analytical decomposition} showing precisely which term runtime gating multiplies,
+and why model capability does not appear in it.
+
 \begin{assumption}\label{as:addr}
 Each evidence record has a content-addressed identifier $\mathrm{eid}(r)=H(\text{payload}(r),\text{metadata}(r))$
 for a collision-resistant $H$. Remediation creates new buffer records and never
@@ -212,11 +289,17 @@ as an upper bound (it is exact when detection is $0$ and conversion is homogeneo
 A gate removes a defect from the loss path when it both detects ($d$) and
 successfully substitutes ($s$); the surviving fraction is $1-ds$, scaling the bound.
 \end{proof}
+\noindent\emph{Reading of the decomposition.} Model capability does not appear in
+either bound. A more capable agent can only \emph{raise} $\rho$ (it tracks the price it
+is given more faithfully---the incompetence shield in reverse); it cannot supply the
+detection term $d$ on a channel it never sees. Only \emph{placement}---the gate's
+$d$ and $s$---multiplies the ceiling by $1-ds$. This is the analytical form of M2 and
+M3: scale moves $\rho$ the wrong way, enforcement moves the factor that matters.
+
 \noindent\emph{Honesty note.} These are \emph{upper bounds}, not equalities: $\rho$
 is not constant across episodes---it is the elasticity-weighted conversion, which
 the pilot estimates empirically (elasticity $\PZcElasticity$ for the competent
-agent). We do not claim a tight closed form; the bound's value is qualitative
-(gating multiplies the ceiling by $1-ds$).
+agent). We do not claim a tight closed form; the bound's value is qualitative.
 
 \section{The Phase 0 pilot}\label{sec:pilot}
 We ran a three-run live pilot on a priced single-period (newsvendor) replenishment
@@ -337,34 +420,48 @@ payload-only critic (H2, H3) and fully recovers the defects it covers (H4, fresh
 being transparent about its named coverage gaps. Every figure is generated from logged results
 only; no number is hand-entered.
 
-\section{The economics hook}
-ADR is the action-level micro-foundation of the firm-level adoption bottleneck.
-If autonomous value is a $\min(\cdot)$ of complements---capability \emph{and}
-trustworthy evidence---then raising capability while evidence quality lags does not
-move the $\min$. ADR measures exactly the complement that gating restores: the rate
-at which competent action is silently converted into loss.
+\section{Implications}\label{sec:implications}
+Two brief consequences of the three claims; both support M3 rather than extend it.
+\paragraph{Economics.} ADR is the action-level micro-foundation of the firm-level
+adoption bottleneck. If autonomous value is a $\min(\cdot)$ of complements---capability
+\emph{and} trustworthy evidence---then raising capability while evidence quality lags
+does not move the $\min$. ADR measures exactly the complement that gating restores.
+\paragraph{Governance.} Metadata-borne evidence defects are precisely the data-quality
+management and ``examination in view of possible biases'' that EU AI Act Article~10
+requires; ISO/IEC 5259~\cite{iso5259} supplies the dimension vocabulary. SARC-DQ's
+versioned evidence sets (Prop.~\ref{prop:lineage}) are auditable artifacts for such
+obligations. This is the only place we use risk-tier language.
 
-\section{Governance mapping}
-This is the only section using risk language. Loss classes map to EU AI Act Article
-10 (data governance) obligations and to risk tiers: metadata-borne evidence defects
-are precisely the ``examination in view of possible biases'' and data-quality
-management the Act requires, and ISO/IEC 5259~\cite{iso5259} supplies the dimension
-vocabulary. SARC-DQ's versioned evidence sets are auditable artifacts for such
-obligations.
+\section{Threats to validity}\label{sec:threats}
+\paragraph{Construct validity (are we measuring the right thing?).} Loss is a currency
+delta against a same-seed clean counterfactual, so it isolates the corruption effect from
+the agent's own decision noise---but it is defined on one realised demand draw per
+episode, so single-episode losses are noisy and we report them pooled with bootstrap CIs.
+``Silence'' is operationalised as a behavioral doubt-marker AUC and an explicit-flag
+fraction; the third intended quantity, an LLM-judge AUC, is deferred, so the silence claim
+rests on two of three signals. Materiality uses a fixed threshold ($\tau_m$); we did not
+sweep it.
+\paragraph{Internal validity (could an artifact explain the result?).} The decider is the
+\texttt{policy\_instructed} agent, chosen \emph{after} an initial run to remove a
+competence confound (Deviations~\S\ref{sec:deviations}, item~i); both readings are
+reported. One re-run was silently truncated by a spend cap and caught in verification
+(item~vii); every reported number is on the hardened harness with zero API errors. Seeds,
+sampler, prompt, and loss definition are pinned per experiment (\texttt{EXPERIMENT\_STATUS.md}).
+\paragraph{External validity (does it generalise?).} A single synthetic domain
+(priced replenishment); a mock GIGO matrix that is a pipeline reference, not evidence
+about real models; four Claude models on one vendor, so capability-invariance is shown
+within, not across, model families. Public base-rate evidence is absent for
+\texttt{silent\_unit\_change} and \texttt{plausible\_outlier}: their injector parameters
+are declared, flagged defaults, and Tier-2 calibration on public labeled data is
+future work (\texttt{benchmarks/gigo/CALIBRATION.md}). Surfacing which classes lack a
+public base rate is itself part of the calibration contribution.
+\paragraph{Statistical-conclusion validity (are the numbers robust?).} Per-class H3/H4
+estimates at $n{=}100$ (rate axis) have wide CIs; only \texttt{silent\_unit\_change}
+carries a clearly non-zero ungated loss, and we say so rather than over-read the rest.
+The H2/H3/H4 headline predictions are reported as \emph{not supported as written}, with
+the honest decomposition, not re-fit to pass.
 
-\section{Limitations}
-Pilot scope (three runs); synthetic substrate; single domain (replenishment);
-LLM-judge validity (validated on 20 hand-checkable cases, not exhaustively);
-model-version sensitivity; controlled assumptions, not deployment-grade rates. The
-mock GIGO matrix is a pipeline reference, not evidence about real models.
-Public base-rate evidence is absent for \texttt{silent\_unit\_change} and
-\texttt{plausible\_outlier}: their injector parameters are declared, flagged
-defaults rather than measured, and the calibration pending the Tier-2 run leaves the
-governed-source rates flagged as well (\texttt{benchmarks/gigo/CALIBRATION.md}).
-Surfacing which classes lack a public base rate is itself a stated contribution of
-the calibration section.
-
-\section{Deviations and clarifications}
+\section{Deviations and clarifications}\label{sec:deviations}
 We disclose deviations from the pre-registration so verdicts are read against a
 transparent record (full detail in \texttt{reports/FINDINGS.md} and
 \texttt{reports/prereg/ADDENDUM-2026-07-09.md}). (i)~\emph{Prompt variant.} The
@@ -411,15 +508,38 @@ every rung, while the LLM-judge AUC remains deferred.} On the superseded first w
 And on H2: \emph{H2 failed its original registration on the corrected re-run and is reported
 as failed; the reframe, not a pass, is the contribution.}
 
-\section{Reproducibility}
-Exact commands: \texttt{make quality} (lint/type/test), \texttt{make smoke}
-(Phase 0 mock), \texttt{make gigo-verify} (benchmark drift), \texttt{make paper}
-(regenerate macros + compile). Phase 0 config hashes: naive
-\texttt{c8202a18b58754d8}, policy \texttt{e785bdc87009b84c}. Live pilot spend
-\$\PhaseZeroSpend. Results-branch index: \texttt{results/phase0-live},
-\texttt{results/phase0b-live}, \texttt{results/phase0c-live}; experiment results
-land on \texttt{results/<exp>-live}. Seeds, splits, and metric definitions are in
-\texttt{benchmarks/gigo/SPEC.md}.
+\section{Reproducibility and research transparency}\label{sec:repro}
+\paragraph{Commands.} \texttt{make quality} (lint/type/test), \texttt{make smoke}
+(Phase 0 mock), \texttt{make gigo-verify} (benchmark drift), \texttt{make status}
+(regenerate the experiment manifest), \texttt{make arxiv} (macros + camera-ready source).
+Phase 0 config hashes: naive \texttt{c8202a18b58754d8}, policy \texttt{e785bdc87009b84c}.
+Per-experiment branch, SHA, prompt/sampler/loss version, and \texttt{config\_hash} are in
+\texttt{EXPERIMENT\_STATUS.md} (the single source of truth); seeds, splits, and metric
+definitions in \texttt{benchmarks/gigo/SPEC.md}.
+\paragraph{Transparency (by construction, not assertion).} We hold this project to the
+standard it studies. (i)~\emph{No result is hand-entered}: every printed value is a macro
+generated from a committed \texttt{results/<exp>-live} summary. (ii)~\emph{No historical
+data were deleted}: invalid first-wave runs and one cap-truncated run remain on their
+branches and are listed, with grounds, in \texttt{EXPERIMENT\_STATUS.md}. (iii)~\emph{Every
+number is provenance-linked} to a branch, SHA, and \texttt{config\_hash}. (iv)~\emph{Failures
+are reported, not hidden}: a garbage-in-garbage-out event in our own parser (\S\ref{sec:pilot})
+and a spend-cap truncation (\S\ref{sec:deviations}) are both written up as results.
+(v)~\emph{No threshold, prediction, or verdict rule was ever altered}; only instrument
+configuration, under a dated addendum.
+
+\section{Conclusion}
+We set out three claims: metadata-borne defects are structurally invisible to a
+payload-only agent (M1); scaling the model does not fix this---silence and
+loss-conversion are flat across a four-model, $\approx15\times$ capability range (M2);
+and the remedy is architectural, a metadata-aware gate at the point of action (M3). The
+gate wins on the channel it covers and, where it does not cover a defect, we report the
+gap rather than patch it. The history of AI safety has largely focused on constraining
+model \emph{behavior}. Our results suggest an equally important and largely orthogonal
+axis: constraining the quality of the \emph{evidence} on which autonomous decisions are
+based. As agents move from answering to acting, runtime evidence governance may become as
+fundamental to enterprise AI as memory protection became to operating systems---a cheap,
+architectural guarantee that a fast, powerful process cannot act on state it was never
+allowed to trust.
 
 \begin{thebibliography}{99}
 \bibitem{agentnoisebench} AgentNoiseBench. arXiv:2602.11348 (ICML 2026).

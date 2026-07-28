@@ -1,0 +1,129 @@
+{
+  "generated_by": "scripts/experiment_status.py",
+  "campaign": "corrected campaign on the cap-hardened harness (2026-07)",
+  "valid_experiments": [
+    {
+      "experiment": "h1-full",
+      "branch": "results/h1-full-live",
+      "commit_sha": "fac16e5",
+      "run_id": "29095598109",
+      "prompt_variant": "policy_instructed",
+      "sampler": "fixed_n",
+      "loss_definition": "paired-counterfactual-v2",
+      "config_hash": "835a81b3602bb435",
+      "instrumentation": null,
+      "spend_usd": 34.88,
+      "cells": "32/32",
+      "validity": "VALID",
+      "ingested": "paper/data/h1-full/reference_summary.json",
+      "paper_section": "\\S Results \u2014 H1 (Silence)",
+      "verdict": "SUPPORTED (P1)"
+    },
+    {
+      "experiment": "h1-ladder",
+      "branch": "results/h1-ladder-live",
+      "commit_sha": "6a1ee4d",
+      "run_id": "30332532378",
+      "prompt_variant": "policy_instructed",
+      "sampler": "fixed_n",
+      "loss_definition": "paired-counterfactual-v2",
+      "config_hash": "63ea99e0e8ea046d",
+      "instrumentation": "api-error-aware-v1",
+      "spend_usd": 182.62,
+      "cells": "128/128",
+      "validity": "VALID",
+      "ingested": "paper/data/h1-ladder/reference_summary.json",
+      "paper_section": "\\S Results \u2014 H1 capability ladder (headline)",
+      "verdict": "SUPPORTED \u2014 silence + loss-conversion flat across capability"
+    },
+    {
+      "experiment": "h2-detection",
+      "branch": "results/h2-detection-live",
+      "commit_sha": "aac7518",
+      "run_id": "29101951327",
+      "prompt_variant": "policy_instructed",
+      "sampler": "fixed_n",
+      "loss_definition": "paired-counterfactual-v2",
+      "config_hash": "b52ba463e0e1b9b4",
+      "instrumentation": null,
+      "spend_usd": 122.93,
+      "cells": "96/96",
+      "validity": "VALID",
+      "ingested": "paper/data/h2-detection/reference_summary.json",
+      "paper_section": "\\S Results \u2014 H2 (Detection asymmetry)",
+      "verdict": "REFRAMED \u2014 gate dominates on the metadata channel (channel boundary)"
+    },
+    {
+      "experiment": "h3-frontier",
+      "branch": "results/h3-frontier-live",
+      "commit_sha": "9bfff1f",
+      "run_id": "30296664147",
+      "prompt_variant": "policy_instructed",
+      "sampler": "rate",
+      "loss_definition": "paired-counterfactual-v2",
+      "config_hash": "32c0c09dd052f859",
+      "instrumentation": "api-error-aware-v1",
+      "spend_usd": 115.16,
+      "cells": "96/96",
+      "validity": "VALID",
+      "ingested": "paper/data/h3-frontier/reference_summary.json",
+      "paper_section": "\\S Results \u2014 H3 (Gating dominance)",
+      "verdict": "P1 NOT supported as written; gate dominates the realistic critic C"
+    },
+    {
+      "experiment": "h4-recovery",
+      "branch": "results/h4-recovery-live",
+      "commit_sha": "a9a4b38",
+      "run_id": "30282599910",
+      "prompt_variant": "policy_instructed",
+      "sampler": "rate",
+      "loss_definition": "paired-counterfactual-v2",
+      "config_hash": "0d606d9b7730cc95",
+      "instrumentation": "api-error-aware-v1",
+      "spend_usd": 99.12,
+      "cells": "96/96",
+      "validity": "VALID",
+      "ingested": "paper/data/h4-recovery/reference_summary.json",
+      "paper_section": "\\S Results \u2014 H4 (Downstream sufficiency)",
+      "verdict": "P1 (recovery>=0.80) NOT supported; gate recovers covered channel (freshness)"
+    }
+  ],
+  "invalid_runs_retained_for_audit": [
+    {
+      "run": "h1-full (first wave)",
+      "commit_sha": "2993ece",
+      "grounds": "buggy sampler / naive-prompt era"
+    },
+    {
+      "run": "h2-detection (first wave)",
+      "commit_sha": "a37bf0b",
+      "grounds": "pre-fix loss, naive prompt, buggy sampler"
+    },
+    {
+      "run": "h3-frontier (first wave)",
+      "commit_sha": "0a6f545",
+      "grounds": "pre-fix loss, naive prompt, buggy sampler"
+    },
+    {
+      "run": "h4-recovery (first wave)",
+      "commit_sha": "5fc430f",
+      "grounds": "pre-fix loss, naive prompt, buggy sampler"
+    },
+    {
+      "run": "h1-ladder (first wave)",
+      "commit_sha": "e47f55e",
+      "grounds": "naive prompt, buggy sampler"
+    },
+    {
+      "run": "ablations (first wave)",
+      "commit_sha": "47c334d",
+      "grounds": "naive prompt, buggy sampler"
+    },
+    {
+      "run": "h4-recovery (cap-truncated)",
+      "commit_sha": "701c38e",
+      "grounds": "API spend cap truncated the run to 2/8 classes"
+    }
+  ],
+  "total_spend_usd_valid": 554.71
+}

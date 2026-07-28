@@ -1,7 +1,7 @@
 LINT_PATHS = src tests benchmarks
 
 .PHONY: install test lint format-check format typecheck quality smoke reproduce verify \
-        gigo-reproduce gigo-verify calibrate calibrate-check paper clean
+        gigo-reproduce gigo-verify calibrate calibrate-check paper status arxiv clean
 
 install:
 	pip install -e ".[dev]"
@@ -59,6 +59,10 @@ calibrate-check:
 paper:
 	python paper/scripts/make_macros.py
 	$(MAKE) -C paper
+
+# Single source of truth for experiment state (EXPERIMENT_STATUS.md + JSON manifest).
+status:
+	python scripts/experiment_status.py
 
 # Self-contained, submission-ready arXiv source (macros inlined; DRAFT watermark,
 # banner, and verify markers stripped). Run only when claims are signed off.
