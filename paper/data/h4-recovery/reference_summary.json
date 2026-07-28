@@ -1,0 +1,21 @@
+{
+  "experiment": "h4-recovery",
+  "provenance": {
+    "branch": "results/h4-recovery-live",
+    "sha": "a9a4b38",
+    "run_id": "30282599910",
+    "config_hash": "0d606d9b7730cc95",
+    "instrumentation": "api-error-aware-v1",
+    "prompt_variant": "policy_instructed",
+    "sampling": "rate",
+    "spend_usd": 99.12,
+    "cells": "96/96"
+  },
+  "headline": -0.041,
+  "portfolio_recovery": -0.041,
+  "portfolio_loss_a": 283.91,
+  "portfolio_loss_d": 295.58,
+  "stale_loss_a": 133.6,
+  "stale_loss_d": -0.47,
+  "verdict": "P1 (recovery>=0.80) NOT supported; gate recovers covered channel (freshness)"
+}

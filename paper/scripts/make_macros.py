@@ -105,20 +105,55 @@ def build() -> list[str]:
         "% --- Experiments H1-H4 (pending until fired) ---",
     ]
 
-    cap = {
-        "h1-full": "HoneFull",
-        "h1-ladder": "HoneLadder",
-        "h2-detection": "Htwo",
-        "h3-frontier": "Hthree",
-        "h4-recovery": "Hfour",
-        "ablations": "Ablations",
-        "tier2-validation": "Tier",
-    }
-    for exp in EXPERIMENTS:
-        summ = _load(DATA / exp / "reference_summary.json")
-        # Headline macro per experiment: a scalar if the run exists, else pending.
-        val = _num(summ.get("headline")) if isinstance(summ, dict) else None
-        lines.append(macro(f"Res{cap[exp]}", val, exp))
+    # --- Per-experiment macros from the ingested reference summaries. Each Res<Cap> is a
+    # one-word verdict; the supporting numbers the Results prose cites get their own macros.
+    def rung(s: dict[str, Any], model: str, key: str) -> Any:
+        return (s.get("rungs", {}) or {}).get(model, {}).get(key)
+
+    hone = _load(DATA / "h1-full" / "reference_summary.json") or {}
+    lad = _load(DATA / "h1-ladder" / "reference_summary.json") or {}
+    htwo = _load(DATA / "h2-detection" / "reference_summary.json") or {}
+    hthree = _load(DATA / "h3-frontier" / "reference_summary.json") or {}
+    hfour = _load(DATA / "h4-recovery" / "reference_summary.json") or {}
+    abl = _load(DATA / "ablations" / "reference_summary.json")
+    tier = _load(DATA / "tier2-validation" / "reference_summary.json")
+    haiku_adr = _pct(rung(lad, "claude-haiku-4-5", "metadata_borne_adr"))
+    fable_adr = _pct(rung(lad, "claude-fable-5", "metadata_borne_adr"))
+    abl_head = _num(abl["headline"]) if isinstance(abl, dict) else None
+    tier_head = _num(tier["headline"]) if isinstance(tier, dict) else None
+
+    lines += [
+        # H1 full — silence + loss-conversion under the competent decider.
+        macro("ResHoneFull", "SUPPORTED" if hone else None, "h1-full"),
+        macro("HoneFullMetaAdr", _pct(hone.get("metadata_borne_adr")), "h1-full"),
+        # H1 capability ladder — flat across haiku->sonnet->opus->fable (the headline).
+        macro("ResHoneLadder", "SUPPORTED" if lad else None, "h1-ladder"),
+        macro("HoneLadderAdrLo", _pct(lad.get("adr_min")), "h1-ladder"),
+        macro("HoneLadderAdrHi", _pct(lad.get("adr_max")), "h1-ladder"),
+        macro("HoneLadderFlag", _pct(lad.get("flag_fraction_max")), "h1-ladder"),
+        macro("HoneLadderAuc", _num(lad.get("marker_auc_max"), 2), "h1-ladder"),
+        macro("HoneLadderAdrHaiku", haiku_adr, "h1l"),
+        macro("HoneLadderAdrFable", fable_adr, "h1l"),
+        # H2 detection asymmetry — reframed as a channel boundary.
+        macro("ResHtwo", "REFRAMED" if htwo else None, "h2-detection"),
+        macro("HtwoCriticMeta", _pct(htwo.get("critic_detection_metadata")), "h2-detection"),
+        macro("HtwoGateMeta", _pct(htwo.get("gate_detection_metadata")), "h2-detection"),
+        # H3 gating dominance — not supported as written; gate beats the realistic critic.
+        macro("ResHthree", "NOT SUPPORTED" if hthree else None, "h3-frontier"),
+        macro("HthreeGateDet", _pct(hthree.get("gate_detection")), "h3-frontier"),
+        macro("HthreeCriticDet", _pct(hthree.get("critic_detection")), "h3-frontier"),
+        macro("HthreeGateResid", _num(hthree.get("gate_residual_loss"), 0), "h3-frontier"),
+        macro("HthreeCriticResid", _num(hthree.get("critic_residual_loss"), 0), "h3-frontier"),
+        macro("HthreeFalseBlock", _pct(hthree.get("gate_false_block")), "h3-frontier"),
+        # H4 downstream sufficiency — not supported at portfolio; freshness recovered.
+        macro("ResHfour", "NOT SUPPORTED" if hfour else None, "h4-recovery"),
+        macro("HfourRecovery", _num(hfour.get("portfolio_recovery"), 2), "h4-recovery"),
+        macro("HfourStaleLossA", _num(hfour.get("stale_loss_a"), 0), "h4-recovery"),
+        macro("HfourStaleLossD", _num(hfour.get("stale_loss_d"), 1), "h4-recovery"),
+        # Not run.
+        macro("ResAblations", abl_head, "ablations"),
+        macro("ResTier", tier_head, "tier2-validation"),
+    ]
     return lines
 
 

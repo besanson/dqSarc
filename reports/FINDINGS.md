@@ -277,3 +277,85 @@ an operational `instrumentation = api-error-aware-v1` tag makes every pre-fix su
 The stage-4/5 firing (h3-frontier, h1-ladder) is **halted** until the spend cap is
 raised; the re-runs then execute on the hardened harness, which can no longer commit a
 silently-truncated summary.
+
+## 9. H4 (downstream recovery) re-run on the hardened harness — P1 NOT supported
+
+The corrected `h4-recovery` re-run (`results/h4-recovery-live` @ `a9a4b38`, run
+30282599910, config_hash `0d606d9b7730cc95`, `instrumentation=api-error-aware-v1`) is
+**VALID**: 96/96 cells, `n_api_errors=0` in every cell, all 8 classes call the model,
+\$99.12 — the cap-truncation failure mode is gone (the hardening worked). Full checks:
+`reports/VERIFICATION-2026-07-13-stage3-rerun.md`.
+
+The registered headline **P1 (recovery ratio ≥ 0.80, portfolio) is NOT supported**:
+portfolio-pooled `loss_A = 283.9`, `loss_D = 295.6`, `loss_E = 0` → recovery **−0.04**
+(the gate recovers ~none of the *portfolio* loss). The decomposition is the honest result
+and mirrors the H2 channel-boundary reframe:
+
+- **Gate fully recovers what it covers.** `stale_master_data` (freshness): `loss_A` 134 →
+  `loss_D` −0.5 [−4, 2] — the DQ gate zeroes the loss the payload-only critic cannot.
+- **The dominant loss is a pre-registered coverage gap.** `silent_unit_change` (unit
+  rescaling, clean metadata) is the **only** class with a clearly non-zero ungated loss
+  (`loss_A` 2420 [1392, 3666]) and it is exactly the defect the gate has no predicate for
+  (unit-consistency = v1.1 future work, addendum D); D ≈ A. Its magnitude dominates the
+  magnitude-weighted portfolio pool → recovery ≈ 0. **Structural, not statistical** — more
+  episodes cannot move it.
+- **n=100 (rate axis) is underpowered per class.** Every other class's `loss_A` CI spans 0,
+  so there is no established loss to recover.
+
+Paper wording: H4 as registered is **not supported**; the reported result is that the gate
+recovers the loss it covers (freshness) and is transparent about its named coverage gaps
+(unit-scaling, outliers), which carry the largest raw magnitude. No threshold or endpoint
+was altered.
+
+## 10. H3 (gating dominance) re-run on the hardened harness — P1 NOT supported as written
+
+The corrected `h3-frontier` re-run (`results/h3-frontier-live` @ `9bfff1f`, run 30296664147,
+config_hash `32c0c09dd052f859`, `instrumentation=api-error-aware-v1`) is **VALID**: 96/96,
+`n_api_errors=0`, all 8 classes ran, \$115.16. Checks:
+`reports/VERIFICATION-2026-07-13-stage4.md`.
+
+Registered **P1 (D Pareto-dominant over B, C, and F(v) on the loss-avoided vs false-block
+frontier) is NOT supported as written**, for two reasons:
+
+- **The false-block axis is degenerate** — every arm false-blocks at 0.000 (no arm blocks a
+  clean episode), so no frontier/operating-point sweep emerges; the comparison collapses to
+  residual loss alone.
+- **F(v) is a partial oracle.** Arm F substitutes the *true* price (`unit_cost=true_p`) on 50%
+  of corrupted episodes, so it has ground-truth access for the fraction it "cleans" — including
+  the uncatchable `silent_unit_change`. Its lowest residual loss (143 vs D 294 vs C 311) is
+  blind laundering of the dominant loss using the answer key, not a realistic competitor.
+
+**The fair, defensible finding (reported):** against the realistic payload-only critic C, the
+pre-action gate **D dominates** — residual loss 294 vs 311, **detection 0.63 vs 0.31 (2×)**, at
+the same zero false-block; per class it zeroes the freshness loss C cannot see
+(`stale`: 134 → −1.3). Same metadata-channel advantage as H2/H4; the portfolio residual stays
+dominated by the pre-registered `silent_unit_change` coverage gap. No threshold/endpoint altered.
+
+## 11. H1 capability ladder on the hardened harness — SUPPORTED (the headline)
+
+The corrected `h1-ladder` re-run (`results/h1-ladder-live` @ `6a1ee4d`, run 30332532378,
+config_hash `63ea99e0e8ea046d`, `instrumentation=api-error-aware-v1`) is **VALID**: 128/128,
+`n_api_errors=0`, all four model rungs ran (32 cells each), \$182.62 (full scale, no trim).
+Checks: `reports/VERIFICATION-2026-07-13-stage5.md`.
+
+**H1 is SUPPORTED, and — the point of the ladder — it holds flat across capability.** Pooled
+per model (800 corrupted episodes each):
+
+```
+model             flag_fraction   marker_AUC   metadata-borne ADR
+claude-haiku-4-5      0.000          0.500            0.605
+claude-sonnet-5       0.000          0.474            0.615
+claude-opus-4-8       0.000          0.472            0.618
+claude-fable-5        0.000          0.500            0.618
+```
+
+- **P1 loss-conversion SUPPORTED and non-decreasing with capability** (metadata-borne ADR
+  0.605→0.618): the frontier model is as vulnerable as the cheapest.
+- **P2 behavioural-marker AUC ≤ 0.60 SUPPORTED at every rung** (0.47–0.50): no capability tier
+  is measurably more doubtful on corrupt vs clean data. (LLM-judge AUC still deferred, §7.)
+- **P3 explicit-flag fraction < 5% SUPPORTED** — **0.000 at every rung**.
+
+**Headline: capability does not buy skepticism.** Across a ~15× price range both silence
+signals stay pinned at the null while loss-conversion is flat-to-rising — a payload-only
+frontier decider is exactly as silent and as vulnerable as a small one. This is the project
+thesis: **enforcement placement beats model intelligence.** No threshold/endpoint altered.
