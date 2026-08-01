@@ -7,7 +7,7 @@ name = "sarc-dq"
 version = "0.1.0"
 description = "SARC-DQ — runtime data-quality gating for agentic AI: DQ predicates + Pre-Action Gate with downstream-only remediation"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [{ name = "Gaston Besanson" }]
 keywords = ["data-quality", "agents", "governance", "sarc", "llm", "provenance", "freshness"]
@@ -15,7 +15,7 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

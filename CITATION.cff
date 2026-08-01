@@ -6,7 +6,7 @@ authors:
     given-names: Gaston
     affiliation: "Universidad Torcuato Di Tella"
 version: 0.1.0
-license: MIT
+license: Apache-2.0
 repository-code: "https://github.com/besanson/dqsarc"
 keywords:
   - data-quality

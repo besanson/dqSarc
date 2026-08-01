@@ -156,6 +156,9 @@ Total live spend: **$5.1331**.
   mismatch (pyproject/CITATION/README all declared MIT; only the LICENSE file was
   Apache — aligned to the majority declaration). CITATION.cff present, version 0.1.0
   consistent across pyproject/CITATION. `pip install -e .` clean; `import sarc_dq` OK.
+  _(Superseded 2026: the repository was relicensed to **Apache License 2.0** — LICENSE +
+  NOTICE, with pyproject/CITATION/README updated to match. This historical note records
+  the earlier state and is intentionally left unchanged.)_
   README final pass: repository-layout block refreshed to the full build (taxonomy,
   gate, harness, gigo, paper), 68 tests, paper build section added.
 
