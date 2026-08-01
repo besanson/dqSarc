@@ -9,7 +9,7 @@ enters the agent's context, so no amount of model capability catches it — but 
 Pre-Action Gate with *metadata access* does.
 
 ![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)
-![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green)
 ![Typed](https://img.shields.io/badge/mypy-strict-blue)
 ![DOI: pending](https://img.shields.io/badge/DOI-pending-lightgrey)
 
@@ -215,4 +215,4 @@ all verify markers removed. CI builds the PDF on every `paper/**` change
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
